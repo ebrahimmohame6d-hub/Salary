@@ -3,46 +3,1551 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Attend & Salary — METI</title>
+<title>HR System</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
 <style>
-  html,body{margin:0;padding:0;height:100%;width:100%;background:linear-gradient(135deg,#1e3a72 0%,#2a5298 100%);overflow:hidden;font-family:'Segoe UI',Tahoma,sans-serif}
-  html::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.12) 1px,transparent 1px);background-size:32px 32px;pointer-events:none}
-  #loader{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:linear-gradient(135deg,#1e3a72 0%,#2a5298 100%);z-index:2;transition:opacity .5s ease}
-  #loader.hide{opacity:0;pointer-events:none}
-  .loader-card{background:#fff;border-radius:22px;padding:36px 28px;width:90%;max-width:360px;text-align:center;box-shadow:0 16px 56px rgba(0,0,0,0.25);animation:fadeUp 0.45s ease both}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-  .loader-avatar{width:64px;height:64px;border-radius:50%;background:#dde8f8;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
-  .loader-avatar img{width:100%;height:100%;object-fit:cover}
-  .loader-card h2{font-size:20px;font-weight:800;color:#1a2a4a;margin-bottom:6px;font-family:'Segoe UI',sans-serif}
-  .loader-online{display:inline-flex;align-items:center;gap:5px;background:#e6f9ef;border:1.5px solid #2cb87a;color:#1a8a55;border-radius:30px;padding:3px 12px;font-size:11px;font-weight:700;margin-bottom:6px}
-  .loader-online::before{content:'';width:7px;height:7px;border-radius:50%;background:#2cb87a;display:inline-block;animation:livePulse 2s infinite}
-  @keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.7)}}
-  .loader-sub{font-size:12px;color:#5a6a84;margin-bottom:22px}
-  .spin{width:34px;height:34px;border:3px solid rgba(20,224,180,0.2);border-top-color:#14e0b4;border-radius:50%;animation:sp .8s linear infinite;margin:0 auto}
-  @keyframes sp{to{transform:rotate(360deg)}}
-  #loader p{color:rgba(255,255,255,0.7);font-size:13px;letter-spacing:.05em;margin-top:4px}
-  #app-frame{position:fixed;inset:0;width:100%;height:100%;border:none;display:block;opacity:0;transition:opacity .4s ease}
-  #app-frame.show{opacity:1}
+:root{
+  --navy:#1a2a4a;--navy2:#1e3259;--navy3:#243b6e;
+  --bg:#eef1f7;--bg2:#ffffff;--bg3:#f4f6fb;--bg4:#dde3ee;
+  --border:rgba(26,42,74,0.1);--border2:rgba(26,42,74,0.16);
+  --accent:#1e3259;--accent-lt:#3060b8;--green:#2cb87a;
+  --red:#e03448;--yellow:#e09020;--orange:#e06820;--purple:#7b5cf6;
+  --text:#1a2a4a;--text2:#5a6a84;--text3:#9aaac0;
+  --radius:12px;--radius-sm:7px;
+  --login-bg1:#1e3a72;--login-bg2:#2a5298;
+  --bottom-nav-h:60px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;overscroll-behavior:none}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg3)}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+
+/* ===== LOGIN ===== */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--login-bg1) 0%,var(--login-bg2) 100%);position:relative;overflow:hidden;padding:16px}
+#login-screen::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.12) 1px,transparent 1px);background-size:32px 32px}
+.login-card{position:relative;background:#fff;border-radius:22px;padding:36px 28px;width:100%;max-width:400px;text-align:center;box-shadow:0 16px 56px rgba(0,0,0,0.25);animation:fadeUp 0.45s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.login-avatar{width:64px;height:64px;border-radius:50%;background:#dde8f8;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
+.login-avatar img{width:100%;height:100%;object-fit:cover}
+.login-card h2{font-size:20px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.login-online{display:inline-flex;align-items:center;gap:5px;background:#e6f9ef;border:1.5px solid #2cb87a;color:#1a8a55;border-radius:30px;padding:3px 12px;font-size:11px;font-weight:700;margin-bottom:6px}
+.login-online::before{content:'';width:7px;height:7px;border-radius:50%;background:#2cb87a;display:inline-block}
+.login-sub{font-size:12px;color:var(--text2);margin-bottom:22px}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;text-align:right}
+.fg label{font-size:10px;font-weight:700;color:var(--text2);letter-spacing:0.07em;text-transform:uppercase}
+.fg input{background:#eef3fc;border:1.5px solid #dde5f4;border-radius:var(--radius-sm);padding:12px 13px;font-size:14px;color:var(--text);font-family:'Cairo',sans-serif;direction:ltr;transition:border-color 0.2s}
+.fg input:focus{outline:none;border-color:var(--accent-lt);background:#f0f5ff}
+.login-btn{width:100%;background:var(--navy);border:none;border-radius:var(--radius-sm);padding:14px;font-size:15px;font-weight:800;color:#fff;cursor:pointer;font-family:'Cairo',sans-serif;margin-top:4px;transition:background 0.2s;-webkit-appearance:none}
+.login-btn:hover{background:var(--navy3)}
+.login-btn:active{background:#111d36;transform:scale(0.98)}
+.login-err{background:rgba(224,52,72,0.07);border:1px solid rgba(224,52,72,0.2);border-radius:var(--radius-sm);padding:9px 13px;font-size:12px;color:var(--red);margin-top:10px;display:none;text-align:center}
+.save-creds-wrap{display:flex;align-items:center;gap:6px;margin-top:10px;justify-content:flex-start}
+.save-creds-wrap input{width:16px;height:16px;accent-color:var(--accent-lt);cursor:pointer}
+.save-creds-wrap label{font-size:11px;color:var(--text2);cursor:pointer}
+
+/* ===== APP SHELL ===== */
+#app{display:none;min-height:100vh;min-height:-webkit-fill-available}
+
+/* ===== LIVE INDICATOR ===== */
+.live-dot{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#2cb87a;font-weight:700;margin-right:8px}
+.live-dot::before{content:'';width:6px;height:6px;border-radius:50%;background:#2cb87a;display:inline-block;animation:livePulse 2s infinite}
+@keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.7)}}
+
+/* ===== DESKTOP SIDEBAR ===== */
+.sidebar{position:fixed;top:0;right:0;width:215px;height:100vh;background:var(--navy);display:flex;flex-direction:column;z-index:100}
+.sb-header{padding:18px 14px 14px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.sb-logo{display:flex;align-items:center;gap:10px;margin-bottom:13px}
+.sb-logo-av{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;overflow:hidden;border:1px solid rgba(255,255,255,0.2)}
+.sb-logo-av img{width:100%;height:100%;object-fit:cover}
+.sb-logo-txt h1{font-size:14px;font-weight:800;color:#fff;line-height:1.2}
+.user-box{padding:12px 14px;background:rgba(255,255,255,0.07);border-radius:var(--radius-sm)}
+.user-name{font-size:17px;font-weight:900;color:#fff}.user-role{font-size:13px;color:rgba(255,255,255,0.65);margin-top:2px}.user-sal{font-size:14px;color:#5de8b0;margin-top:4px;font-weight:700}
+.sb-nav{flex:1;padding:12px 8px;overflow-y:auto}
+.nav-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:0.1em;text-transform:uppercase;padding:0 8px;margin:12px 0 5px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:var(--radius-sm);cursor:pointer;font-size:12px;font-weight:500;color:rgba(255,255,255,0.55);border:none;background:none;width:100%;text-align:right;font-family:'Cairo',sans-serif;margin-bottom:2px;transition:all 0.15s}
+.nav-item:hover,.nav-item:active{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.85)}.nav-item.active{background:rgba(255,255,255,0.12);color:#fff;font-weight:700}
+.nav-icon{font-size:13px;width:17px;text-align:center;flex-shrink:0}
+.sb-footer{padding:12px 8px;border-top:1px solid rgba(255,255,255,0.08)}
+.logout-btn{display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;border-radius:var(--radius-sm);background:none;border:none;cursor:pointer;font-size:12px;color:rgba(255,255,255,0.45);font-family:'Cairo',sans-serif;transition:all 0.15s}
+.logout-btn:hover,.logout-btn:active{background:rgba(224,52,72,0.15);color:#f87080}
+
+/* ===== MOBILE BOTTOM NAV ===== */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:var(--bottom-nav-h);background:var(--navy);z-index:200;flex-direction:row;align-items:stretch;border-top:1px solid rgba(255,255,255,0.1);padding-bottom:env(safe-area-inset-bottom)}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;color:rgba(255,255,255,0.5);font-family:'Cairo',sans-serif;font-size:10px;font-weight:600;cursor:pointer;padding:6px 0;transition:color 0.2s}
+.bn-item.active{color:#fff}.bn-item.active .bn-icon{background:rgba(255,255,255,0.15);border-radius:10px}
+.bn-icon{font-size:20px;padding:4px 14px;transition:background 0.2s}
+
+/* ===== MOBILE TOP BAR ===== */
+.mobile-topbar{display:none;position:fixed;top:0;left:0;right:0;height:56px;background:var(--navy);z-index:150;align-items:center;justify-content:space-between;padding:0 16px}
+.mt-logo{display:flex;align-items:center;gap:8px}
+.mt-logo-av{width:30px;height:30px;border-radius:50%;overflow:hidden;border:1px solid rgba(255,255,255,0.2)}
+.mt-logo-av img{width:100%;height:100%;object-fit:cover}
+.mt-title{font-size:14px;font-weight:800;color:#fff}
+.mt-user{display:flex;flex-direction:column;align-items:flex-end}
+.mt-name{font-size:13px;font-weight:700;color:#fff}
+.mt-sal{font-size:11px;color:#5de8b0;font-weight:600}
+
+/* ===== MAIN CONTENT ===== */
+.main{margin-right:215px;padding:22px;min-height:100vh}
+.page{display:none}.page.active{display:block;animation:fadeIn 0.2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.page-header{margin-bottom:16px}.page-header h2{font-size:20px;font-weight:800;color:var(--navy);margin-bottom:2px}.page-header p{font-size:12px;color:var(--text2)}
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:13px;box-shadow:0 1px 6px rgba(26,42,74,0.06)}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:11px;border-bottom:1px solid var(--border);gap:8px;flex-wrap:wrap}
+.card-title{font-size:13px;font-weight:700;color:var(--navy)}
+.period-badge{background:#eef3fc;border:1.5px solid #c8d8f5;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--accent-lt);white-space:nowrap}
+.month-nav{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.month-nav button{background:var(--bg3);border:1.5px solid var(--border2);color:var(--text2);width:32px;height:32px;border-radius:var(--radius-sm);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.month-nav button:hover{background:#e2e8f0}
+.month-nav button:active{border-color:var(--accent-lt);color:var(--accent-lt);transform:scale(0.95)}
+.month-nav span{font-size:12px;font-weight:700;color:var(--navy);min-width:70px;text-align:center}
+.emp-sel{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px}
+.emp-btn{padding:5px 14px;border-radius:30px;background:var(--bg3);border:1.5px solid var(--border2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Cairo',sans-serif;transition:all 0.15s;min-height:34px}
+.emp-btn:hover{background:#e2e8f0}
+.emp-btn:active{border-color:var(--accent-lt);color:var(--accent-lt);transform:scale(0.97)}
+.emp-btn.active{background:var(--navy);border-color:var(--navy);color:#fff}
+
+/* ===== ATTENDANCE TABLE ===== */
+.att-layout{display:grid;grid-template-columns:1fr 305px;gap:14px;align-items:start}
+.att-table-wrap{overflow-y:auto;max-height:72vh}
+.att-table{width:100%;border-collapse:collapse;font-size:12px}
+.att-table th{font-size:10px;font-weight:700;color:var(--text3);padding:7px 11px;text-align:right;border-bottom:1.5px solid var(--border);position:sticky;top:0;background:#fff;z-index:2;letter-spacing:0.04em;text-transform:uppercase}
+.att-table td{padding:0;border-bottom:1px solid var(--border)}.att-table tr:last-child td{border-bottom:none}
+.day-row{display:flex;align-items:center;padding:10px 11px;gap:9px;cursor:pointer;transition:all 0.2s ease;border-right:3px solid transparent;border-radius:0 8px 8px 0;margin:2px 0}
+.day-row:hover{background:#f8fafc}
+.day-row:active{background:#f4f7ff}
+.day-row.active-row{
+  background:linear-gradient(90deg, #e0f2fe 0%, #dbeafe 100%);
+  border-right:3px solid var(--accent-lt);
+  box-shadow:0 0 15px rgba(48, 96, 184, 0.18), inset 0 0 20px rgba(48, 96, 184, 0.05);
+  transform:scale(1.01);
+  font-weight:700;
+}
+.friday-row{background:#fff8f0 !important;border-right:3px solid rgba(224,104,32,0.3) !important}
+.friday-row .day-num-box{background:rgba(224,104,32,0.13) !important;color:var(--orange) !important}
+.friday-row .day-name-txt{color:var(--orange) !important;font-weight:700 !important}
+.friday-badge{font-size:9px;background:rgba(224,104,32,0.1);color:var(--orange);border:1px solid rgba(224,104,32,0.25);padding:1px 7px;border-radius:8px;font-weight:700;flex-shrink:0}
+.month-sep td{background:var(--bg3);padding:5px 11px;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid var(--border)}
+.day-num-box{width:32px;height:32px;border-radius:7px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;color:var(--navy)}
+.day-name-txt{font-size:12px;font-weight:500;flex:1}
+.day-ot-badge{font-size:10px;color:var(--orange);background:rgba(224,104,32,0.08);border:1px solid rgba(224,104,32,0.18);padding:2px 6px;border-radius:8px;white-space:nowrap}
+.day-comp-badge{font-size:10px;color:var(--purple);background:rgba(123,92,246,0.08);border:1px solid rgba(123,92,246,0.25);padding:2px 6px;border-radius:8px;white-space:nowrap}
+.day-ded-badge{font-size:10px;color:var(--red);background:rgba(224,52,72,0.08);border:1px solid rgba(224,52,72,0.2);padding:2px 6px;border-radius:8px;white-space:nowrap;margin-top:2px}
+
+.pill{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.p-present{background:#e6f9ef;color:#1a8a55;border:1px solid #b6e8ce}
+.p-absent{background:#fde8eb;color:#c01c2e;border:1px solid #f5b8bf}
+.p-annual{background:#e8effe;color:#2a4db8;border:1px solid #bfcef8}
+.p-dayoff{background:#f0f2f7;color:var(--text2);border:1px solid var(--border2)}
+.p-comp{background:#f3f0ff;color:#5b21b6;border:1px solid #c4b5fd}
+.p-friday{background:#fff0e5;color:var(--orange);border:1px solid #f5c89a}
+.p-ot{background:#fff0e5;color:var(--orange);border:1px solid #f5c89a}
+.p-ded{background:#fde8eb;color:#c01c2e;border:1px solid #f5b8bf}
+.p-empty{background:transparent;color:var(--text3);border:1px dashed var(--text3);font-weight:500}
+
+/* ===== DESKTOP SIDE PANEL ===== */
+.side-panel{background:var(--bg3);border:1.5px solid var(--border2);border-radius:var(--radius);padding:14px;position:sticky;top:22px;max-height:80vh;overflow-y:auto}
+
+/* ===== TODAY CARD ===== */
+.today-card{background:linear-gradient(135deg,var(--navy) 0%,var(--accent-lt) 100%);border-radius:var(--radius);padding:20px 14px 16px;color:#fff;text-align:center;position:relative;overflow:hidden}
+.today-card::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.08) 1px,transparent 1px);background-size:20px 20px}
+.today-card-inner{position:relative;z-index:1}
+.today-lbl{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;opacity:0.6;margin-bottom:10px}
+.today-dayname{font-size:26px;font-weight:900;margin-bottom:4px;line-height:1.1}
+.today-date{font-size:13px;font-weight:600;opacity:0.8;margin-bottom:16px}
+.today-divider{border:none;border-top:1px solid rgba(255,255,255,0.2);margin:0 0 12px}
+.today-hint{font-size:11px;opacity:0.5;display:flex;align-items:center;justify-content:center;gap:5px}
+
+/* ===== ANNUAL LEAVE CARD ===== */
+.annual-leave-card{background:linear-gradient(135deg,var(--navy) 0%,var(--accent-lt) 100%);border-radius:var(--radius);padding:18px 18px 16px;color:#fff;position:relative;overflow:hidden}
+.annual-leave-card::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.07) 1px,transparent 1px);background-size:20px 20px}
+.annual-leave-card.al-danger{background:linear-gradient(135deg,#7b1a2a 0%,#c01c2e 100%)}
+.annual-leave-card.al-warn{background:linear-gradient(135deg,#7a4a00 0%,#c07000 100%)}
+.annual-leave-card.al-done{background:linear-gradient(135deg,#0a4a2a 0%,#1a8a55 100%)}
+.al-inner{position:relative;z-index:1}
+.al-top-lbl{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.65;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.al-nums{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px}
+.al-stat{text-align:center;flex:1}
+.al-stat-num{font-size:32px;font-weight:900;line-height:1;margin-bottom:3px}
+.al-stat-lbl{font-size:10px;opacity:0.65;font-weight:600;letter-spacing:0.05em}
+.al-divider{width:1px;height:40px;background:rgba(255,255,255,0.2);flex-shrink:0}
+.al-bar-wrap{height:8px;background:rgba(255,255,255,0.2);border-radius:8px;overflow:hidden;margin-bottom:10px}
+.al-bar{height:100%;border-radius:8px;transition:width 0.5s ease;background:#5de8b0}
+.al-bar.al-bar-warn{background:#fbbf24}
+.al-bar.al-bar-danger{background:#f87080}
+.al-footer{font-size:11px;opacity:0.65;display:flex;align-items:center;justify-content:center;gap:4px;border-top:1px solid rgba(255,255,255,0.15);padding-top:10px}
+
+/* ===== MOBILE DAY DRAWER ===== */
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(2px);z-index:300;opacity:0;transition:opacity 0.25s}
+.drawer-overlay.show{opacity:1}
+.drawer{position:fixed;bottom:0;left:0;right:0;background:#fff;z-index:301;border-radius:24px 24px 0 0;padding:0 16px 24px;max-height:90vh;overflow-y:auto;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 -8px 40px rgba(0,0,0,0.15)}
+.drawer.show{transform:translateY(0)}
+.drawer-handle{width:40px;height:4px;background:var(--bg4);border-radius:4px;margin:12px auto 16px}
+.drawer-title{font-size:16px;font-weight:800;color:var(--navy);margin-bottom:4px}
+.drawer-info{font-size:11px;color:var(--accent-lt);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+
+.sp-placeholder{text-align:center;padding:0}
+.sp-title{font-size:11px;color:var(--accent-lt);margin-bottom:12px;padding-bottom:11px;border-bottom:1px solid var(--border)}
+.sp-day-info{font-size:11px;color:var(--accent-lt);margin-bottom:12px;padding-bottom:11px;border-bottom:1px solid var(--border)}
+.sp-section{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin:12px 0 7px}
+.status-opts{display:flex;flex-direction:column;gap:5px;margin-bottom:4px}
+.s-opt{display:flex;align-items:center;gap:7px;padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--text2);border:1.5px solid var(--border);background:#fff;transition:all 0.15s;font-family:'Cairo',sans-serif;width:100%;text-align:right}
+.s-opt:hover{background:#f8fafc}
+.s-opt:active{border-color:var(--border2);color:var(--text)}.s-opt.sel{border-color:var(--accent-lt);background:linear-gradient(90deg,#edf2ff 0%,#e0f2fe 100%);color:var(--navy);font-weight:700;box-shadow:0 0 10px rgba(48,96,184,0.1)}
+.s-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.d-green{background:var(--green)}.d-red{background:var(--red)}.d-blue{background:var(--accent-lt)}
+.d-gray{background:var(--text3)}.d-yellow{background:var(--yellow)}.d-orange{background:var(--orange)}
+.d-purple{background:var(--purple)}
+
+/* ===== OT BOX ===== */
+.ot-box{background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-bottom:10px;transition:all 0.2s}
+.ot-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}.ot-row:last-child{margin-bottom:0}
+.ot-label{font-size:11px;color:var(--text2);flex-shrink:0;width:60px}
+.ot-input{background:#fff;border:1.5px solid var(--border2);border-radius:6px;padding:9px 10px;font-size:14px;color:var(--text);font-family:'Cairo',sans-serif;flex:1;min-width:0;transition:border-color 0.2s;direction:ltr;-webkit-appearance:none}
+.ot-input:focus{outline:none;border-color:var(--accent-lt)}
+.ot-select{background:#fff;border:1.5px solid var(--border2);border-radius:6px;padding:9px 10px;font-size:12px;color:var(--text);font-family:'Cairo',sans-serif;flex:1;cursor:pointer;-webkit-appearance:none;transition:all 0.2s}
+.ot-result{font-size:11px;color:var(--orange);font-weight:700;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);direction:rtl;text-align:right}
+
+/* ===== OT TYPE TOGGLE ===== */
+.ot-type-toggle{display:flex;gap:0;margin-bottom:10px;border-radius:var(--radius-sm);overflow:hidden;border:1.5px solid var(--border2)}
+.ot-type-btn{flex:1;padding:9px 6px;font-size:12px;font-weight:700;font-family:'Cairo',sans-serif;border:none;cursor:pointer;transition:all 0.18s;background:var(--bg3);color:var(--text2)}
+.ot-type-btn:hover{background:#e2e8f0}
+.ot-type-btn.ot-active-ot{background:var(--orange);color:#fff}
+.ot-type-btn.ot-active-comp{background:var(--purple);color:#fff}
+.ot-box.is-comp{background:#f3f0ff;border-color:#c4b5fd}
+.ot-box.is-comp .ot-input{border-color:#c4b5fd;background:#ede9fe;color:#5b21b6}
+.ot-box.is-comp .ot-select{border-color:#c4b5fd;background:#ede9fe;color:#5b21b6}
+.ot-comp-note{font-size:11px;color:var(--purple);font-weight:700;margin-top:8px;padding-top:8px;border-top:1px solid #c4b5fd;text-align:right;display:none;align-items:center;gap:5px}
+.ot-box.is-comp .ot-comp-note{display:flex}
+.ot-box.is-comp .ot-result{display:none !important}
+.ot-box.is-comp .ot-rate-row{display:none}
+
+/* ===== INDEPENDENT DEDUCTIONS BOX ===== */
+.ind-ded-box{background:#fff5f6;border:1.5px solid rgba(224,52,72,0.2);border-radius:var(--radius-sm);padding:12px;margin-bottom:10px}
+.ind-ded-title{font-size:10px;font-weight:700;color:var(--red);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.ind-ded-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.ind-ded-row:last-child{margin-bottom:0}
+.ind-ded-label{font-size:11px;color:var(--text2);flex-shrink:0;width:80px}
+.ind-ded-input{background:#fff;border:1.5px solid rgba(224,52,72,0.2);border-radius:6px;padding:9px 10px;font-size:14px;color:var(--red);font-family:'Cairo',sans-serif;flex:1;min-width:0;direction:ltr;-webkit-appearance:none;transition:border-color 0.2s}
+.ind-ded-input:focus{outline:none;border-color:var(--red)}
+.ind-ded-hint{font-size:10px;color:var(--text3);margin-top:6px;padding-top:6px;border-top:1px solid rgba(224,52,72,0.1);text-align:right}
+.ind-ded-result{font-size:11px;color:var(--red);font-weight:700;margin-top:8px;padding-top:8px;border-top:1px solid rgba(224,52,72,0.15);direction:rtl;text-align:right}
+
+.sp-save-btn{width:100%;background:var(--navy);border:none;border-radius:var(--radius-sm);padding:13px;font-size:14px;font-weight:800;color:#fff;cursor:pointer;font-family:'Cairo',sans-serif;margin-bottom:8px;-webkit-appearance:none;transition:all 0.15s}
+.sp-save-btn:hover{background:var(--navy3)}
+.sp-save-btn:active{background:#111d36;transform:scale(0.98)}
+.sp-save-btn:disabled{opacity:0.35;cursor:default}
+.sp-cancel-btn{width:100%;background:none;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px;font-size:12px;color:var(--text2);cursor:pointer;font-family:'Cairo',sans-serif;-webkit-appearance:none;margin-bottom:6px;transition:all 0.15s}
+.sp-cancel-btn:hover{background:var(--bg3)}
+.sp-cancel-btn:active{border-color:var(--red);color:var(--red)}
+.sp-clear-btn{width:100%;background:none;border:1.5px solid var(--red);border-radius:var(--radius-sm);padding:10px;font-size:12px;color:var(--red);cursor:pointer;font-family:'Cairo',sans-serif;-webkit-appearance:none;font-weight:700;transition:all 0.15s}
+.sp-clear-btn:hover{background:rgba(224,52,72,0.05)}
+.sp-clear-btn:active{background:rgba(224,52,72,0.08)}
+
+/* ===== SALARY & STATS ===== */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px;position:relative;overflow:hidden;box-shadow:0 1px 6px rgba(26,42,74,0.05)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.sc-blue::before{background:linear-gradient(90deg,#3060b8,#1e3259)}.sc-green::before{background:linear-gradient(90deg,#2cb87a,#1a8a55)}
+.sc-red::before{background:linear-gradient(90deg,#e03448,#f87080)}.sc-purple::before{background:linear-gradient(90deg,#7b5cf6,#5535d4)}
+.sc-yellow::before{background:linear-gradient(90deg,#e09020,#c07000)}
+.stat-icon{font-size:15px;margin-bottom:7px}.stat-num{font-size:20px;font-weight:800;line-height:1;margin-bottom:3px;color:var(--navy)}.stat-label{font-size:10px;color:var(--text2)}
+
+.sal-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.sal-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)}.sal-row:last-child{border:none}
+.sal-label{font-size:12px;color:var(--text2)}.sal-val{font-size:12px;font-weight:700;color:var(--navy)}
+.sal-plus{color:var(--green)}.sal-minus{color:var(--red)}
+.ot-summary{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px;margin-top:10px}
+.ot-sum-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px}
+.ot-sum-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;gap:8px}.ot-sum-row:last-child{border:none}
+.ot-sum-lbl{color:var(--text2);flex:1}.ot-sum-val{color:var(--orange);font-weight:700;white-space:nowrap}
+
+.tbl-wrap{overflow-x:auto}
+table.gtbl{width:100%;border-collapse:collapse;font-size:12px;min-width:500px}
+table.gtbl th{font-size:10px;font-weight:700;color:#fff;padding:9px 12px;text-align:right;background:var(--navy);white-space:nowrap}
+table.gtbl th:first-child{border-radius:0 8px 0 0}table.gtbl th:last-child{border-radius:8px 0 0 0}
+table.gtbl td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text)}
+table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{background:#f4f7ff}
+
+.btn-outline{background:transparent;border:1.5px solid var(--border2);color:var(--text2);padding:6px 12px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:'Cairo',sans-serif;transition:all 0.15s}
+.btn-outline:hover{background:var(--bg3)}
+.loading{text-align:center;padding:30px;color:var(--text2);font-size:12px}
+.spinner{width:22px;height:22px;border:2px solid var(--border2);border-top-color:var(--accent-lt);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 9px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:28px;color:var(--text2)}.empty-icon{font-size:26px;margin-bottom:7px;opacity:0.35}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) scale(0.95);background:var(--navy);color:#fff;padding:10px 20px;border-radius:30px;font-size:12px;font-weight:600;box-shadow:0 8px 28px rgba(26,42,74,0.3);display:none;z-index:9999;white-space:nowrap;opacity:0;transition:all 0.3s ease}
+.toast.show{opacity:1;transform:translateX(-50%) scale(1)}
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width:768px){
+  .sidebar{display:none}
+  .bottom-nav{display:flex}
+  .mobile-topbar{display:flex}
+  .main{margin-right:0;padding:72px 12px calc(var(--bottom-nav-h) + 12px + env(safe-area-inset-bottom));min-height:100vh}
+  .page-header{margin-bottom:12px}
+  .page-header h2{font-size:17px}
+  .card{padding:12px;border-radius:10px;margin-bottom:10px}
+  .card-head{flex-direction:column;align-items:flex-start;gap:8px}
+  .card-head > div:first-child{width:100%}
+  .att-layout{grid-template-columns:1fr;gap:0}
+  .side-panel{display:none}
+  .att-table-wrap{max-height:none;overflow-y:visible}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+  .stat-card{padding:11px}
+  .stat-num{font-size:17px}
+  .sal-2col{grid-template-columns:1fr;gap:10px}
+  .month-nav span{min-width:60px;font-size:11px}
+  .emp-sel{gap:5px}
+  .emp-btn{font-size:11px;padding:5px 11px}
+  .att-table{font-size:12px}
+  .att-table th{font-size:9px;padding:6px 9px}
+  .toast{bottom:calc(var(--bottom-nav-h) + 10px + env(safe-area-inset-bottom))}
+  .period-badge{font-size:10px;padding:3px 10px}
+  .al-stat-num{font-size:26px}
+  .annual-leave-card{padding:14px 14px 13px}
+  .day-row.active-row{transform:scale(1)}
+}
+@media (max-width:380px){
+  .stats-grid{gap:6px}
+  .stat-num{font-size:15px}
+  .stat-label{font-size:9px}
+  .main{padding:68px 10px calc(var(--bottom-nav-h) + 10px + env(safe-area-inset-bottom))}
+  .al-stat-num{font-size:22px}
+}
 </style>
 <base target="_blank">
 </head>
 <body>
 
-<div id="loader">
-  <div class="loader-card">
-    <div class="loader-avatar"><img src="https://i.ibb.co/WpxRj6z9/Screenshot-2026-03-31-220317.png" alt="Logo"></div>
-    <h2>Attend & Salary</h2>
-    <div class="loader-online">متصل</div>
-    <p class="loader-sub">جاري تحميل النظام...</p>
-    <div class="spin"></div>
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-avatar"><img src="https://i.ibb.co/WpxRj6z9/Screenshot-2026-03-31-220317.png" alt="Logo"></div>
+    <h2>Attend &amp; Salary</h2>
+    <div class="login-online">متصل</div>
+    <p class="login-sub">نظام إدارة الحضور والمرتبات</p>
+    <div class="fg"><label>اسم المستخدم</label><input id="l-user" placeholder="username" dir="ltr" autocomplete="username" oninput="onUserInput()"></div>
+    <div class="fg"><label>كلمة المرور</label><input id="l-pass" type="password" placeholder="••••" dir="ltr" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="save-creds-wrap">
+      <input type="checkbox" id="save-creds" checked>
+      <label for="save-creds">تذكرني على هذا الجهاز</label>
+    </div>
+    <button class="login-btn" onclick="doLogin()">دخول</button>
+    <div class="login-err" id="l-err"></div>
   </div>
 </div>
 
-<iframe id="app-frame"
-  src="https://script.google.com/macros/s/AKfycbye7KFKphubufC72h2FmsErDHC6pwWy6-1dZ2rpO5fRiSehTZb4y-acjTDilUhZf7FG/exec"
-  allow="clipboard-write"
-  onload="document.getElementById('loader').classList.add('hide');document.getElementById('app-frame').classList.add('show')">
-</iframe>
+<!-- APP -->
+<div id="app">
 
+  <!-- MOBILE TOP BAR -->
+  <div class="mobile-topbar">
+    <div class="mt-logo">
+      <div class="mt-logo-av"><img src="https://i.ibb.co/WpxRj6z9/Screenshot-2026-03-31-220317.png" alt="Logo"></div>
+      <span class="mt-title">Attend &amp; Salary</span>
+    </div>
+    <div class="mt-user">
+      <div class="mt-name" id="mt-name">—</div>
+      <div class="mt-sal" id="mt-sal">—</div>
+    </div>
+  </div>
+
+  <!-- DESKTOP SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-header">
+      <div class="sb-logo">
+        <div class="sb-logo-av"><img src="https://i.ibb.co/WpxRj6z9/Screenshot-2026-03-31-220317.png" alt="Logo"></div>
+        <div class="sb-logo-txt"><h1>Attend &amp; Salary</h1></div>
+      </div>
+      <div class="user-box">
+        <div class="user-name" id="sb-name">—</div>
+        <div class="user-role" id="sb-role">—</div>
+        <div class="user-sal" id="sb-sal">—</div>
+      </div>
+    </div>
+    <nav class="sb-nav">
+      <div class="nav-lbl">القائمة</div>
+      <button class="nav-item active" onclick="showPage('att',this)"><span class="nav-icon">📅</span>الحضور</button>
+      <button class="nav-item" onclick="showPage('salary',this)"><span class="nav-icon">💰</span>المرتب</button>
+      <button class="nav-item admin-only" onclick="showPage('report',this)" style="display:none"><span class="nav-icon">📊</span>التقارير</button>
+    </nav>
+    <div class="sb-footer"><button class="logout-btn" onclick="logout()"><span>🚪</span>خروج</button></div>
+  </aside>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="bn-item active" id="bn-att" onclick="showPage('att',this,true)">
+      <span class="bn-icon">📅</span>الحضور
+    </button>
+    <button class="bn-item" id="bn-salary" onclick="showPage('salary',this,true)">
+      <span class="bn-icon">💰</span>المرتب
+    </button>
+    <button class="bn-item admin-only" id="bn-report" onclick="showPage('report',this,true)" style="display:none">
+      <span class="bn-icon">📊</span>التقارير
+    </button>
+    <button class="bn-item" onclick="logout()">
+      <span class="bn-icon">🚪</span>خروج
+    </button>
+  </nav>
+
+  <main class="main">
+
+    <!-- ATTEND PAGE -->
+    <div id="page-att" class="page active">
+      <div class="page-header">
+        <h2>الحضور <span class="live-dot" id="live-dot" style="display:none">مباشر</span></h2>
+      </div>
+      <div class="card admin-only" id="att-emp-card" style="display:none">
+        <div class="card-head"><div class="card-title">اختر الموظف</div></div>
+        <div class="emp-sel" id="att-emp-sel"></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">أيام الشهر — <span id="att-lbl" style="color:var(--accent-lt)"></span></div>
+            <div id="att-period-badge" class="period-badge" style="margin-top:5px;display:inline-block"></div>
+          </div>
+          <div class="month-nav">
+            <button onclick="changeMonth(-1)">‹</button>
+            <span id="month-label">—</span>
+            <button onclick="changeMonth(1)">›</button>
+          </div>
+        </div>
+        <div id="att-loading" class="loading"><div class="spinner"></div>جاري التحميل...</div>
+        <div id="att-content" style="display:none">
+          <div class="att-layout">
+            <div class="att-table-wrap">
+              <table class="att-table">
+                <thead><tr><th>اليوم</th><th>الحالة</th><th>ساعات / خصم</th></tr></thead>
+                <tbody id="att-tbody"></tbody>
+              </table>
+            </div>
+            <div class="side-panel" id="desktop-side-panel">
+              <div class="sp-placeholder" id="sp-ph">
+                <div class="today-card">
+                  <div class="today-card-inner">
+                    <div class="today-lbl">اليوم</div>
+                    <div class="today-dayname" id="today-dayname">—</div>
+                    <div class="today-date" id="today-date">—</div>
+                    <hr class="today-divider">
+                    <div class="today-hint">اضغط على يوم لتعديله</div>
+                  </div>
+                </div>
+                <div id="sp-annual-leave" style="margin-top:13px;display:none"></div>
+              </div>
+              <div id="sp-form" style="display:none">
+                <div class="sp-title" id="sp-title"></div>
+                <div class="sp-day-info" id="sp-info"></div>
+                <div class="sp-section">الحالة</div>
+                <div class="status-opts" id="desktop-status-opts">
+                  <button class="s-opt" onclick="pickS(this,'Present')"><span class="s-dot d-green"></span>حضور</button>
+                  <button class="s-opt" onclick="pickS(this,'Absence')"><span class="s-dot d-red"></span>غياب</button>
+                  <button class="s-opt" onclick="pickS(this,'Annual')"><span class="s-dot d-blue"></span>إجازة سنوية — Annual</button>
+                  <button class="s-opt" onclick="pickS(this,'Day Off')"><span class="s-dot d-gray"></span>يوم راحة</button>
+                  <button class="s-opt" onclick="pickS(this,'Compensation')"><span class="s-dot d-purple"></span>تعويض</button>
+                  <button class="s-opt" onclick="pickS(this,'Friday + Double Paid')"><span class="s-dot d-orange"></span>دابل</button>
+                </div>
+                <div class="sp-section">الساعات الإضافية</div>
+                <div class="ot-box" id="d-ot-box">
+                  <div class="ot-type-toggle">
+                    <button class="ot-type-btn ot-active-ot" id="d-btn-ot" onclick="setOTType('d','ot')">⏱ أوفر تايم</button>
+                    <button class="ot-type-btn" id="d-btn-comp" onclick="setOTType('d','comp')">🔄 ساعات تعويض</button>
+                  </div>
+                  <div class="ot-row">
+                    <span class="ot-label">ساعات</span>
+                    <input class="ot-input" type="number" id="ot-hours" min="0" max="24" step="0.5" placeholder="0" oninput="calcOT()">
+                  </div>
+                  <div class="ot-row ot-rate-row">
+                    <span class="ot-label">المعدل</span>
+                    <select class="ot-select" id="ot-rate" onchange="calcOT()">
+                      <option value="1.5">× ١.٥ ساعة ونص</option>
+                      <option value="2">× ٢ ساعتين</option>
+                    </select>
+                  </div>
+                  <div class="ot-result" id="ot-result" style="display:none"></div>
+                  <div class="ot-comp-note" id="d-comp-note">🟣 ساعات تعويض — لا تُضاف للمرتب</div>
+                </div>
+                <div class="sp-section">خصم مستقل عن الحالة</div>
+                <div class="ind-ded-box" id="d-ind-ded-box">
+                  <div class="ind-ded-title">📉 خصومات إضافية</div>
+                  <div class="ind-ded-row">
+                    <span class="ind-ded-label">خصم ٣ أيام</span>
+                    <input class="ind-ded-input" type="number" id="ded-day3" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('d')">
+                  </div>
+                  <div class="ind-ded-row">
+                    <span class="ind-ded-label">خصم يومين</span>
+                    <input class="ind-ded-input" type="number" id="ded-day2" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('d')">
+                  </div>
+                  <div class="ind-ded-row">
+                    <span class="ind-ded-label">خصم يوم</span>
+                    <input class="ind-ded-input" type="number" id="ded-day1" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('d')">
+                  </div>
+                  <div class="ind-ded-row">
+                    <span class="ind-ded-label">خصم نص يوم</span>
+                    <input class="ind-ded-input" type="number" id="ded-half" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('d')">
+                  </div>
+                  <div class="ind-ded-hint">⚡ مستقلة عن الحالة — تُخصم من ساعات الأوفر (مش من المرتب مباشرة)</div>
+                  <div class="ind-ded-result" id="d-ind-ded-result" style="display:none"></div>
+                </div>
+                <button class="sp-save-btn" id="sp-save" onclick="saveDay()">💾 حفظ</button>
+                <button class="sp-cancel-btn" onclick="clearSel()">إلغاء</button>
+                <button class="sp-clear-btn" onclick="clearDay()">🗑️ مسح الكل</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SALARY PAGE -->
+    <div id="page-salary" class="page">
+      <div class="page-header"><h2>المرتب</h2><p>تفاصيل المرتب والإضافات والخصومات</p></div>
+      <div class="card admin-only" id="sal-emp-card" style="display:none">
+        <div class="card-head"><div class="card-title">اختر الموظف</div></div>
+        <div class="emp-sel" id="sal-emp-sel"></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">المرتب — <span id="sal-month-lbl" style="color:var(--accent-lt)"></span></div>
+            <div id="sal-period-badge" class="period-badge" style="margin-top:5px;display:inline-block"></div>
+          </div>
+          <div class="month-nav">
+            <button onclick="changeSalMonth(-1)">‹</button>
+            <span id="sal-month-label">—</span>
+            <button onclick="changeSalMonth(1)">›</button>
+          </div>
+        </div>
+        <div id="sal-loading" class="loading"><div class="spinner"></div>جاري التحميل...</div>
+        <div id="sal-content"></div>
+      </div>
+    </div>
+
+    <!-- REPORT PAGE -->
+    <div id="page-report" class="page">
+      <div class="page-header"><h2>التقارير</h2><p>مقارنة شاملة بين الموظفين</p></div>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">التقرير — <span id="rep-month-lbl" style="color:var(--accent-lt)"></span></div>
+            <div id="rep-period-badge" class="period-badge" style="margin-top:5px;display:inline-block"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:7px">
+            <div class="month-nav">
+              <button onclick="changeRepMonth(-1)">‹</button>
+              <span id="rep-month-label">—</span>
+              <button onclick="changeRepMonth(1)">›</button>
+            </div>
+            <button class="btn-outline" onclick="loadReport()">🔄</button>
+          </div>
+        </div>
+        <div class="stats-grid" id="rep-stats"></div>
+        <div id="rep-loading" class="loading"><div class="spinner"></div>جاري التحميل...</div>
+        <div id="rep-content" style="display:none">
+          <div class="tbl-wrap">
+            <table class="gtbl">
+              <thead><tr><th>الموظف</th><th>اليومية</th><th>الساعة</th><th>غياب</th><th>إجازة</th><th>تعويض</th><th>أوفر تايم</th><th>إضافات</th><th>خصم أوفر</th><th>صافي المرتب</th></tr></thead>
+              <tbody id="rep-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MOBILE DRAWER -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="day-drawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-title" id="drawer-title">—</div>
+  <div class="drawer-info" id="drawer-info">—</div>
+  <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px">الحالة</div>
+  <div class="status-opts" id="mobile-status-opts">
+    <button class="s-opt" onclick="pickSM(this,'Present')"><span class="s-dot d-green"></span>حضور</button>
+    <button class="s-opt" onclick="pickSM(this,'Absence')"><span class="s-dot d-red"></span>غياب</button>
+    <button class="s-opt" onclick="pickSM(this,'Annual')"><span class="s-dot d-blue"></span>إجازة سنوية — Annual</button>
+    <button class="s-opt" onclick="pickSM(this,'Day Off')"><span class="s-dot d-gray"></span>يوم راحة</button>
+    <button class="s-opt" onclick="pickSM(this,'Compensation')"><span class="s-dot d-purple"></span>تعويض</button>
+    <button class="s-opt" onclick="pickSM(this,'Friday + Double Paid')"><span class="s-dot d-orange"></span>دابل</button>
+  </div>
+  <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin:14px 0 8px">الساعات الإضافية</div>
+  <div class="ot-box" id="m-ot-box">
+    <div class="ot-type-toggle">
+      <button class="ot-type-btn ot-active-ot" id="m-btn-ot" onclick="setOTType('m','ot')">⏱ أوفر تايم</button>
+      <button class="ot-type-btn" id="m-btn-comp" onclick="setOTType('m','comp')">🔄 ساعات تعويض</button>
+    </div>
+    <div class="ot-row">
+      <span class="ot-label">ساعات</span>
+      <input class="ot-input" type="number" id="m-ot-hours" min="0" max="24" step="0.5" placeholder="0" oninput="calcOTM()">
+    </div>
+    <div class="ot-row ot-rate-row">
+      <span class="ot-label">المعدل</span>
+      <select class="ot-select" id="m-ot-rate" onchange="calcOTM()">
+        <option value="1.5">× ١.٥ ساعة ونص</option>
+        <option value="2">× ٢ ساعتين</option>
+      </select>
+    </div>
+    <div class="ot-result" id="m-ot-result" style="display:none"></div>
+    <div class="ot-comp-note" id="m-comp-note">🟣 ساعات تعويض — لا تُضاف للمرتب</div>
+  </div>
+  <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin:14px 0 8px">خصم مستقل عن الحالة</div>
+  <div class="ind-ded-box" id="m-ind-ded-box">
+    <div class="ind-ded-title">📉 خصومات إضافية</div>
+    <div class="ind-ded-row">
+      <span class="ind-ded-label">خصم ٣ أيام</span>
+      <input class="ind-ded-input" type="number" id="m-ded-day3" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('m')">
+    </div>
+    <div class="ind-ded-row">
+      <span class="ind-ded-label">خصم يومين</span>
+      <input class="ind-ded-input" type="number" id="m-ded-day2" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('m')">
+    </div>
+    <div class="ind-ded-row">
+      <span class="ind-ded-label">خصم يوم</span>
+      <input class="ind-ded-input" type="number" id="m-ded-day1" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('m')">
+    </div>
+    <div class="ind-ded-row">
+      <span class="ind-ded-label">خصم نص يوم</span>
+      <input class="ind-ded-input" type="number" id="m-ded-half" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('m')">
+    </div>
+    <div class="ind-ded-hint">⚡ مستقلة عن الحالة — تُخصم من ساعات الأوفر (مش من المرتب مباشرة)</div>
+    <div class="ind-ded-result" id="m-ind-ded-result" style="display:none"></div>
+  </div>
+  <button class="sp-save-btn" id="m-sp-save" onclick="saveDayM()">💾 حفظ</button>
+  <button class="sp-cancel-btn" onclick="closeDrawer()">إلغاء</button>
+  <button class="sp-clear-btn" onclick="clearDayM()">🗑️ مسح الكل</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== STATE ====================
+let S={}, curAttUser='', curSalUser='';
+let attYear, attMonth, salYear, salMonth, repYear, repMonth;
+let attData=[], selIdx=null, selStatus=null, selStatusM=null, empList=[];
+let isMobile=false;
+let dOTType='ot', mOTType='ot';
+let autoRefreshTimer=null;
+let isSaving=false;
+
+const REFRESH_INTERVAL = 30000;
+const MONTHS_AR=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const DAYS_AR=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+
+function checkMobile(){ isMobile=window.innerWidth<=768; }
+window.addEventListener('resize', checkMobile);
+checkMobile();
+
+function toAR(n){ return String(n).replace(/[0-9]/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]); }
+function fNum(n){ return toAR(Number(n||0).toLocaleString('en-US')); }
+function monthName(m){ return MONTHS_AR[m-1]; }
+function monthLabel(y,m){ return monthName(m)+' '+toAR(y); }
+function periodLabel(y,m){
+  var prevM=m-1, prevY=y;
+  if(prevM<1){prevM=12;prevY--;}
+  return '٢٦ '+monthName(prevM)+' — ٢٥ '+monthName(m);
+}
+function isFriday(y,m,d){ return new Date(y,m-1,d).getDay()===5; }
+
+function updateTodayCard(){
+  const now=new Date();
+  const d=document.getElementById('today-dayname');
+  const dt=document.getElementById('today-date');
+  if(d) d.textContent=DAYS_AR[now.getDay()];
+  if(dt) dt.textContent=toAR(now.getDate())+' '+MONTHS_AR[now.getMonth()]+' '+toAR(now.getFullYear());
+}
+
+// ==================== HELPERS ====================
+function getCurDayRate(){
+  if(empList && empList.length > 0){
+    var emp = empList.find(e => e.username === curAttUser);
+    if(emp) return emp.dayRate;
+  }
+  return S.dayRate;
+}
+
+function getCurHourRate(){
+  if(empList && empList.length > 0){
+    var emp = empList.find(e => e.username === curAttUser);
+    if(emp) return emp.hourRate;
+  }
+  return S.hourRate;
+}
+
+function getSalHourRate(){
+  if(empList && empList.length > 0){
+    var emp = empList.find(e => e.username === curSalUser);
+    if(emp) return emp.hourRate;
+  }
+  return S.hourRate;
+}
+
+// ==================== AUTO REFRESH ====================
+function startAutoRefresh(){
+  stopAutoRefresh();
+  if(S.isAdmin){
+    var ld=document.getElementById('live-dot');
+    if(ld) ld.style.display='inline-flex';
+  }
+  autoRefreshTimer = setInterval(function(){
+    if(isSaving) return;
+    var drawerOpen=document.getElementById('day-drawer').classList.contains('show');
+    if(drawerOpen) return;
+    var attActive=document.getElementById('page-att').classList.contains('active');
+    var salActive=document.getElementById('page-salary').classList.contains('active');
+    var repActive=document.getElementById('page-report').classList.contains('active');
+    if(attActive) loadAttendanceSilent();
+    if(salActive) loadSalarySilent();
+    if(repActive && S.isAdmin) loadReportSilent();
+  }, REFRESH_INTERVAL);
+}
+
+function stopAutoRefresh(){
+  if(autoRefreshTimer){ clearInterval(autoRefreshTimer); autoRefreshTimer=null; }
+}
+
+function loadAttendanceSilent(){
+  google.script.run
+    .withSuccessHandler(function(data){
+      if(!data) return;
+      if(selIdx===null){ attData=data; renderAtt(); }
+      else { attData=data; }
+    })
+    .getAttendance(curAttUser, attYear, attMonth);
+}
+
+function loadSalarySilent(){
+  var salLoading=document.getElementById('sal-loading');
+  if(salLoading.style.display!=='none') return;
+  google.script.run
+    .withSuccessHandler(function(res){
+      if(!res || !res.salary) return;
+      renderSalaryContent(res.salary);
+    })
+    .calcSalaryWithLeave(curSalUser, salYear, salMonth);
+}
+
+function loadReportSilent(){
+  var repLoading=document.getElementById('rep-loading');
+  if(repLoading.style.display!=='none') return;
+  google.script.run
+    .withSuccessHandler(function(data){ if(!data) return; renderReportContent(data); })
+    .getAllSalaries(repYear, repMonth);
+}
+
+// ==================== OT TYPE TOGGLE ====================
+function setOTType(panel, type) {
+  if(panel==='d'){
+    dOTType=type;
+    var box=document.getElementById('d-ot-box');
+    var btnOT=document.getElementById('d-btn-ot');
+    var btnComp=document.getElementById('d-btn-comp');
+    box.classList.toggle('is-comp', type==='comp');
+    btnOT.className='ot-type-btn'+(type==='ot'?' ot-active-ot':'');
+    btnComp.className='ot-type-btn'+(type==='comp'?' ot-active-comp':'');
+    calcOT();
+  } else {
+    mOTType=type;
+    var box=document.getElementById('m-ot-box');
+    var btnOT=document.getElementById('m-btn-ot');
+    var btnComp=document.getElementById('m-btn-comp');
+    box.classList.toggle('is-comp', type==='comp');
+    btnOT.className='ot-type-btn'+(type==='ot'?' ot-active-ot':'');
+    btnComp.className='ot-type-btn'+(type==='comp'?' ot-active-comp':'');
+    calcOTM();
+  }
+}
+
+// ==================== INDEPENDENT DEDUCTION CALC ====================
+function calcIndDed(panel){
+  var prefix = panel==='d' ? '' : 'm-';
+  var d1  = parseFloat(document.getElementById(prefix+'ded-day1').value)||0;
+  var d2  = parseFloat(document.getElementById(prefix+'ded-day2').value)||0;
+  var d3  = parseFloat(document.getElementById(prefix+'ded-day3').value)||0;
+  var dh  = parseFloat(document.getElementById(prefix+'ded-half').value)||0;
+  var hoursPerDay = 8;
+  var totalDays  = d1 + d2 + d3 + (dh*0.5);
+  var totalHours = parseFloat((totalDays * hoursPerDay).toFixed(2));
+  var res = document.getElementById(panel==='d'?'d-ind-ded-result':'m-ind-ded-result');
+  if(totalHours>0){
+    res.style.display='block';
+    res.textContent='خصم من الأوفر: '+toAR(totalHours)+' ساعة = '+toAR(totalDays)+' يوم';
+  } else {
+    res.style.display='none';
+  }
+}
+
+// ==================== LOGIN & CREDENTIALS ====================
+function onUserInput(){
+  var u = document.getElementById('l-user').value.trim().toLowerCase();
+  if(!u) return;
+  try {
+    var savedPass = localStorage.getItem('hr_cred_' + u);
+    if(savedPass){
+      document.getElementById('l-pass').value = savedPass;
+      document.getElementById('save-creds').checked = true;
+    } else {
+      document.getElementById('l-pass').value = '';
+      document.getElementById('save-creds').checked = false;
+    }
+  } catch(e){}
+}
+
+function doLogin(){
+  const u=document.getElementById('l-user').value.trim().toLowerCase();
+  const p=document.getElementById('l-pass').value.trim();
+  const saveCreds=document.getElementById('save-creds').checked;
+  const err=document.getElementById('l-err');
+  err.style.display='none';
+  if(!u||!p){err.textContent='ادخل اسم المستخدم وكلمة المرور';err.style.display='block';return}
+  google.script.run
+    .withSuccessHandler(res=>{
+      if(!res.success){err.textContent=res.msg;err.style.display='block';return}
+      try{
+        localStorage.setItem('hr_last_user', u);
+        if(saveCreds){
+          localStorage.setItem('hr_cred_' + u, p);
+        } else {
+          localStorage.removeItem('hr_cred_' + u);
+        }
+      }catch(e){}
+      S=res; startApp();
+    })
+    .withFailureHandler(e=>{err.textContent='خطأ: '+e.message;err.style.display='block'})
+    .login(u,p);
+}
+
+function loadSavedLogin(){
+  try {
+    var lastUser = localStorage.getItem('hr_last_user');
+    if(lastUser){
+      document.getElementById('l-user').value = lastUser;
+      var savedPass = localStorage.getItem('hr_cred_' + lastUser);
+      if(savedPass){
+        document.getElementById('l-pass').value = savedPass;
+        document.getElementById('save-creds').checked = true;
+      }
+    }
+  } catch(e) {}
+  // fallback to server saved login if exists
+  google.script.run
+    .withSuccessHandler(function(saved){
+      if(saved && saved.username && !document.getElementById('l-user').value){
+        document.getElementById('l-user').value=saved.username;
+        if(saved.password && !document.getElementById('l-pass').value){
+          document.getElementById('l-pass').value=saved.password;
+        }
+      }
+    })
+    .getSavedLogin();
+}
+loadSavedLogin();
+
+function startApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+
+  document.getElementById('sb-name').textContent=S.displayName;
+  document.getElementById('sb-role').textContent=S.isAdmin?'Admin':'Labeler';
+  document.getElementById('sb-sal').textContent=fNum(S.salary)+' جنيه';
+  document.getElementById('mt-name').textContent=S.displayName;
+  document.getElementById('mt-sal').textContent=fNum(S.salary)+' جنيه';
+
+  curAttUser=S.username;
+  curSalUser=S.username;
+
+  const now=new Date();
+  attYear=salYear=repYear=now.getFullYear();
+  attMonth=salMonth=repMonth=now.getMonth()+1;
+  updateLabels();
+  updateTodayCard();
+
+  document.getElementById('desktop-side-panel').style.display='block';
+
+  if(S.isAdmin){
+    document.querySelectorAll('.admin-only').forEach(el=>{
+      el.style.display = el.classList.contains('bn-item') ? 'flex' : 'block';
+    });
+    loadEmpSelectors();
+  } else {
+    document.querySelectorAll('.admin-only').forEach(el=>el.style.display='none');
+  }
+
+  loadAttendance();
+  loadSalary();
+  loadAnnualLeavePanel();
+  setTimeout(startAutoRefresh, 5000);
+}
+
+function logout(){
+  stopAutoRefresh();
+  S={};
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+  document.getElementById('l-pass').value='';
+  document.getElementById('l-err').style.display='none';
+  document.querySelectorAll('.admin-only').forEach(el=>el.style.display='none');
+  var alPanel=document.getElementById('sp-annual-leave');
+  if(alPanel){ alPanel.style.display='none'; alPanel.innerHTML=''; }
+}
+
+// ==================== ANNUAL LEAVE PANEL ====================
+function loadAnnualLeavePanel(){
+  if(!curAttUser) return;
+  var year = attYear || new Date().getFullYear();
+  google.script.run
+    .withSuccessHandler(function(al){
+      if(!al) return;
+      var alPanel = document.getElementById('sp-annual-leave');
+      if(alPanel){
+        alPanel.innerHTML = buildAnnualLeaveCard(al, year);
+        alPanel.style.display = 'block';
+      }
+    })
+    .getAnnualLeaveSummary(curAttUser, year);
+}
+
+function updateLabels(){
+  document.getElementById('month-label').textContent=monthLabel(attYear,attMonth);
+  document.getElementById('sal-month-label').textContent=monthLabel(salYear,salMonth);
+  document.getElementById('rep-month-label').textContent=monthLabel(repYear,repMonth);
+  document.getElementById('att-lbl').textContent=S.displayName||'';
+  document.getElementById('sal-month-lbl').textContent=S.displayName||'';
+  document.getElementById('rep-month-lbl').textContent='';
+  document.getElementById('att-period-badge').textContent=periodLabel(attYear,attMonth);
+  document.getElementById('sal-period-badge').textContent=periodLabel(salYear,salMonth);
+  document.getElementById('rep-period-badge').textContent=periodLabel(repYear,repMonth);
+}
+
+function changeMonth(dir){
+  attMonth+=dir;
+  if(attMonth>12){attMonth=1;attYear++} if(attMonth<1){attMonth=12;attYear--}
+  document.getElementById('month-label').textContent=monthLabel(attYear,attMonth);
+  document.getElementById('att-period-badge').textContent=periodLabel(attYear,attMonth);
+  clearSel(); loadAttendance();
+  loadAnnualLeavePanel();
+}
+function changeSalMonth(dir){
+  salMonth+=dir;
+  if(salMonth>12){salMonth=1;salYear++} if(salMonth<1){salMonth=12;salYear--}
+  document.getElementById('sal-month-label').textContent=monthLabel(salYear,salMonth);
+  document.getElementById('sal-period-badge').textContent=periodLabel(salYear,salMonth);
+  loadSalary();
+}
+function changeRepMonth(dir){
+  repMonth+=dir;
+  if(repMonth>12){repMonth=1;repYear++} if(repMonth<1){repMonth=12;repYear--}
+  document.getElementById('rep-month-label').textContent=monthLabel(repYear,repMonth);
+  document.getElementById('rep-period-badge').textContent=periodLabel(repYear,repMonth);
+  loadReport();
+}
+
+// ==================== EMP SELECTORS ====================
+function loadEmpSelectors(){
+  google.script.run.withSuccessHandler(list=>{
+    empList=list;
+    const aS=document.getElementById('att-emp-sel');
+    const sS=document.getElementById('sal-emp-sel');
+    aS.innerHTML=''; sS.innerHTML='';
+    list.forEach(emp=>{
+      aS.innerHTML+=`<button class="emp-btn ${emp.username===curAttUser?'active':''}" onclick="switchAtt('${emp.username}','${emp.displayName}',this)">${emp.displayName}</button>`;
+      sS.innerHTML+=`<button class="emp-btn ${emp.username===curSalUser?'active':''}" onclick="switchSal('${emp.username}',this)">${emp.displayName}</button>`;
+    });
+  }).getEmployeeList();
+}
+function switchAtt(u,n,el){
+  curAttUser=u;
+  document.getElementById('att-lbl').textContent=n;
+  document.getElementById('att-emp-sel').querySelectorAll('.emp-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active'); clearSel(); loadAttendance();
+  loadAnnualLeavePanel();
+}
+function switchSal(u,el){
+  curSalUser=u;
+  document.getElementById('sal-emp-sel').querySelectorAll('.emp-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active'); loadSalary();
+}
+
+// ==================== LOAD ATTENDANCE ====================
+function loadAttendance(){
+  document.getElementById('att-loading').style.display='block';
+  document.getElementById('att-content').style.display='none';
+  google.script.run
+    .withSuccessHandler(data=>{
+      attData=data; renderAtt();
+      document.getElementById('att-loading').style.display='none';
+      document.getElementById('att-content').style.display='block';
+    })
+    .withFailureHandler(e=>{document.getElementById('att-loading').innerHTML=`<p style="color:var(--red)">خطأ: ${e.message}</p>`})
+    .getAttendance(curAttUser, attYear, attMonth);
+}
+
+function renderAtt(){
+  const tbody=document.getElementById('att-tbody');
+  let html='', lastMonth=null;
+  attData.forEach((d,i)=>{
+    if(d.month!==lastMonth){
+      html+=`<tr class="month-sep"><td colspan="3">${monthName(d.month)} ${toAR(d.year)}</td></tr>`;
+      lastMonth=d.month;
+    }
+    const status=d.status||'';
+    const fri=isFriday(d.year,d.month,d.day);
+    const pill=status?`<span class="pill ${getPillClass(status)}">${statusLabel(status)}</span>`:`<span class="pill p-empty">—</span>`;
+
+    let hoursBadge='';
+    if(d.otHours && d.otHours>0){
+      if(d.otType==='comp'){
+        hoursBadge=`<span class="day-comp-badge">🔄 ${toAR(d.otHours)}h تعويض</span>`;
+      } else {
+        hoursBadge=`<span class="day-ot-badge">⏱ ${toAR(d.otHours)}h×${toAR(d.otRate)}</span>`;
+      }
+    }
+
+    let dedBadge='';
+    var hasDed=(d.dedDay1&&d.dedDay1>0)||(d.dedDay2&&d.dedDay2>0)||(d.dedDay3&&d.dedDay3>0)||(d.dedHalfInd&&d.dedHalfInd>0);
+    if(hasDed){
+      var parts=[];
+      if(d.dedDay3&&d.dedDay3>0) parts.push(toAR(d.dedDay3)+'×٣أيام');
+      if(d.dedDay2&&d.dedDay2>0) parts.push(toAR(d.dedDay2)+'×يومين');
+      if(d.dedDay1&&d.dedDay1>0) parts.push(toAR(d.dedDay1)+'×يوم');
+      if(d.dedHalfInd&&d.dedHalfInd>0) parts.push(toAR(d.dedHalfInd)+'×نص');
+      dedBadge=`<br><span class="day-ded-badge">📉 ${parts.join(' ')}</span>`;
+    }
+    if(!hoursBadge && !hasDed){
+      hoursBadge=`<span style="color:var(--text3);font-size:11px">—</span>`;
+    }
+
+    html+=`<tr><td><div class="day-row ${fri?'friday-row':''} ${selIdx===i?'active-row':''}" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px">${hoursBadge}${dedBadge}</td></tr>`;
+  });
+  tbody.innerHTML=html;
+}
+
+function openDay(i){
+  selIdx=i; const d=attData[i];
+  checkMobile();
+
+  if(isMobile){
+    document.getElementById('drawer-title').textContent=d.dayName+' '+toAR(d.day)+' '+monthName(d.month);
+    document.getElementById('drawer-info').textContent=d.status?'الحالة: '+statusLabel(d.status):'لم يتم التسجيل بعد';
+    document.querySelectorAll('#mobile-status-opts .s-opt').forEach(o=>{
+      const s=o.getAttribute('onclick').match(/'([^']+)'/)?.[1];
+      o.classList.toggle('sel',s===d.status);
+    });
+    selStatusM=d.status||null;
+    document.getElementById('m-ot-hours').value=d.otHours||'';
+    document.getElementById('m-ot-rate').value=d.otRate||1.5;
+    var savedType=d.otType||'ot';
+    mOTType=savedType; setOTType('m',savedType);
+    document.getElementById('m-ded-day3').value=d.dedDay3||'';
+    document.getElementById('m-ded-day2').value=d.dedDay2||'';
+    document.getElementById('m-ded-day1').value=d.dedDay1||'';
+    document.getElementById('m-ded-half').value=d.dedHalfInd||'';
+    calcOTM(); calcIndDed('m');
+    openDrawer();
+  } else {
+    document.getElementById('sp-ph').style.display='none';
+    document.getElementById('sp-form').style.display='block';
+    document.getElementById('sp-title').textContent=d.dayName+' '+toAR(d.day)+' '+monthName(d.month);
+    document.getElementById('sp-info').textContent=d.status?'الحالة: '+statusLabel(d.status):'لم يتم التسجيل بعد';
+    document.querySelectorAll('#desktop-status-opts .s-opt').forEach(o=>{
+      const s=o.getAttribute('onclick').match(/'([^']+)'/)?.[1];
+      o.classList.toggle('sel',s===d.status);
+    });
+    selStatus=d.status||null;
+    document.getElementById('ot-hours').value=d.otHours||'';
+    document.getElementById('ot-rate').value=d.otRate||1.5;
+    var savedType=d.otType||'ot';
+    dOTType=savedType; setOTType('d',savedType);
+    document.getElementById('ded-day3').value=d.dedDay3||'';
+    document.getElementById('ded-day2').value=d.dedDay2||'';
+    document.getElementById('ded-day1').value=d.dedDay1||'';
+    document.getElementById('ded-half').value=d.dedHalfInd||'';
+    calcOT(); calcIndDed('d');
+  }
+  renderAtt();
+}
+
+function openDrawer(){
+  const overlay=document.getElementById('drawer-overlay');
+  const drawer=document.getElementById('day-drawer');
+  overlay.style.display='block';
+  document.getElementById('m-sp-save').disabled=false;
+  document.getElementById('m-sp-save').textContent='💾 حفظ';
+  requestAnimationFrame(()=>{
+    overlay.classList.add('show');
+    drawer.classList.add('show');
+  });
+}
+function closeDrawer(){
+  const overlay=document.getElementById('drawer-overlay');
+  const drawer=document.getElementById('day-drawer');
+  overlay.classList.remove('show');
+  drawer.classList.remove('show');
+  setTimeout(()=>{overlay.style.display='none';},300);
+  selIdx=null; selStatusM=null;
+  renderAtt();
+}
+
+function pickS(el,status){
+  document.querySelectorAll('#desktop-status-opts .s-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel'); selStatus=status;
+}
+function pickSM(el,status){
+  document.querySelectorAll('#mobile-status-opts .s-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel'); selStatusM=status;
+}
+
+// ==================== OT CALC ====================
+function calcOT(){
+  const hrs=parseFloat(document.getElementById('ot-hours').value)||0;
+  const rate=parseFloat(document.getElementById('ot-rate').value)||1.5;
+  const hourRate = getCurHourRate();
+  const res=document.getElementById('ot-result');
+  if(hrs>0 && hourRate && dOTType==='ot'){
+    res.style.display='block';
+    res.textContent=`${toAR(hrs)} ساعة × ${toAR(rate)} × ${toAR(hourRate)} = ${fNum((hrs*hourRate*rate).toFixed(2))} جنيه`;
+  } else { res.style.display='none'; }
+}
+
+function calcOTM(){
+  const hrs=parseFloat(document.getElementById('m-ot-hours').value)||0;
+  const rate=parseFloat(document.getElementById('m-ot-rate').value)||1.5;
+  const hourRate = getCurHourRate();
+  const res=document.getElementById('m-ot-result');
+  if(hrs>0 && hourRate && mOTType==='ot'){
+    res.style.display='block';
+    res.textContent=`${toAR(hrs)} ساعة × ${toAR(rate)} × ${toAR(hourRate)} = ${fNum((hrs*hourRate*rate).toFixed(2))} جنيه`;
+  } else { res.style.display='none'; }
+}
+
+function clearSel(){
+  selIdx=null; selStatus=null;
+  var ph=document.getElementById('sp-ph');
+  var sf=document.getElementById('sp-form');
+  if(ph) ph.style.display='block';
+  if(sf) sf.style.display='none';
+  var otr=document.getElementById('ot-result');
+  var ddr=document.getElementById('d-ind-ded-result');
+  if(otr) otr.style.display='none';
+  if(ddr) ddr.style.display='none';
+  document.querySelectorAll('#desktop-status-opts .s-opt').forEach(o=>o.classList.remove('sel'));
+  dOTType='ot'; setOTType('d','ot');
+  renderAtt();
+}
+
+// ==================== SAVE ====================
+function saveDay(){
+  if(selIdx===null) return;
+  isSaving=true;
+  const d=attData[selIdx];
+  const dayData={
+    day:d.day, month:d.month, year:d.year, dayName:d.dayName, key:d.key,
+    status:selStatus||'',
+    otHours:parseFloat(document.getElementById('ot-hours').value)||0,
+    otRate:parseFloat(document.getElementById('ot-rate').value)||1.5,
+    otType:dOTType,
+    dedDay3:parseFloat(document.getElementById('ded-day3').value)||0,
+    dedDay2:parseFloat(document.getElementById('ded-day2').value)||0,
+    dedDay1:parseFloat(document.getElementById('ded-day1').value)||0,
+    dedHalfInd:parseFloat(document.getElementById('ded-half').value)||0
+  };
+  document.getElementById('sp-save').disabled=true;
+  document.getElementById('sp-save').textContent='⏳ جاري الحفظ...';
+  google.script.run
+    .withSuccessHandler(res=>{
+      isSaving=false;
+      document.getElementById('sp-save').disabled=false;
+      document.getElementById('sp-save').textContent='💾 حفظ';
+      if(res==='ok'){
+        attData[selIdx]=dayData;
+        toast('✅ تم الحفظ!');
+        clearSel();
+        if(dayData.status==='Annual' || d.status==='Annual') loadAnnualLeavePanel();
+      } else toast('❌ خطأ: '+res);
+    })
+    .withFailureHandler(e=>{
+      isSaving=false;
+      document.getElementById('sp-save').disabled=false;
+      document.getElementById('sp-save').textContent='💾 حفظ';
+      toast('❌ '+e.message);
+    })
+    .saveAttendanceDay(curAttUser, attYear, attMonth, dayData);
+}
+
+function saveDayM(){
+  if(selIdx===null) return;
+  isSaving=true;
+  const d=attData[selIdx];
+  const dayData={
+    day:d.day, month:d.month, year:d.year, dayName:d.dayName, key:d.key,
+    status:selStatusM||'',
+    otHours:parseFloat(document.getElementById('m-ot-hours').value)||0,
+    otRate:parseFloat(document.getElementById('m-ot-rate').value)||1.5,
+    otType:mOTType,
+    dedDay3:parseFloat(document.getElementById('m-ded-day3').value)||0,
+    dedDay2:parseFloat(document.getElementById('m-ded-day2').value)||0,
+    dedDay1:parseFloat(document.getElementById('m-ded-day1').value)||0,
+    dedHalfInd:parseFloat(document.getElementById('m-ded-half').value)||0
+  };
+  document.getElementById('m-sp-save').disabled=true;
+  document.getElementById('m-sp-save').textContent='⏳ جاري الحفظ...';
+  google.script.run
+    .withSuccessHandler(res=>{
+      isSaving=false;
+      document.getElementById('m-sp-save').disabled=false;
+      document.getElementById('m-sp-save').textContent='💾 حفظ';
+      if(res==='ok'){attData[selIdx]=dayData;toast('✅ تم الحفظ!');closeDrawer();}
+      else toast('❌ خطأ: '+res);
+    })
+    .withFailureHandler(e=>{
+      isSaving=false;
+      document.getElementById('m-sp-save').disabled=false;
+      document.getElementById('m-sp-save').textContent='💾 حفظ';
+      toast('❌ '+e.message);
+    })
+    .saveAttendanceDay(curAttUser, attYear, attMonth, dayData);
+}
+
+function clearDay(){
+  if(selIdx===null) return;
+  isSaving=true;
+  const d=attData[selIdx];
+  const dayData={day:d.day,month:d.month,year:d.year,dayName:d.dayName,key:d.key,status:'',otHours:0,otRate:1.5,otType:'ot',dedDay3:0,dedDay2:0,dedDay1:0,dedHalfInd:0};
+  document.getElementById('sp-save').disabled=true;
+  google.script.run
+    .withSuccessHandler(res=>{
+      isSaving=false;
+      document.getElementById('sp-save').disabled=false;
+      if(res==='ok'){
+        attData[selIdx]=dayData;
+        toast('🗑️ تم المسح!');
+        clearSel();
+        if(d.status==='Annual') loadAnnualLeavePanel();
+      } else toast('❌ خطأ: '+res);
+    })
+    .withFailureHandler(e=>{isSaving=false;document.getElementById('sp-save').disabled=false;toast('❌ '+e.message);})
+    .saveAttendanceDay(curAttUser, attYear, attMonth, dayData);
+}
+
+function clearDayM(){
+  if(selIdx===null) return;
+  isSaving=true;
+  const d=attData[selIdx];
+  const dayData={day:d.day,month:d.month,year:d.year,dayName:d.dayName,key:d.key,status:'',otHours:0,otRate:1.5,otType:'ot',dedDay3:0,dedDay2:0,dedDay1:0,dedHalfInd:0};
+  document.getElementById('m-sp-save').disabled=true;
+  google.script.run
+    .withSuccessHandler(res=>{
+      isSaving=false;
+      document.getElementById('m-sp-save').disabled=false;
+      if(res==='ok'){attData[selIdx]=dayData;toast('🗑️ تم المسح!');closeDrawer();}
+      else toast('❌ خطأ: '+res);
+    })
+    .withFailureHandler(e=>{isSaving=false;document.getElementById('m-sp-save').disabled=false;toast('❌ '+e.message);})
+    .saveAttendanceDay(curAttUser, attYear, attMonth, dayData);
+}
+
+// ==================== SALARY ====================
+function loadSalary(){
+  document.getElementById('sal-loading').style.display='block';
+  document.getElementById('sal-content').innerHTML='';
+  google.script.run
+    .withSuccessHandler(res=>{
+      document.getElementById('sal-loading').style.display='none';
+      if(!res || !res.salary){
+        document.getElementById('sal-content').innerHTML=`<div class="empty"><div class="empty-icon">💰</div><p>لا توجد بيانات</p></div>`;
+        return;
+      }
+      renderSalaryContent(res.salary);
+    })
+    .withFailureHandler(e=>{
+      document.getElementById('sal-loading').style.display='none';
+      document.getElementById('sal-content').innerHTML=`<div class="empty"><p style="color:var(--red)">خطأ: ${e.message}</p></div>`;
+    })
+    .calcSalaryWithLeave(curSalUser, salYear, salMonth);
+}
+
+// ==================== ANNUAL LEAVE CARD (builder) ====================
+function buildAnnualLeaveCard(al, year) {
+  if(!al) return '';
+  var used      = al.used      || 0;
+  var total     = al.total     || 15;
+  var remaining = al.remaining !== undefined ? al.remaining : Math.max(0, total - used);
+  var pct       = total > 0 ? Math.round((used / total) * 100) : 0;
+
+  var cardClass = '';
+  var barClass  = 'al-bar';
+  var statusIcon = '🌴';
+  var statusText = '';
+
+  if(remaining === 0){
+    cardClass  = 'al-done';
+    barClass  += ' al-bar-danger';
+    statusIcon = '⚠️';
+    statusText = 'انتهى الرصيد';
+  } else if(remaining <= 3){
+    cardClass  = 'al-warn';
+    barClass  += ' al-bar-warn';
+    statusIcon = '⚡';
+    statusText = 'رصيد منخفض';
+  } else {
+    statusText = 'رصيد الإجازة السنوية';
+  }
+
+  return `
+    <div class="annual-leave-card ${cardClass}">
+      <div class="al-inner">
+        <div class="al-top-lbl">${statusIcon} ${statusText} ${toAR(year)}</div>
+        <div class="al-nums">
+          <div class="al-stat">
+            <div class="al-stat-num">${toAR(used)}</div>
+            <div class="al-stat-lbl">مأخوذ</div>
+          </div>
+          <div class="al-divider"></div>
+          <div class="al-stat">
+            <div class="al-stat-num" style="opacity:0.5">${toAR(total)}</div>
+            <div class="al-stat-lbl">إجمالي</div>
+          </div>
+          <div class="al-divider"></div>
+          <div class="al-stat">
+            <div class="al-stat-num" style="color:${remaining===0?'#f87080':remaining<=3?'#fbbf24':'#5de8b0'}">${toAR(remaining)}</div>
+            <div class="al-stat-lbl">متبقي</div>
+          </div>
+        </div>
+        <div class="al-bar-wrap">
+          <div class="${barClass}" style="width:${pct}%"></div>
+        </div>
+        <div class="al-footer">
+          <span>الرصيد الكلي للسنة:</span>
+          <strong>${toAR(total)} يوم</strong>
+          <span>·</span>
+          <span>مستخدم: ${toAR(pct)}%</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ==================== RENDER SALARY ====================
+function renderSalaryContent(d){
+  const otSummaryHTML=buildOTSummary(d);
+
+  const attendRows=[['غياب',d.absence,'p-absent'],['إجازة سنوية — Annual',d.annual,'p-annual'],['يوم راحة',d.dayOff,'p-dayoff'],['تعويض',d.compensation,'p-comp'],['دابل',d.fridayDouble,'p-friday']]
+    .filter(([l,v])=>v>0).map(([l,v,c])=>`<div class="sal-row"><span class="sal-label">${l}</span><span class="pill ${c}">${toAR(v)} يوم</span></div>`).join('');
+  const otRow=d.otEffHoursWithFriday>0?`<div class="sal-row"><span class="sal-label">أوفر تايم (${toAR(d.otEffHoursWithFriday)} ساعة)</span><span class="pill p-ot">${toAR(d.otEffHoursWithFriday)} ساعة</span></div>`:'';
+  const compHoursRow=d.compHoursTotal>0?`<div class="sal-row"><span class="sal-label">ساعات تعويض (${toAR(d.compHoursTotal)} ساعة)</span><span class="pill p-comp">${toAR(d.compHoursTotal)} ساعة</span></div>`:'';
+
+  const absHours=d.absence*8;
+  const compH=parseFloat(d.compHoursTotal||0);
+  const remainH=Math.max(0,absHours-compH);
+  const absCompHTML=(d.absence>0||compH>0)?`
+    <div style="background:#fff;border:1.5px solid var(--border2);border-radius:var(--radius);padding:14px;margin-bottom:13px;box-shadow:0 1px 6px rgba(26,42,74,0.06)">
+      <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:11px;padding-bottom:9px;border-bottom:1px solid var(--border)">🗓 متابعة الغياب والتعويض</div>
+      <div class="sal-row"><span class="sal-label">أيام الغياب</span><span style="font-size:12px;font-weight:700;color:var(--red)">${toAR(d.absence)} يوم = ${toAR(absHours)} ساعة</span></div>
+      <div class="sal-row"><span class="sal-label">ساعات التعويض المُنجزة</span><span style="font-size:12px;font-weight:700;color:var(--purple)">${toAR(compH)} ساعة</span></div>
+      <div class="sal-row" style="border-bottom:none;margin-top:2px;padding-top:10px;border-top:1.5px solid var(--border2)">
+        <span class="sal-label" style="font-weight:700;color:var(--navy)">المتبقي للتعويض</span>
+        <span style="font-size:15px;font-weight:800;color:${remainH>0?"var(--red)":"var(--green)"}">${remainH>0?toAR(remainH)+" ساعة":"✅ مكتمل"}</span>
+      </div>
+    </div>`:"";
+
+  document.getElementById('sal-content').innerHTML=`
+    <div class="stats-grid">
+      <div class="stat-card sc-blue"><div class="stat-icon">💵</div><div class="stat-num">${fNum(d.basicSalary)}</div><div class="stat-label">المرتب الأساسي</div></div>
+      <div class="stat-card sc-green"><div class="stat-icon">➕</div><div class="stat-num">${fNum(d.totalAdditions)}</div><div class="stat-label">الإضافات</div></div>
+      <div class="stat-card sc-red"><div class="stat-icon">➖</div><div class="stat-num">${toAR(d.statusDedHours||0)}</div><div class="stat-label">ساعات خصم من الأوفر</div></div>
+      <div class="stat-card sc-purple"><div class="stat-icon">🏦</div><div class="stat-num">${fNum(d.netSalary)}</div><div class="stat-label">صافي المرتب</div></div>
+    </div>
+    ${absCompHTML}
+    <div class="sal-2col">
+      <div class="card" style="margin:0">
+        <div class="card-head"><div class="card-title">ملخص الحضور</div></div>
+        <div class="sal-row"><span class="sal-label" style="font-size:10px;color:var(--text3)">معدل اليوم</span><span style="font-size:11px;font-weight:700;color:var(--accent-lt)">${fNum(d.dayRate)} جنيه</span></div>
+        <div class="sal-row"><span class="sal-label" style="font-size:10px;color:var(--text3)">معدل الساعة</span><span style="font-size:11px;font-weight:700;color:var(--accent-lt)">${fNum(d.hourRate)} جنيه</span></div>
+        ${attendRows||'<div style="color:var(--text3);font-size:12px;padding:8px 0">لا سجلات هذا الشهر</div>'}
+        ${otRow}${compHoursRow}
+        ${otSummaryHTML}
+      </div>
+      <div class="card" style="margin:0">
+        <div class="card-head"><div class="card-title">تفاصيل المرتب</div></div>
+        <div class="sal-row"><span class="sal-label">المرتب الأساسي</span><span class="sal-val">${fNum(d.basicSalary)} جنيه</span></div>
+${(d.otNetAmount>0||d.otTotalAmount>0)?`<div class="sal-row"><span class="sal-label">أوفر تايم (${toAR(d.otEffHoursNet!==undefined?d.otEffHoursNet:d.otEffHoursWithFriday)} ساعة صافي)</span><span class="sal-val sal-plus">+ ${fNum(d.otNetAmount!==undefined?d.otNetAmount:d.otAmount)} جنيه</span></div>`:''}
+        ${d.compHoursTotal>0?`<div class="sal-row"><span class="sal-label" style="color:var(--purple)">ساعات تعويض مسجلة</span><span class="sal-val" style="color:var(--purple)">${toAR(d.compHoursTotal)} ساعة</span></div>`:''}
+        <div class="sal-row" style="margin-top:8px;padding-top:8px;border-top:1.5px solid var(--border2)">
+          <span class="sal-label" style="font-size:14px;color:var(--navy);font-weight:700">صافي المرتب</span>
+          <span class="sal-val" style="font-size:19px;color:var(--accent-lt)">${fNum(d.netSalary)} جنيه</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ==================== BUILD OT SUMMARY ====================
+function buildOTSummary(d){
+  if(!d.otBreakdown&&!(d.fridayDouble>0)) return '';
+  var b=d.otBreakdown||{x1_5:[],x2:[]};
+  var has15=b.x1_5&&b.x1_5.length>0, has2=b.x2&&b.x2.length>0, hasFri=d.fridayDouble>0;
+  if(!has15&&!has2&&!hasFri) return '';
+  var hourRate=d.hourRate||0;
+  var hoursPerDay=8;
+  var html='<div class="ot-summary"><div class="ot-sum-title">تفاصيل الأوفر تايم</div>';
+
+  function groupDays(list, defaultRate){
+    var groups={};
+    var order=[];
+    list.forEach(function(day){
+      var rate = parseFloat(day.otRate||defaultRate);
+      var hrs  = parseFloat(day.hours);
+      var key  = hrs+'_'+rate;
+      if(!groups[key]){
+        groups[key]={hours:hrs, rate:rate, count:0, totalHours:0, totalEffHours:0, totalAmt:0};
+        order.push(key);
+      }
+      var effH = parseFloat((hrs*rate).toFixed(2));
+      var amt  = parseFloat((effH*hourRate).toFixed(2));
+      groups[key].count++;
+      groups[key].totalHours      = parseFloat((groups[key].totalHours+hrs).toFixed(2));
+      groups[key].totalEffHours   = parseFloat((groups[key].totalEffHours+effH).toFixed(2));
+      groups[key].totalAmt        = parseFloat((groups[key].totalAmt+amt).toFixed(2));
+    });
+    return order.map(function(k){ return groups[k]; });
+  }
+
+  var allOTDays=[];
+  if(has15) allOTDays=allOTDays.concat(b.x1_5.map(function(day){ return {hours:day.hours, otRate:day.otRate||1.5}; }));
+  if(has2)  allOTDays=allOTDays.concat(b.x2.map(function(day){ return {hours:day.hours, otRate:day.otRate||2}; }));
+
+  var grouped = groupDays(allOTDays, 1.5);
+
+  grouped.forEach(function(g){
+    var rateAR = g.rate===2 ? '٢' : '١.٥';
+    var dayWord = g.count===1 ? 'يوم' : 'أيام';
+    html += '<div class="ot-sum-row">'
+      + '<span class="ot-sum-lbl">' + toAR(g.count) + ' ' + dayWord + ' (' + toAR(g.hours) + '×' + rateAR + ')</span>'
+      + '<span class="ot-sum-val">' + toAR(g.totalHours) + ' ساعة × ' + rateAR + ' = ' + fNum(g.totalAmt.toFixed(2)) + ' جنيه</span>'
+      + '</div>';
+  });
+
+  if(hasFri){
+    var friAmt = d.fridayAmount || 0;
+    var friRawHours = d.fridayEffHours ? parseFloat((d.fridayEffHours/2).toFixed(2)) : 0;
+    html+='<div class="ot-sum-row">'
+      +'<span class="ot-sum-lbl">'+toAR(d.fridayDouble)+' دابل ('+toAR(friRawHours)+'×٢)</span>'
+      +'<span class="ot-sum-val">'+toAR(friRawHours)+' ساعة × ٢ = '+fNum(friAmt.toFixed(2))+' جنيه</span>'
+      +'</div>';
+  }
+
+  var totalEffHoursWithFri = d.otEffHoursWithFriday || 0;
+  if(totalEffHoursWithFri > 0){
+    var effDays     = d.otEffDaysWithFriday !== undefined ? d.otEffDaysWithFriday
+                      : parseFloat((totalEffHoursWithFri / hoursPerDay).toFixed(2));
+    var dedHours    = d.statusDedHours || 0;
+    var dedDays     = d.statusDedDays  || 0;
+    var netEffHours = d.otEffHoursNet  !== undefined ? d.otEffHoursNet : Math.max(0, totalEffHoursWithFri - dedHours);
+    var netEffDays  = d.otEffDaysNet   !== undefined ? d.otEffDaysNet  : parseFloat((netEffHours / hoursPerDay).toFixed(2));
+
+    html += '<div class="ot-sum-row" style="margin-top:2px">'
+      + '<span class="ot-sum-lbl" style="font-weight:700;color:var(--navy)">توتال الأوفر</span>'
+      + '<span class="ot-sum-val" style="color:var(--navy)">' + toAR(totalEffHoursWithFri) + ' ساعة = ' + toAR(effDays) + ' يوم</span>'
+      + '</div>';
+
+    html += '<div class="ot-sum-row">'
+      + '<span class="ot-sum-lbl" style="color:var(--red)">خصومات</span>'
+      + '<span class="ot-sum-val" style="color:var(--red)">' + toAR(dedHours) + ' ساعة = ' + toAR(dedDays) + ' أيام</span>'
+      + '</div>';
+
+    html += '<div style="border-top:1.5px solid var(--border2);margin:5px 0 3px"></div>';
+
+    html += '<div class="ot-sum-row" style="background:rgba(44,184,122,0.1);border:1.5px solid rgba(44,184,122,0.35);border-radius:8px;padding:8px 10px;margin-top:2px">'
+      + '<span class="ot-sum-lbl" style="font-weight:800;color:var(--green)">✅ الصافي</span>'
+      + '<span class="ot-sum-val" style="color:var(--green);font-weight:800;font-size:13px">' + toAR(netEffHours) + ' ساعة = ' + toAR(netEffDays) + ' يوم</span>'
+      + '</div>';
+  }
+
+  var totalAmtNet = d.otNetAmount !== undefined ? d.otNetAmount : ((d.otAmount||0) + (d.fridayAmount||0));
+
+  if(totalAmtNet>0){
+    html+='<div class="ot-sum-row" style="border-top:1.5px solid var(--border2);margin-top:6px;padding-top:8px">'
+      +'<span class="ot-sum-lbl" style="font-weight:700;color:var(--navy)">توتال الإضافات</span>'
+      +'<span class="ot-sum-val">'+fNum(totalAmtNet.toFixed(2))+' جنيه</span>'
+      +'</div>';
+  }
+
+  html+='</div>';
+  return html;
+}
+
+// ==================== REPORT ====================
+function loadReport(){
+  if(!S.isAdmin) return;
+  document.getElementById('rep-loading').style.display='block';
+  document.getElementById('rep-content').style.display='none';
+  google.script.run
+    .withSuccessHandler(data=>{
+      document.getElementById('rep-loading').style.display='none';
+      document.getElementById('rep-content').style.display='block';
+      renderReportContent(data);
+    })
+    .withFailureHandler(e=>{document.getElementById('rep-loading').innerHTML=`<p style="color:var(--red)">خطأ: ${e.message}</p>`})
+    .getAllSalaries(repYear, repMonth);
+}
+
+function renderReportContent(data){
+  const totNet=data.reduce((s,r)=>s+Number(r.netSalary||0),0);
+  const totAbs=data.reduce((s,r)=>s+Number(r.absence||0),0);
+  const totOT=data.reduce((s,r)=>s+Number(r.otEffHoursWithFriday||0),0);
+  document.getElementById('rep-stats').innerHTML=[
+    ['sc-blue','👥',toAR(data.length),'عدد الموظفين'],
+    ['sc-red','❌',toAR(totAbs),'إجمالي الغياب'],
+    ['sc-yellow','⏱',toAR(totOT)+' ساعة','إجمالي الأوفر تايم'],
+    ['sc-purple','💰',fNum(totNet)+' جنيه','إجمالي المرتبات'],
+  ].map(([c,ic,v,l])=>`<div class="stat-card ${c}"><div class="stat-icon">${ic}</div><div class="stat-num">${v}</div><div class="stat-label">${l}</div></div>`).join('');
+
+  document.getElementById('rep-tbody').innerHTML=data.map(r=>`<tr>
+    <td style="font-weight:700;color:var(--navy)">${r.name}</td>
+    <td style="color:var(--accent-lt);font-weight:700">${fNum(r.dayRate)} ج</td>
+    <td style="color:var(--accent-lt);font-weight:700">${fNum(r.hourRate)} ج</td>
+    <td><span class="pill p-absent">${toAR(r.absence||0)}</span></td>
+    <td><span class="pill p-annual">${toAR(r.annual||0)}</span></td>
+    <td><span class="pill p-comp">${toAR(r.compensation||0)}</span></td>
+    <td><span class="pill p-ot">${toAR(r.otEffHoursWithFriday||0)} ساعة</span></td>
+    <td style="color:var(--green)">${fNum(r.totalAdditions)} جنيه</td>
+    <td style="color:var(--red)">${toAR(r.statusDedHours||0)} ساعة</td>
+    <td style="font-weight:800;color:var(--accent-lt)">${fNum(r.netSalary)} جنيه</td>
+  </tr>`).join('');
+}
+
+function getPillClass(s){
+  if(s==='Present')return'p-present';if(s==='Absence')return'p-absent';
+  if(s==='Annual')return'p-annual';if(s==='Day Off')return'p-dayoff';
+  if(s==='Compensation')return'p-comp';if(s&&s.includes('Friday'))return'p-friday';
+  if(s&&s.includes('Deduction'))return'p-ded';return'p-empty';
+}
+function statusLabel(s){
+  const m={'Present':'✓ حضور','Absence':'✗ غياب','Annual':'🌴 إجازة Annual','Day Off':'😴 راحة',
+    'Compensation':'🔄 تعويض','Friday + Double Paid':'⭐ دابل',
+    'Deduction 3 day':'📉 خصم ٣','Deduction 2 day':'📉 خصم ٢','Deduction 1 day':'📉 خصم ١','Deduction half day':'📉 خصم نص'};
+  return m[s]||s;
+}
+
+function showPage(name, el, fromMobile){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.sidebar .nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.bn-item').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  if(name==='salary') loadSalary();
+  if(name==='report' && S.isAdmin) loadReport();
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; 
+  t.style.display='block';
+  requestAnimationFrame(()=>t.classList.add('show'));
+  clearTimeout(t._t); 
+  t._t=setTimeout(()=>{
+    t.classList.remove('show');
+    setTimeout(()=>t.style.display='none', 300);
+  },2800);
+}
+</script>
 </body>
 </html>
