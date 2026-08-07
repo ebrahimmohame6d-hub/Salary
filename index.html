@@ -3,26 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta http-equiv="refresh" content="0; url=https://script.google.com/macros/s/AKfycbye7KFKphubufC72h2FmsErDHC6pwWy6-1dZ2rpO5fRiSehTZb4y-acjTDilUhZf7FG/exec">
-<title>Attend &amp; Salary — METI</title>
+<title>Attend & Salary — METI</title>
 <style>
-  html,body{margin:0;padding:0;height:100%;width:100%;background:#060b1a;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;font-family:sans-serif}
+  html,body{margin:0;padding:0;height:100%;width:100%;background:#060b1a;overflow:hidden}
+  #app-frame{position:fixed;inset:0;width:100%;height:100%;border:none;display:block}
+  #loader{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:#060b1a;z-index:2;transition:opacity .4s ease}
+  #loader.hide{opacity:0;pointer-events:none}
   .spin{width:34px;height:34px;border:3px solid rgba(20,224,180,0.2);border-top-color:#14e0b4;border-radius:50%;animation:sp .8s linear infinite}
   @keyframes sp{to{transform:rotate(360deg)}}
-  p{color:rgba(255,255,255,0.5);font-size:13px;letter-spacing:.05em}
-  a{color:#14e0b4}
+  #loader p{color:rgba(255,255,255,0.5);font-family:sans-serif;font-size:13px;letter-spacing:.05em}
 </style>
-<script>
-  // تحويل فوري عبر JS (أسرع وأضمن من meta refresh على بعض المتصفحات)
-  window.location.replace("https://script.google.com/macros/s/AKfycbye7KFKphubufC72h2FmsErDHC6pwWy6-1dZ2rpO5fRiSehTZb4y-acjTDilUhZf7FG/exec");
-</script>
 </head>
 <body>
+
+<div id="loader">
   <div class="spin"></div>
-  <p>جاري تحويلك للنظام...</p>
-  <noscript>
-    <p>فعّل JavaScript أو اضغط الرابط للدخول:<br>
-    <a href="https://script.google.com/macros/s/AKfycbye7KFKphubufC72h2FmsErDHC6pwWy6-1dZ2rpO5fRiSehTZb4y-acjTDilUhZf7FG/exec">دخول للنظام</a></p>
-  </noscript>
+  <p>جاري تحميل النظام...</p>
+</div>
+
+<iframe id="app-frame"
+  src="https://script.google.com/macros/s/AKfycbye7KFKphubufC72h2FmsErDHC6pwWy6-1dZ2rpO5fRiSehTZb4y-acjTDilUhZf7FG/exec"
+  allow="clipboard-write"
+  onload="document.getElementById('loader').classList.add('hide')">
+</iframe>
+
 </body>
 </html>
