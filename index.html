@@ -16,29 +16,37 @@
   --radius:12px;--radius-sm:7px;
   --login-bg1:#1e3a72;--login-bg2:#2a5298;
   --bottom-nav-h:60px;
+  --teal:#14e0b4;--teal-dk:#0aa886;--login-dark1:#060b1a;--login-dark2:#0b1638;--login-dark3:#101f4a;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;overscroll-behavior:none}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg3)}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
 
-/* ===== LOGIN ===== */
-#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--login-bg1) 0%,var(--login-bg2) 100%);position:relative;overflow:hidden;padding:16px}
-#login-screen::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.12) 1px,transparent 1px);background-size:32px 32px}
-.login-card{position:relative;background:#fff;border-radius:22px;padding:36px 28px;width:100%;max-width:400px;text-align:center;box-shadow:0 16px 56px rgba(0,0,0,0.25);animation:fadeUp 0.45s ease both}
+/* ===== LOGIN (dark / teal glow) ===== */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 0%,var(--login-dark3) 0%,var(--login-dark2) 45%,var(--login-dark1) 100%);position:relative;overflow:hidden;padding:16px}
+#login-screen::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(20,224,180,0.10) 1px,transparent 1px);background-size:30px 30px;pointer-events:none}
+#login-screen::after{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:640px;height:640px;background:radial-gradient(circle,rgba(20,224,180,0.16) 0%,rgba(20,224,180,0) 65%);pointer-events:none}
+.login-card{position:relative;background:linear-gradient(180deg,rgba(20,34,66,0.92) 0%,rgba(10,18,42,0.94) 100%);border:1px solid rgba(20,224,180,0.18);border-radius:22px;padding:38px 28px;width:100%;max-width:400px;text-align:center;box-shadow:0 0 0 1px rgba(20,224,180,0.05),0 24px 70px rgba(0,0,0,0.55),0 0 60px rgba(20,224,180,0.07);backdrop-filter:blur(10px);animation:fadeUp 0.45s ease both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
-.login-avatar{width:64px;height:64px;border-radius:50%;background:#dde8f8;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;overflow:hidden;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
+.login-avatar{width:68px;height:68px;border-radius:50%;background:rgba(20,224,180,0.08);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;overflow:hidden;border:2px solid rgba(20,224,180,0.35);box-shadow:0 0 26px rgba(20,224,180,0.35),0 0 0 6px rgba(20,224,180,0.05)}
 .login-avatar img{width:100%;height:100%;object-fit:cover}
-.login-card h2{font-size:20px;font-weight:800;color:var(--navy);margin-bottom:6px}
-.login-online{display:inline-flex;align-items:center;gap:5px;background:#e6f9ef;border:1.5px solid #2cb87a;color:#1a8a55;border-radius:30px;padding:3px 12px;font-size:11px;font-weight:700;margin-bottom:6px}
-.login-online::before{content:'';width:7px;height:7px;border-radius:50%;background:#2cb87a;display:inline-block}
-.login-sub{font-size:12px;color:var(--text2);margin-bottom:22px}
-.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;text-align:right}
-.fg label{font-size:10px;font-weight:700;color:var(--text2);letter-spacing:0.07em;text-transform:uppercase}
-.fg input{background:#eef3fc;border:1.5px solid #dde5f4;border-radius:var(--radius-sm);padding:12px 13px;font-size:14px;color:var(--text);font-family:'Cairo',sans-serif;direction:ltr;transition:border-color 0.2s}
-.fg input:focus{outline:none;border-color:var(--accent-lt);background:#f0f5ff}
-.login-btn{width:100%;background:var(--navy);border:none;border-radius:var(--radius-sm);padding:14px;font-size:15px;font-weight:800;color:#fff;cursor:pointer;font-family:'Cairo',sans-serif;margin-top:4px;transition:background 0.2s;-webkit-appearance:none}
-.login-btn:active{background:var(--navy3)}
-.login-err{background:rgba(224,52,72,0.07);border:1px solid rgba(224,52,72,0.2);border-radius:var(--radius-sm);padding:9px 13px;font-size:12px;color:var(--red);margin-top:10px;display:none;text-align:center}
+.login-card h2{font-size:21px;font-weight:900;color:#fff;margin-bottom:7px;letter-spacing:0.01em;text-shadow:0 0 18px rgba(20,224,180,0.35)}
+.login-online{display:inline-flex;align-items:center;gap:6px;background:rgba(20,224,180,0.08);border:1.5px solid rgba(20,224,180,0.4);color:var(--teal);border-radius:30px;padding:4px 13px;font-size:11px;font-weight:700;margin-bottom:8px;letter-spacing:0.02em}
+.login-online::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--teal);display:inline-block;box-shadow:0 0 8px var(--teal);animation:livePulse 2s infinite}
+.login-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:24px;letter-spacing:0.08em;text-transform:uppercase}
+.fg{display:flex;flex-direction:column;gap:6px;margin-bottom:13px;text-align:right}
+.fg label{font-size:10px;font-weight:700;color:rgba(255,255,255,0.45);letter-spacing:0.09em;text-transform:uppercase}
+.fg input{background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.12);border-radius:var(--radius-sm);padding:13px 14px;font-size:14px;color:#fff;font-family:'Cairo',sans-serif;direction:ltr;transition:all 0.2s}
+.fg input::placeholder{color:rgba(255,255,255,0.3)}
+.fg input:focus{outline:none;border-color:var(--teal);background:rgba(20,224,180,0.06);box-shadow:0 0 0 3px rgba(20,224,180,0.12)}
+.login-btn{width:100%;background:linear-gradient(135deg,var(--teal) 0%,var(--teal-dk) 100%);border:none;border-radius:var(--radius-sm);padding:14px;font-size:15px;font-weight:800;color:#04241c;cursor:pointer;font-family:'Cairo',sans-serif;margin-top:6px;transition:all 0.2s;-webkit-appearance:none;box-shadow:0 8px 24px rgba(20,224,180,0.28);letter-spacing:0.01em}
+.login-btn:hover{box-shadow:0 10px 30px rgba(20,224,180,0.4);transform:translateY(-1px)}
+.login-btn:active{transform:translateY(0);box-shadow:0 4px 14px rgba(20,224,180,0.3)}
+.login-btn:disabled{opacity:0.6;cursor:default;transform:none}
+.login-err{background:rgba(224,52,72,0.1);border:1px solid rgba(224,52,72,0.35);border-radius:var(--radius-sm);padding:10px 13px;font-size:12px;color:#ff8b96;margin-top:12px;display:none;text-align:center}
+.login-remember{display:flex;align-items:center;justify-content:flex-end;gap:7px;margin:2px 0 14px;direction:rtl}
+.login-remember input{accent-color:var(--teal);width:15px;height:15px;cursor:pointer}
+.login-remember label{font-size:11.5px;color:rgba(255,255,255,0.55);cursor:pointer;user-select:none}
 
 /* ===== APP SHELL ===== */
 #app{display:none;min-height:100vh;min-height:-webkit-fill-available}
@@ -299,10 +307,14 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
     <div class="login-avatar"><img src="https://i.ibb.co/WpxRj6z9/Screenshot-2026-03-31-220317.png" alt="Logo"></div>
     <h2>Attend &amp; Salary</h2>
     <div class="login-online">متصل</div>
-    <p class="login-sub"></p>
-    <div class="fg"><label>اسم المستخدم</label><input id="l-user" placeholder="username" dir="ltr" autocomplete="username"></div>
-    <div class="fg"><label>كلمة المرور</label><input id="l-pass" type="password" placeholder="••••" dir="ltr" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <button class="login-btn" onclick="doLogin()">دخول</button>
+    <p class="login-sub">HR &amp; Payroll System</p>
+    <div class="fg"><label>اسم المستخدم</label><input id="l-user" placeholder="اكتب اسم المستخدم" dir="ltr" autocomplete="username"></div>
+    <div class="fg"><label>كلمة المرور</label><input id="l-pass" type="password" placeholder="••••" dir="ltr" autocomplete="current-password" onkeydown="if(event.key==='Enter'){event.preventDefault();doLogin();}"></div>
+    <div class="login-remember">
+      <label for="l-remember">تذكرني على هذا الجهاز</label>
+      <input type="checkbox" id="l-remember" checked>
+    </div>
+    <button type="button" class="login-btn" id="l-btn" onclick="doLogin()">دخول</button>
     <div class="login-err" id="l-err"></div>
   </div>
 </div>
@@ -750,47 +762,67 @@ function calcIndDed(panel){
 }
 
 // ==================== LOGIN ====================
+// ملحوظة: التذكر بيتم بالكامل على جهاز/متصفح المستخدم فقط (localStorage)
+// كل شخص بيفتح النظام من جهازه، بياناته المحفوظة تبقى عنده هو بس ومحدش غيره بيشوفها
+var LS_USER_KEY = 'hr_saved_user_v2';
+var LS_PASS_KEY = 'hr_saved_pass_v2';
+
 function doLogin(){
+  const btn=document.getElementById('l-btn');
   const u=document.getElementById('l-user').value.trim();
   const p=document.getElementById('l-pass').value.trim();
   const err=document.getElementById('l-err');
   err.style.display='none';
-  if(!u||!p){err.textContent='ادخل اسم المستخدم وكلمة المرور';err.style.display='block';return}
+
+  if(!u||!p){
+    err.textContent='ادخل اسم المستخدم وكلمة المرور';
+    err.style.display='block';
+    return;
+  }
+
+  if(typeof google==='undefined' || !google.script || !google.script.run){
+    err.textContent='تعذر الاتصال بالسيرفر — افتح الرابط الرسمي للنظام (Web App URL) وليس ملف HTML لوحده';
+    err.style.display='block';
+    return;
+  }
+
+  btn.disabled=true;
+  btn.textContent='⏳ جاري الدخول...';
+
   google.script.run
     .withSuccessHandler(res=>{
-      if(!res.success){err.textContent=res.msg;err.style.display='block';return}
+      btn.disabled=false;
+      btn.textContent='دخول';
+      if(!res || !res.success){
+        err.textContent=(res && res.msg) ? res.msg : 'حصل خطأ غير متوقع';
+        err.style.display='block';
+        return;
+      }
       try{
-        localStorage.setItem('hr_saved_user', u);
-        localStorage.setItem('hr_saved_pass', p);
+        var remember=document.getElementById('l-remember').checked;
+        if(remember){
+          localStorage.setItem(LS_USER_KEY, u);
+          localStorage.setItem(LS_PASS_KEY, p);
+        } else {
+          localStorage.removeItem(LS_USER_KEY);
+          localStorage.removeItem(LS_PASS_KEY);
+        }
       }catch(e){}
       S=res; startApp();
     })
-    .withFailureHandler(e=>{err.textContent='خطأ: '+e.message;err.style.display='block'})
+    .withFailureHandler(e=>{
+      btn.disabled=false;
+      btn.textContent='دخول';
+      err.textContent='خطأ: '+(e && e.message ? e.message : 'تعذر الوصول للسيرفر');
+      err.style.display='block';
+    })
     .login(u,p);
 }
 
 function loadSavedLogin(){
-  // أولاً: نجرب نجيب البيانات من السيرفر (UserProperties) — أضمن ومستقل عن قيود المتصفح
-  google.script.run
-    .withSuccessHandler(function(saved){
-      if(saved && saved.username){
-        document.getElementById('l-user').value=saved.username;
-        document.getElementById('l-pass').value=saved.password||'';
-        return;
-      }
-      // لو السيرفر مرجع حاجة، نرجع نجرب localStorage كنسخة احتياطية
-      loadFromLocalStorage();
-    })
-    .withFailureHandler(function(){
-      loadFromLocalStorage();
-    })
-    .getSavedLogin();
-}
-
-function loadFromLocalStorage(){
   try{
-    var su=localStorage.getItem('hr_saved_user');
-    var sp=localStorage.getItem('hr_saved_pass');
+    var su=localStorage.getItem(LS_USER_KEY);
+    var sp=localStorage.getItem(LS_PASS_KEY);
     if(su) document.getElementById('l-user').value=su;
     if(sp) document.getElementById('l-pass').value=sp;
   }catch(e){}
@@ -1506,6 +1538,5 @@ function toast(msg){
   clearTimeout(t._t); t._t=setTimeout(()=>t.style.display='none',2800);
 }
 </script>
-  <script src="script.js"></script>
 </body>
 </html>
