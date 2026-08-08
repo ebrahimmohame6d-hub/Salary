@@ -111,7 +111,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .att-table{width:100%;border-collapse:collapse;font-size:12px}
 .att-table th{font-size:10px;font-weight:700;color:var(--text3);padding:7px 11px;text-align:right;border-bottom:1.5px solid var(--border);position:sticky;top:0;background:#fff;z-index:2;letter-spacing:0.04em;text-transform:uppercase}
 .att-table td{padding:0}
-.day-row{display:flex;align-items:center;padding:11px 13px;gap:9px;cursor:pointer;transition:all 0.2s ease;border:1.5px solid var(--border2);border-radius:10px;background:var(--bg3);margin:6px 2px}
+.day-row{display:flex;align-items:center;padding:11px 13px;gap:9px;cursor:pointer;transition:all 0.2s ease;border:1.5px solid var(--border2);border-radius:10px;background:#fff;margin:6px 2px;box-shadow:0 1px 4px rgba(13,27,75,0.05)}
 .day-row:hover{
   background:#fff;
   border-color:var(--accent-lt);
@@ -130,13 +130,13 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .day-row.active-row .day-name-txt{color:var(--accent-lt);font-weight:800}
 .friday-row{background:#fff8f0 !important;border-color:rgba(224,104,32,0.4) !important}
 .friday-row:hover{border-color:var(--orange) !important;box-shadow:0 6px 18px rgba(224,104,32,0.2) !important}
-.friday-row .day-num-box{background:rgba(224,104,32,0.13) !important;color:var(--orange) !important}
+.friday-row .day-num-box{background:linear-gradient(135deg,var(--orange) 0%,#f5a35a 100%) !important;color:#fff !important;box-shadow:0 3px 10px rgba(224,104,32,0.35) !important}
 .friday-row .day-name-txt{color:var(--orange) !important;font-weight:700 !important}
 .friday-row:hover .day-name-txt{color:var(--orange) !important}
 .friday-badge{font-size:9px;background:rgba(224,104,32,0.1);color:var(--orange);border:1px solid rgba(224,104,32,0.25);padding:1px 7px;border-radius:8px;font-weight:700;flex-shrink:0}
 .month-sep td{background:var(--bg3);padding:5px 11px;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid var(--border)}
-.day-num-box{width:32px;height:32px;border-radius:7px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;color:var(--navy)}
-.day-name-txt{font-size:12px;font-weight:500;flex:1}
+.day-num-box{width:32px;height:32px;border-radius:7px;background:linear-gradient(135deg,var(--navy) 0%,var(--accent-lt) 100%);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;color:#fff;box-shadow:0 3px 10px rgba(0,180,166,0.3)}
+.day-name-txt{font-size:12px;font-weight:700;flex:1;color:var(--navy)}
 .day-ot-badge{font-size:10px;color:var(--orange);background:rgba(224,104,32,0.08);border:1px solid rgba(224,104,32,0.18);padding:2px 6px;border-radius:8px;white-space:nowrap}
 .day-comp-badge{font-size:10px;color:var(--purple);background:rgba(123,92,246,0.08);border:1px solid rgba(123,92,246,0.25);padding:2px 6px;border-radius:8px;white-space:nowrap}
 .day-ded-badge{font-size:10px;color:var(--red);background:rgba(224,52,72,0.08);border:1px solid rgba(224,52,72,0.2);padding:2px 6px;border-radius:8px;white-space:nowrap;margin-top:2px}
