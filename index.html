@@ -634,6 +634,59 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
 <div class="toast" id="toast"></div>
 
 <script>
+// ==================== APPS SCRIPT BRIDGE (fetch instead of google.script.run) ====================
+// لما الصفحة بتتفتح من GitHub Pages، أوبجكت google.script.run مش موجود أصلاً
+// (بيشتغل بس لما الصفحة نفسها متفتحة من رابط الـ Apps Script). عشان كده عملنا
+// "بديل" بنفس الشكل بالظبط (withSuccessHandler / withFailureHandler / اسم الفنكشن)
+// لكنه بيبعت الطلب بـ fetch() لرابط الـ Web App بتاعك. لو الصفحة اتفتحت من رابط
+// الـ Apps Script نفسه، الكود مش هيلمسها وهيسيب google.script.run الأصلي زي ما هو.
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbye7KFKphubufC72h2FmsErDHC6pwWy6-1dZ2rpO5fRiSehTZb4y-acjTDilUhZf7FG/exec';
+
+function callAppsScript(fnName, args, onSuccess, onFailure){
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // text/plain عشان نتفادى مشكلة CORS preflight
+    body: JSON.stringify({ fn: fnName, args: args })
+  })
+  .then(function(r){
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  })
+  .then(function(res){
+    if(res && res.success){
+      if(onSuccess) onSuccess(res.result);
+    } else {
+      var msg = (res && res.error) ? res.error : 'خطأ غير معروف من السيرفر';
+      if(onFailure) onFailure(new Error(msg)); else console.error('Apps Script error:', msg);
+    }
+  })
+  .catch(function(err){
+    if(onFailure) onFailure(err); else console.error('Fetch error:', err);
+  });
+}
+
+function createGsRunner(successCb, failureCb){
+  return new Proxy({}, {
+    get: function(target, prop){
+      if(prop === 'withSuccessHandler'){
+        return function(cb){ return createGsRunner(cb, failureCb); };
+      }
+      if(prop === 'withFailureHandler'){
+        return function(cb){ return createGsRunner(successCb, cb); };
+      }
+      // أي اسم تاني هنا معناه ده اسم فنكشن في Code.gs
+      return function(){
+        var args = Array.prototype.slice.call(arguments);
+        callAppsScript(prop, args, successCb, failureCb);
+      };
+    }
+  });
+}
+
+if (typeof google === 'undefined' || typeof google.script === 'undefined'){
+  window.google = { script: { run: createGsRunner(null, null) } };
+}
+
 // ==================== STATE ====================
 let S={}, curAttUser='', curSalUser='';
 let attYear, attMonth, salYear, salMonth, repYear, repMonth;
