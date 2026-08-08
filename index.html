@@ -137,20 +137,32 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .month-sep td{background:var(--bg3);padding:5px 11px;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid var(--border)}
 .day-num-box{width:32px;height:32px;border-radius:7px;background:linear-gradient(135deg,var(--navy) 0%,var(--accent-lt) 100%);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;color:#fff;box-shadow:0 3px 10px rgba(42,77,184,0.3)}
 .day-name-txt{font-size:12px;font-weight:700;flex:1;color:var(--navy)}
-.day-ot-badge{font-size:10px;color:var(--orange);background:rgba(224,104,32,0.08);border:1px solid rgba(224,104,32,0.18);padding:2px 6px;border-radius:8px;white-space:nowrap}
-.day-comp-badge{font-size:10px;color:var(--purple);background:rgba(123,92,246,0.08);border:1px solid rgba(123,92,246,0.25);padding:2px 6px;border-radius:8px;white-space:nowrap}
-.day-ded-badge{font-size:10px;color:var(--red);background:rgba(224,52,72,0.08);border:1px solid rgba(224,52,72,0.2);padding:2px 6px;border-radius:8px;white-space:nowrap;margin-top:2px}
+.day-ot-badge{font-size:10px;font-weight:700;color:var(--accent-lt);background:#fff;border:1.5px solid var(--border2);padding:3px 8px;border-radius:8px;white-space:nowrap;box-shadow:0 1px 4px rgba(13,27,75,0.05);transition:all 0.2s ease}
+.day-ot-badge:hover{border-color:var(--accent-lt);box-shadow:0 5px 14px rgba(42,77,184,0.22);transform:translateY(-1px)}
+.day-comp-badge{font-size:10px;font-weight:700;color:var(--purple);background:#fff;border:1.5px solid #c4b5fd;padding:3px 8px;border-radius:8px;white-space:nowrap;box-shadow:0 1px 4px rgba(13,27,75,0.05);transition:all 0.2s ease}
+.day-comp-badge:hover{border-color:var(--purple);box-shadow:0 5px 14px rgba(123,92,246,0.25);transform:translateY(-1px)}
+.day-ded-badge{font-size:10px;font-weight:700;color:var(--red);background:#fff;border:1.5px solid rgba(224,52,72,0.3);padding:3px 8px;border-radius:8px;white-space:nowrap;margin-top:2px;box-shadow:0 1px 4px rgba(13,27,75,0.05);transition:all 0.2s ease}
+.day-ded-badge:hover{border-color:var(--red);box-shadow:0 5px 14px rgba(224,52,72,0.22);transform:translateY(-1px)}
 
-.pill{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
-.p-present{background:#e6f9ef;color:#1a8a55;border:1px solid #b6e8ce}
-.p-absent{background:#fde8eb;color:#c01c2e;border:1px solid #f5b8bf}
-.p-annual{background:#e8effe;color:#2a4db8;border:1px solid #bfcef8}
-.p-dayoff{background:#f0f2f7;color:var(--text2);border:1px solid var(--border2)}
-.p-comp{background:#f3f0ff;color:#5b21b6;border:1px solid #c4b5fd}
-.p-friday{background:#fff0e5;color:var(--orange);border:1px solid #f5c89a}
-.p-ot{background:#fff0e5;color:var(--orange);border:1px solid #f5c89a}
-.p-ded{background:#fde8eb;color:#c01c2e;border:1px solid #f5b8bf}
-.p-empty{background:transparent;color:var(--text3);border:1px dashed var(--text3);font-weight:500}
+.pill{display:inline-flex;align-items:center;gap:3px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;background:#fff;box-shadow:0 1px 4px rgba(13,27,75,0.05);transition:all 0.2s ease}
+.pill:hover{transform:translateY(-1px)}
+.p-present{background:#fff;color:#1a8a55;border:1.5px solid #b6e8ce}
+.p-present:hover{border-color:#1a8a55;box-shadow:0 5px 14px rgba(26,138,85,0.2)}
+.p-absent{background:#fff;color:#c01c2e;border:1.5px solid #f5b8bf}
+.p-absent:hover{border-color:#c01c2e;box-shadow:0 5px 14px rgba(192,28,46,0.2)}
+.p-annual{background:#fff;color:#2a4db8;border:1.5px solid #bfcef8}
+.p-annual:hover{border-color:#2a4db8;box-shadow:0 5px 14px rgba(42,77,184,0.2)}
+.p-dayoff{background:#fff;color:var(--text2);border:1.5px solid var(--border2)}
+.p-dayoff:hover{border-color:var(--text2);box-shadow:0 5px 14px rgba(90,106,132,0.18)}
+.p-comp{background:#fff;color:#5b21b6;border:1.5px solid #c4b5fd}
+.p-comp:hover{border-color:#5b21b6;box-shadow:0 5px 14px rgba(91,33,182,0.2)}
+.p-friday{background:#fff;color:var(--orange);border:1.5px solid #f5c89a}
+.p-friday:hover{border-color:var(--orange);box-shadow:0 5px 14px rgba(224,104,32,0.2)}
+.p-ot{background:#fff;color:var(--accent-lt);border:1.5px solid var(--border2)}
+.p-ot:hover{border-color:var(--accent-lt);box-shadow:0 5px 14px rgba(42,77,184,0.2)}
+.p-ded{background:#fff;color:#c01c2e;border:1.5px solid #f5b8bf}
+.p-ded:hover{border-color:#c01c2e;box-shadow:0 5px 14px rgba(192,28,46,0.2)}
+.p-empty{background:transparent;color:var(--text3);border:1px dashed var(--text3);font-weight:500;box-shadow:none}
 
 /* ===== DESKTOP SIDE PANEL ===== */
 .side-panel{background:var(--bg3);border:1.5px solid var(--border2);border-radius:var(--radius);padding:14px;position:sticky;top:22px;max-height:80vh;overflow-y:auto}
