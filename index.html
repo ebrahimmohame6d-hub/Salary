@@ -127,22 +127,26 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
   transform:translateY(-2px);
   font-weight:700;
 }
-.day-row.today-row{
-  background:linear-gradient(135deg,#e8effe 0%,#d4e0fc 100%);
-  border:2px solid var(--accent-lt);
-  box-shadow:0 0 0 3px rgba(42,77,184,0.15), 0 4px 14px rgba(42,77,184,0.18);
-  transform:translateY(-1px);
-}
-.day-row.today-row .day-num-box{
-  background:linear-gradient(135deg,#2a4db8 0%,#0d1b4b 100%);
-  box-shadow:0 3px 12px rgba(42,77,184,0.45);
-}
-.day-row.today-row .day-name-txt{
-  color:var(--accent-lt);
-  font-weight:800;
-}
 
 .day-row.active-row .day-name-txt{color:var(--accent-lt);font-weight:800}
+tr.today-row td{
+  background:linear-gradient(135deg,#e8effe 0%,#d4e0fc 100%) !important;
+}
+tr.today-row .day-row{
+  background:transparent !important;
+  border:2px solid var(--accent-lt) !important;
+  box-shadow:none !important;
+  transform:translateY(-1px);
+}
+tr.today-row .day-row .day-num-box{
+  background:linear-gradient(135deg,#2a4db8 0%,#0d1b4b 100%) !important;
+  box-shadow:0 3px 12px rgba(42,77,184,0.45) !important;
+}
+tr.today-row .day-row .day-name-txt{
+  color:var(--accent-lt) !important;
+  font-weight:800 !important;
+}
+
 .friday-row{background:#fff8f0 !important;border-color:rgba(224,104,32,0.4) !important}
 .friday-row:hover{border-color:var(--orange) !important;box-shadow:0 6px 18px rgba(224,104,32,0.2) !important}
 .friday-row .day-num-box{background:linear-gradient(135deg,var(--orange) 0%,#f5a35a 100%) !important;color:#fff !important;box-shadow:0 3px 10px rgba(224,104,32,0.35) !important}
@@ -1050,7 +1054,7 @@ function loadAttendance(){
   document.getElementById('att-content').style.display='none';
   google.script.run
     .withSuccessHandler(data=>{
-      attData=data; renderAtt();
+      attData=data; renderAtt(); setTimeout(scrollToToday, 300);
       document.getElementById('att-loading').style.display='none';
       document.getElementById('att-content').style.display='block';
     })
@@ -1063,10 +1067,12 @@ function isToday(d){
   return d.year===now.getFullYear() && d.month===(now.getMonth()+1) && d.day===now.getDate();
 }
 function scrollToToday(){
-  const row=document.querySelector('.day-row.today-row');
-  if(row){
-    row.scrollIntoView({behavior:'smooth',block:'center'});
-  }
+  setTimeout(function(){
+    const row=document.querySelector('tr.today-row');
+    if(row){
+      row.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+  }, 150);
 }
 function renderAtt(){
   const tbody=document.getElementById('att-tbody');
@@ -1103,7 +1109,7 @@ function renderAtt(){
       hoursBadge=`<span style="color:var(--text3);font-size:11px">—</span>`;
     }
 
-    html+=`<tr><td><div class="day-row ${fri?'friday-row':''} ${selIdx===i?'active-row':''} ${isToday(d)?'today-row':''}" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px">${hoursBadge}${dedBadge}</td></tr>`;
+    html+=`<tr class="${isToday(d)?'today-row':''}"><td><div class="day-row ${fri?'friday-row':''} ${selIdx===i?'active-row':''}" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px">${hoursBadge}${dedBadge}</td></tr>`;
   });
   tbody.innerHTML=html;scrollToToday();
 }
