@@ -128,18 +128,34 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
   font-weight:700;
 }
 .day-row.active-row .day-name-txt{color:var(--accent-lt);font-weight:800}
-/* ===== TODAY ROW — rounded blue box ===== */
-.day-row.today-row{
+/* ===== TODAY ROW — whole row blue card ===== */
+tr.today-row td{
   background:#e8effe !important;
-  border:2px solid #2a4db8 !important;
-  box-shadow:0 0 0 3px rgba(42,77,184,0.10), 0 4px 14px rgba(42,77,184,0.18) !important;
-  transform:translateY(-1px);
+  border-top:2px solid #2a4db8 !important;
+  border-bottom:2px solid #2a4db8 !important;
+  padding:6px 0;
 }
-.day-row.today-row .day-num-box{
+tr.today-row td:first-child{
+  border-right:2px solid #2a4db8 !important;
+  border-radius:0 10px 10px 0;
+  padding:6px 0 6px 2px;
+}
+tr.today-row td:last-child{
+  border-left:2px solid #2a4db8 !important;
+  border-radius:10px 0 0 10px;
+  padding:6px 2px 6px 0;
+}
+tr.today-row .day-row{
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+  transform:none !important;
+}
+tr.today-row .day-row .day-num-box{
   background:linear-gradient(135deg,#2a4db8 0%,#0d1b4b 100%) !important;
   box-shadow:0 3px 12px rgba(42,77,184,0.45) !important;
 }
-.day-row.today-row .day-name-txt{
+tr.today-row .day-row .day-name-txt{
   color:#2a4db8 !important;
   font-weight:800 !important;
 }
@@ -1064,7 +1080,7 @@ function isToday(d){
 }
 function scrollToToday(){
   setTimeout(function(){
-    const row=document.querySelector('.day-row.today-row');
+    const row=document.querySelector('tr.today-row');
     if(row){
       row.scrollIntoView({behavior:'smooth',block:'center'});
     }
@@ -1105,7 +1121,7 @@ function renderAtt(){
       hoursBadge=`<span style="color:var(--text3);font-size:11px">—</span>`;
     }
 
-    html+=`<tr><td><div class="day-row ${fri?'friday-row':''} ${isToday(d)?'today-row':''} ${selIdx===i?'active-row':''}" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px">${hoursBadge}${dedBadge}</td></tr>`;
+    html+=`<tr class="${isToday(d)?'today-row':''}"><td><div class="day-row ${fri?'friday-row':''} ${selIdx===i?'active-row':''}" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px">${hoursBadge}${dedBadge}</td></tr>`;
   });
   tbody.innerHTML=html;scrollToToday();
 }
