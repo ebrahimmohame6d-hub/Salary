@@ -128,34 +128,54 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
   font-weight:700;
 }
 .day-row.active-row .day-name-txt{color:var(--accent-lt);font-weight:800}
-/* ===== TODAY ROW — mobile-safe rounded card ===== */
+/* ===== TODAY ROW — single rounded card via colspan ===== */
 tr.today-row td{
-  background:#e8effe !important;
-  border-top:2px solid #2a4db8 !important;
-  border-bottom:2px solid #2a4db8 !important;
-  padding:6px 0;
-}
-tr.today-row td:first-child{
-  border-right:2px solid #2a4db8 !important;
-  border-radius:0 14px 14px 0;
-}
-tr.today-row td:last-child{
-  border-left:2px solid #2a4db8 !important;
-  border-radius:14px 0 0 14px;
-}
-tr.today-row .day-row{
-  background:transparent !important;
+  padding:0 !important;
   border:none !important;
-  box-shadow:none !important;
-  transform:none !important;
+  background:transparent !important;
 }
-tr.today-row .day-row .day-num-box{
+.today-row-card{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:11px 13px;
+  margin:4px;
+  background:linear-gradient(90deg,#a8c0f0 0%,#d4e4fc 20%,#e8effe 50%,#d4e4fc 80%,#a8c0f0 100%);
+  border:2px solid #2a4db8;
+  border-radius:14px;
+  box-shadow:0 2px 12px rgba(42,77,184,0.15);
+  cursor:pointer;
+  transition:all 0.2s ease;
+}
+.today-row-card:active{
+  transform:scale(0.98);
+}
+.today-row-card .tcol-day{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  flex:1;
+}
+.today-row-card .tcol-status{
+  flex:1;
+  text-align:center;
+}
+.today-row-card .tcol-hours{
+  flex:1;
+  text-align:left;
+  direction:ltr;
+}
+.today-row-card .day-num-box{
   background:linear-gradient(135deg,#2a4db8 0%,#0d1b4b 100%) !important;
   box-shadow:0 3px 12px rgba(42,77,184,0.45) !important;
 }
-tr.today-row .day-row .day-name-txt{
+.today-row-card .day-name-txt{
   color:#2a4db8 !important;
   font-weight:800 !important;
+}
+.today-row-card .friday-badge{
+  background:rgba(224,104,32,0.15) !important;
+  color:var(--orange) !important;
 }
 .friday-row{background:#fff8f0 !important;border-color:rgba(224,104,32,0.4) !important}
 .friday-row:hover{border-color:var(--orange) !important;box-shadow:0 6px 18px rgba(224,104,32,0.2) !important}
@@ -1078,7 +1098,7 @@ function isToday(d){
 }
 function scrollToToday(){
   setTimeout(function(){
-    const row=document.querySelector('tr.today-row');
+    const row=document.querySelector('.today-row-card');
     if(row){
       row.scrollIntoView({behavior:'smooth',block:'center'});
     }
@@ -1119,7 +1139,11 @@ function renderAtt(){
       hoursBadge=`<span style="color:var(--text3);font-size:11px">—</span>`;
     }
 
-    html+=`<tr class="${isToday(d)?'today-row':''}"><td><div class="day-row ${fri?'friday-row':''} ${selIdx===i?'active-row':''}" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px">${hoursBadge}${dedBadge}</td></tr>`;
+    if(isToday(d)){
+      html+=`<tr class="today-row"><td colspan="3"><div class="today-row-card" onclick="openDay(${i})"><div class="tcol-day"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}</div><div class="tcol-status">${pill}</div><div class="tcol-hours">${hoursBadge}${dedBadge}</div></div></td></tr>`;
+    } else {
+      html+=`<tr><td><div class="day-row ${fri?'friday-row':''} ${selIdx===i?'active-row':''}" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px">${hoursBadge}${dedBadge}</td></tr>`;
+    }
   });
   tbody.innerHTML=html;scrollToToday();
 }
