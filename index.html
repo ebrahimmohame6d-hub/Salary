@@ -135,10 +135,8 @@ tr.today-row td{
   background:transparent !important;
 }
 .today-row-card{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
+  display:flex;
   align-items:center;
-  gap:8px;
   padding:11px 13px;
   margin:4px;
   background:linear-gradient(90deg,#a8c0f0 0%,#d4e4fc 20%,#e8effe 50%,#d4e4fc 80%,#a8c0f0 100%);
@@ -152,16 +150,22 @@ tr.today-row td{
   transform:scale(0.98);
 }
 .today-row-card .tcol-day{
+  flex:1.6;
   display:flex;
   align-items:center;
   gap:9px;
   justify-content:flex-end;
+  padding-left:2px;
 }
 .today-row-card .tcol-status{
+  flex:1;
   text-align:center;
+  padding:0 8px;
 }
 .today-row-card .tcol-hours{
+  flex:1;
   text-align:left;
+  padding-right:2px;
 }
 .today-row-card .day-num-box{
   background:linear-gradient(135deg,#2a4db8 0%,#0d1b4b 100%) !important;
