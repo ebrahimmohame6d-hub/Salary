@@ -111,110 +111,90 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .att-table{width:100%;border-collapse:collapse;font-size:12px}
 .att-table th{font-size:10px;font-weight:700;color:var(--text3);padding:7px 11px;text-align:right;border-bottom:1.5px solid var(--border);position:sticky;top:0;background:#fff;z-index:2;letter-spacing:0.04em;text-transform:uppercase}
 .att-table td{padding:0}
-/* ===== ROW CARD (unified box across all 3 columns) ===== */
-tr.day-card td{
+.day-row{display:flex;align-items:center;padding:11px 13px;gap:9px;cursor:pointer;transition:all 0.2s ease;border:1.5px solid var(--border2);border-radius:10px;background:#fff;margin:6px 2px;box-shadow:0 1px 4px rgba(13,27,75,0.05)}
+.day-row:hover{
   background:#fff;
-  border-top:1.5px solid var(--border2);
-  border-bottom:1.5px solid var(--border2);
-  padding:6px 0;
-  vertical-align:middle;
-  transition:all 0.2s ease;
+  border-color:var(--accent-lt);
+  box-shadow:0 6px 18px rgba(42,77,184,0.2);
+  transform:translateY(-2px);
 }
-tr.day-card td:first-child{
-  border-right:1.5px solid var(--border2);
+.day-row:hover .day-name-txt{color:var(--accent-lt);font-weight:700}
+.day-row:active{transform:translateY(0);box-shadow:0 2px 8px rgba(42,77,184,0.15)}
+.day-row.active-row{
+  background:#fff;
+  border:2px solid var(--accent-lt);
+  box-shadow:0 0 0 3px rgba(42,77,184,0.12), 0 6px 18px rgba(42,77,184,0.2);
+  transform:translateY(-2px);
+  font-weight:700;
+}
+.day-row.active-row .day-name-txt{color:var(--accent-lt);font-weight:800}
+.friday-row{background:#fff8f0 !important;border-color:rgba(224,104,32,0.4) !important}
+.friday-row:hover{border-color:var(--orange) !important;box-shadow:0 6px 18px rgba(224,104,32,0.2) !important}
+.friday-row .day-num-box{background:linear-gradient(135deg,var(--orange) 0%,#f5a35a 100%) !important;color:#fff !important;box-shadow:0 3px 10px rgba(224,104,32,0.35) !important}
+.friday-row .day-name-txt{color:var(--orange) !important;font-weight:700 !important}
+.friday-row:hover .day-name-txt{color:var(--orange) !important}
+
+/* ===== TODAY ROW — whole row card ===== */
+tr.today-row td{
+  background:linear-gradient(135deg,#e8effe 0%,#d4e0fc 100%) !important;
+  border-top:2px solid var(--accent-lt) !important;
+  border-bottom:2px solid var(--accent-lt) !important;
+  padding:6px 0;
+}
+tr.today-row td:first-child{
+  border-right:2px solid var(--accent-lt) !important;
   border-radius:0 10px 10px 0;
   padding:6px 0 6px 2px;
 }
-tr.day-card td:last-child{
-  border-left:1.5px solid var(--border2);
+tr.today-row td:last-child{
+  border-left:2px solid var(--accent-lt) !important;
   border-radius:10px 0 0 10px;
   padding:6px 2px 6px 0;
 }
-
-/* Inner day-row: just flex layout, no card styling */
-.day-row{
-  display:flex;
-  align-items:center;
-  padding:11px 13px;
-  gap:9px;
-  cursor:pointer;
-  background:transparent;
-  border:none;
-  border-radius:0;
-  box-shadow:none;
-  margin:0;
-  transition:none;
-  transform:none;
+tr.today-row .day-row{
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+  transform:none !important;
 }
-
-/* Row hover: whole card lifts */
-tr.day-card:hover td{
-  border-color:var(--accent-lt);
-  background:#fff;
-}
-tr.day-card:hover{
-  filter:drop-shadow(0 6px 18px rgba(42,77,184,0.2));
-}
-tr.day-card:hover .day-name-txt{color:var(--accent-lt);font-weight:700}
-
-/* Active row (selected day) */
-tr.day-card.active-row td{
-  background:#fff;
-  border-top:2px solid var(--accent-lt);
-  border-bottom:2px solid var(--accent-lt);
-}
-tr.day-card.active-row td:first-child{
-  border-right:2px solid var(--accent-lt);
-  border-radius:0 10px 10px 0;
-}
-tr.day-card.active-row td:last-child{
-  border-left:2px solid var(--accent-lt);
-  border-radius:10px 0 0 10px;
-}
-tr.day-card.active-row td:nth-child(2){
-  border-left:none;
-  border-right:none;
-}
-tr.day-card.active-row{
-  filter:drop-shadow(0 0 3px rgba(42,77,184,0.12)) drop-shadow(0 6px 18px rgba(42,77,184,0.2));
-}
-tr.day-card.active-row .day-name-txt{color:var(--accent-lt);font-weight:800}
-
-/* Today row highlight */
-tr.day-card.today-row td{
-  background:linear-gradient(135deg,#e8effe 0%,#d4e0fc 100%) !important;
-  border-color:var(--accent-lt) !important;
-}
-tr.day-card.today-row .day-num-box{
+tr.today-row .day-row .day-num-box{
   background:linear-gradient(135deg,#2a4db8 0%,#0d1b4b 100%) !important;
   box-shadow:0 3px 12px rgba(42,77,184,0.45) !important;
 }
-tr.day-card.today-row .day-name-txt{
+tr.today-row .day-row .day-name-txt{
   color:var(--accent-lt) !important;
   font-weight:800 !important;
 }
 
-/* Friday row */
-tr.day-card.friday-row td{
-  background:#fff8f0 !important;
-  border-color:rgba(224,104,32,0.4) !important;
+/* ===== ACTIVE ROW — whole row card ===== */
+tr.active-row td{
+  background:#fff !important;
+  border-top:2px solid var(--accent-lt) !important;
+  border-bottom:2px solid var(--accent-lt) !important;
+  padding:6px 0;
 }
-tr.day-card.friday-row:hover td{
-  border-color:var(--orange) !important;
+tr.active-row td:first-child{
+  border-right:2px solid var(--accent-lt) !important;
+  border-radius:0 10px 10px 0;
+  padding:6px 0 6px 2px;
 }
-tr.day-card.friday-row:hover{
-  filter:drop-shadow(0 6px 18px rgba(224,104,32,0.2)) !important;
+tr.active-row td:last-child{
+  border-left:2px solid var(--accent-lt) !important;
+  border-radius:10px 0 0 10px;
+  padding:6px 2px 6px 0;
 }
-tr.day-card.friday-row .day-num-box{
-  background:linear-gradient(135deg,var(--orange) 0%,#f5a35a 100%) !important;
-  color:#fff !important;
-  box-shadow:0 3px 10px rgba(224,104,32,0.35) !important;
+tr.active-row .day-row{
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+  transform:none !important;
 }
-tr.day-card.friday-row .day-name-txt{
-  color:var(--orange) !important;
-  font-weight:700 !important;
+tr.active-row .day-row .day-name-txt{
+  color:var(--accent-lt) !important;
+  font-weight:800 !important;
 }
-tr.day-card.friday-row:hover .day-name-txt{color:var(--orange) !important}
+
+
 .friday-badge{font-size:9px;background:rgba(224,104,32,0.1);color:var(--orange);border:1px solid rgba(224,104,32,0.25);padding:1px 7px;border-radius:8px;font-weight:700;flex-shrink:0}
 .month-sep td{background:var(--bg3);padding:5px 11px;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid var(--border)}
 .day-num-box{width:32px;height:32px;border-radius:7px;background:linear-gradient(135deg,var(--navy) 0%,var(--accent-lt) 100%);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;color:#fff;box-shadow:0 3px 10px rgba(42,77,184,0.3)}
@@ -1172,7 +1152,7 @@ function renderAtt(){
       hoursBadge=`<span style="color:var(--text3);font-size:11px">—</span>`;
     }
 
-    html+=`<tr class="day-card ${isToday(d)?'today-row':''} ${fri?'friday-row':''} ${selIdx===i?'active-row':''}"><td><div class="day-row" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}</div></td><td>${pill}</td><td>${hoursBadge}${dedBadge}</td></tr>`;
+    html+=`<tr class="${isToday(d)?'today-row':''} ${selIdx===i?'active-row':''}"><td><div class="day-row ${fri?'friday-row':''}" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px">${hoursBadge}${dedBadge}</td></tr>`;
   });
   tbody.innerHTML=html;scrollToToday();
 }
