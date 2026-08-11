@@ -128,28 +128,41 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
   font-weight:700;
 }
 .day-row.active-row .day-name-txt{color:var(--accent-lt);font-weight:800}
-/* ===== TODAY ROW — whole row blue card ===== */
+/* ===== TODAY ROW — rounded gradient card ===== */
+tr.today-row{
+  position:relative;
+  transform:scale(1);
+}
+tr.today-row::after{
+  content:'';
+  position:absolute;
+  top:2px;right:4px;bottom:2px;left:4px;
+  background:linear-gradient(90deg,#a8c0f0 0%,#d4e4fc 20%,#e8effe 50%,#d4e4fc 80%,#a8c0f0 100%);
+  border:2px solid #2a4db8;
+  border-radius:14px;
+  box-shadow:0 2px 12px rgba(42,77,184,0.15);
+  z-index:0;
+  pointer-events:none;
+}
 tr.today-row td{
-  background:#e8effe !important;
-  border-top:2px solid #2a4db8 !important;
-  border-bottom:2px solid #2a4db8 !important;
-  padding:6px 0;
+  background:transparent !important;
+  border:none !important;
+  padding:4px 0;
+  position:relative;
+  z-index:1;
 }
 tr.today-row td:first-child{
-  border-right:2px solid #2a4db8 !important;
-  border-radius:0 10px 10px 0;
-  padding:6px 0 6px 2px;
+  padding-right:6px;
 }
 tr.today-row td:last-child{
-  border-left:2px solid #2a4db8 !important;
-  border-radius:10px 0 0 10px;
-  padding:6px 2px 6px 0;
+  padding-left:6px;
 }
 tr.today-row .day-row{
   background:transparent !important;
   border:none !important;
   box-shadow:none !important;
   transform:none !important;
+  margin:2px 0;
 }
 tr.today-row .day-row .day-num-box{
   background:linear-gradient(135deg,#2a4db8 0%,#0d1b4b 100%) !important;
