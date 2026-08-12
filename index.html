@@ -701,27 +701,62 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
 // الـ Apps Script نفسه، الكود مش هيلمسها وهيسيب google.script.run الأصلي زي ما هو.
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbye7KFKphubufC72h2FmsErDHC6pwWy6-1dZ2rpO5fRiSehTZb4y-acjTDilUhZf7FG/exec';
 
-function callAppsScript(fnName, args, onSuccess, onFailure){
-  fetch(APPS_SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // text/plain عشان نتفادى مشكلة CORS preflight
-    body: JSON.stringify({ fn: fnName, args: args })
-  })
-  .then(function(r){
-    if(!r.ok) throw new Error('HTTP ' + r.status);
-    return r.json();
-  })
-  .then(function(res){
-    if(res && res.success){
-      if(onSuccess) onSuccess(res.result);
+function callAppsScript(fnName, args, onSuccess, onFailure, attempt){
+  attempt = attempt || 1;
+
+  // Build GET URL with encoded payload
+  var payload = btoa(unescape(encodeURIComponent(JSON.stringify({ fn: fnName, args: args }))));
+  var url = APPS_SCRIPT_URL + '?p=' + encodeURIComponent(payload) + '&_=' + Date.now();
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url, true);
+  xhr.timeout = 15000;
+
+  xhr.onreadystatechange = function(){
+    if(xhr.readyState !== 4) return;
+    if(xhr.status >= 200 && xhr.status < 300){
+      try {
+        var res = JSON.parse(xhr.responseText);
+        if(res && res.success){
+          if(onSuccess) onSuccess(res.result);
+        } else {
+          // Server returned error — retry silently
+          console.warn('Server error, retrying...');
+          setTimeout(function(){
+            callAppsScript(fnName, args, onSuccess, onFailure, attempt + 1);
+          }, 2000);
+        }
+      } catch(e) {
+        // Invalid JSON — retry silently
+        console.warn('Invalid response, retrying...');
+        setTimeout(function(){
+          callAppsScript(fnName, args, onSuccess, onFailure, attempt + 1);
+        }, 2000);
+      }
     } else {
-      var msg = (res && res.error) ? res.error : 'خطأ غير معروف من السيرفر';
-      if(onFailure) onFailure(new Error(msg)); else console.error('Apps Script error:', msg);
+      // Any error (CORS, network, timeout) — retry silently forever
+      console.warn('Request failed, retrying... (attempt ' + attempt + ')');
+      setTimeout(function(){
+        callAppsScript(fnName, args, onSuccess, onFailure, attempt + 1);
+      }, 2000);
     }
-  })
-  .catch(function(err){
-    if(onFailure) onFailure(err); else console.error('Fetch error:', err);
-  });
+  };
+
+  xhr.onerror = function(){
+    console.warn('Network error, retrying...');
+    setTimeout(function(){
+      callAppsScript(fnName, args, onSuccess, onFailure, attempt + 1);
+    }, 2000);
+  };
+
+  xhr.ontimeout = function(){
+    console.warn('Timeout, retrying...');
+    setTimeout(function(){
+      callAppsScript(fnName, args, onSuccess, onFailure, attempt + 1);
+    }, 2000);
+  };
+
+  xhr.send();
 }
 
 function createGsRunner(successCb, failureCb){
@@ -1090,7 +1125,11 @@ function loadAttendance(){
       document.getElementById('att-loading').style.display='none';
       document.getElementById('att-content').style.display='block';
     })
-    .withFailureHandler(e=>{document.getElementById('att-loading').innerHTML=`<p style="color:var(--red)">خطأ: ${e.message}</p>`})
+    .withFailureHandler(e=>{
+      // Silent retry — spinner keeps spinning
+      console.warn('Attendance load failed, will retry automatically...');
+      setTimeout(loadAttendance, 3000);
+    })
     .getAttendance(curAttUser, attYear, attMonth);
 }
 
@@ -1388,8 +1427,9 @@ function loadSalary(){
       renderSalaryContent(res.salary);
     })
     .withFailureHandler(e=>{
-      document.getElementById('sal-loading').style.display='none';
-      document.getElementById('sal-content').innerHTML=`<div class="empty"><p style="color:var(--red)">خطأ: ${e.message}</p></div>`;
+      // Silent retry
+      console.warn('Salary load failed, will retry automatically...');
+      setTimeout(loadSalary, 3000);
     })
     .calcSalaryWithLeave(curSalUser, salYear, salMonth);
 }
