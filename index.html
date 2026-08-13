@@ -128,6 +128,57 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
   font-weight:700;
 }
 .day-row.active-row .day-name-txt{color:var(--accent-lt);font-weight:800}
+/* ===== TODAY ROW — single rounded card via colspan ===== */
+tr.today-row td{
+  padding:0 !important;
+  border:none !important;
+  background:transparent !important;
+}
+.today-row-card{
+  display:flex;
+  align-items:center;
+  padding:11px 13px;
+  margin:4px;
+  background:linear-gradient(90deg,#a8c0f0 0%,#d4e4fc 20%,#e8effe 50%,#d4e4fc 80%,#a8c0f0 100%);
+  border:2px solid #2a4db8;
+  border-radius:14px;
+  box-shadow:0 2px 12px rgba(42,77,184,0.15);
+  cursor:pointer;
+  transition:all 0.2s ease;
+}
+.today-row-card:active{
+  transform:scale(0.98);
+}
+.today-row-card .tcol-day{
+  flex:1.6;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  justify-content:flex-end;
+  padding-left:2px;
+}
+.today-row-card .tcol-status{
+  flex:1;
+  text-align:center;
+  padding:0 8px;
+}
+.today-row-card .tcol-hours{
+  flex:1;
+  text-align:left;
+  padding-right:2px;
+}
+.today-row-card .day-num-box{
+  background:linear-gradient(135deg,#2a4db8 0%,#0d1b4b 100%) !important;
+  box-shadow:0 3px 12px rgba(42,77,184,0.45) !important;
+}
+.today-row-card .day-name-txt{
+  color:#2a4db8 !important;
+  font-weight:800 !important;
+}
+.today-row-card .friday-badge{
+  background:rgba(224,104,32,0.15) !important;
+  color:var(--orange) !important;
+}
 .friday-row{background:#fff8f0 !important;border-color:rgba(224,104,32,0.4) !important}
 .friday-row:hover{border-color:var(--orange) !important;box-shadow:0 6px 18px rgba(224,104,32,0.2) !important}
 .friday-row .day-num-box{background:linear-gradient(135deg,var(--orange) 0%,#f5a35a 100%) !important;color:#fff !important;box-shadow:0 3px 10px rgba(224,104,32,0.35) !important}
@@ -338,6 +389,7 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
   .al-stat-num{font-size:22px}
 }
 </style>
+<base target="_blank">
 <base target="_blank">
 </head>
 <body>
@@ -649,27 +701,62 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
 // الـ Apps Script نفسه، الكود مش هيلمسها وهيسيب google.script.run الأصلي زي ما هو.
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbye7KFKphubufC72h2FmsErDHC6pwWy6-1dZ2rpO5fRiSehTZb4y-acjTDilUhZf7FG/exec';
 
-function callAppsScript(fnName, args, onSuccess, onFailure){
-  fetch(APPS_SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // text/plain عشان نتفادى مشكلة CORS preflight
-    body: JSON.stringify({ fn: fnName, args: args })
-  })
-  .then(function(r){
-    if(!r.ok) throw new Error('HTTP ' + r.status);
-    return r.json();
-  })
-  .then(function(res){
-    if(res && res.success){
-      if(onSuccess) onSuccess(res.result);
+function callAppsScript(fnName, args, onSuccess, onFailure, attempt){
+  attempt = attempt || 1;
+
+  // Build GET URL with encoded payload
+  var payload = btoa(unescape(encodeURIComponent(JSON.stringify({ fn: fnName, args: args }))));
+  var url = APPS_SCRIPT_URL + '?p=' + encodeURIComponent(payload) + '&_=' + Date.now();
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url, true);
+  xhr.timeout = 15000;
+
+  xhr.onreadystatechange = function(){
+    if(xhr.readyState !== 4) return;
+    if(xhr.status >= 200 && xhr.status < 300){
+      try {
+        var res = JSON.parse(xhr.responseText);
+        if(res && res.success){
+          if(onSuccess) onSuccess(res.result);
+        } else {
+          // Server returned error — retry silently
+          console.warn('Server error, retrying...');
+          setTimeout(function(){
+            callAppsScript(fnName, args, onSuccess, onFailure, attempt + 1);
+          }, 2000);
+        }
+      } catch(e) {
+        // Invalid JSON — retry silently
+        console.warn('Invalid response, retrying...');
+        setTimeout(function(){
+          callAppsScript(fnName, args, onSuccess, onFailure, attempt + 1);
+        }, 2000);
+      }
     } else {
-      var msg = (res && res.error) ? res.error : 'خطأ غير معروف من السيرفر';
-      if(onFailure) onFailure(new Error(msg)); else console.error('Apps Script error:', msg);
+      // Any error (CORS, network, timeout) — retry silently forever
+      console.warn('Request failed, retrying... (attempt ' + attempt + ')');
+      setTimeout(function(){
+        callAppsScript(fnName, args, onSuccess, onFailure, attempt + 1);
+      }, 2000);
     }
-  })
-  .catch(function(err){
-    if(onFailure) onFailure(err); else console.error('Fetch error:', err);
-  });
+  };
+
+  xhr.onerror = function(){
+    console.warn('Network error, retrying...');
+    setTimeout(function(){
+      callAppsScript(fnName, args, onSuccess, onFailure, attempt + 1);
+    }, 2000);
+  };
+
+  xhr.ontimeout = function(){
+    console.warn('Timeout, retrying...');
+    setTimeout(function(){
+      callAppsScript(fnName, args, onSuccess, onFailure, attempt + 1);
+    }, 2000);
+  };
+
+  xhr.send();
 }
 
 function createGsRunner(successCb, failureCb){
@@ -1034,14 +1121,30 @@ function loadAttendance(){
   document.getElementById('att-content').style.display='none';
   google.script.run
     .withSuccessHandler(data=>{
-      attData=data; renderAtt();
+      attData=data; renderAtt(); setTimeout(scrollToToday, 300);
       document.getElementById('att-loading').style.display='none';
       document.getElementById('att-content').style.display='block';
     })
-    .withFailureHandler(e=>{document.getElementById('att-loading').innerHTML=`<p style="color:var(--red)">خطأ: ${e.message}</p>`})
+    .withFailureHandler(e=>{
+      // Silent retry — spinner keeps spinning
+      console.warn('Attendance load failed, will retry automatically...');
+      setTimeout(loadAttendance, 3000);
+    })
     .getAttendance(curAttUser, attYear, attMonth);
 }
 
+function isToday(d){
+  const now=new Date();
+  return d.year===now.getFullYear() && d.month===(now.getMonth()+1) && d.day===now.getDate();
+}
+function scrollToToday(){
+  setTimeout(function(){
+    const row=document.querySelector('.today-row-card');
+    if(row){
+      row.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+  }, 150);
+}
 function renderAtt(){
   const tbody=document.getElementById('att-tbody');
   let html='', lastMonth=null;
@@ -1077,9 +1180,13 @@ function renderAtt(){
       hoursBadge=`<span style="color:var(--text3);font-size:11px">—</span>`;
     }
 
-    html+=`<tr><td><div class="day-row ${fri?'friday-row':''} ${selIdx===i?'active-row':''}" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px">${hoursBadge}${dedBadge}</td></tr>`;
+    if(isToday(d)){
+      html+=`<tr class="today-row"><td colspan="3"><div class="today-row-card" onclick="openDay(${i})"><div class="tcol-day"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}</div><div class="tcol-status">${pill}</div><div class="tcol-hours">${hoursBadge}${dedBadge}</div></div></td></tr>`;
+    } else {
+      html+=`<tr><td><div class="day-row ${fri?'friday-row':''} ${selIdx===i?'active-row':''}" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px">${hoursBadge}${dedBadge}</td></tr>`;
+    }
   });
-  tbody.innerHTML=html;
+  tbody.innerHTML=html;scrollToToday();
 }
 
 function openDay(i){
@@ -1192,7 +1299,7 @@ function clearSel(){
   if(ddr) ddr.style.display='none';
   document.querySelectorAll('#desktop-status-opts .s-opt').forEach(o=>o.classList.remove('sel'));
   dOTType='ot'; setOTType('d','ot');
-  renderAtt();
+  renderAtt();scrollToToday();
 }
 
 // ==================== SAVE ====================
@@ -1320,8 +1427,9 @@ function loadSalary(){
       renderSalaryContent(res.salary);
     })
     .withFailureHandler(e=>{
-      document.getElementById('sal-loading').style.display='none';
-      document.getElementById('sal-content').innerHTML=`<div class="empty"><p style="color:var(--red)">خطأ: ${e.message}</p></div>`;
+      // Silent retry
+      console.warn('Salary load failed, will retry automatically...');
+      setTimeout(loadSalary, 3000);
     })
     .calcSalaryWithLeave(curSalUser, salYear, salMonth);
 }
