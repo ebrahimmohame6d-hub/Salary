@@ -108,7 +108,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 /* ===== ATTENDANCE TABLE ===== */
 .att-layout{display:grid;grid-template-columns:1fr 305px;gap:14px;align-items:start}
 .att-table-wrap{overflow-y:auto;max-height:72vh}
-.att-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+.att-table{width:100%;border-collapse:collapse;font-size:12px}
 .att-table th{font-size:10px;font-weight:700;color:var(--text3);padding:7px 11px;text-align:right;border-bottom:1.5px solid var(--border);position:sticky;top:0;background:#fff;z-index:2;letter-spacing:0.04em;text-transform:uppercase}
 .att-table td{padding:0}
 .day-row{display:flex;align-items:center;padding:11px 13px;gap:9px;cursor:pointer;transition:all 0.2s ease;border:1.5px solid var(--border2);border-radius:10px;background:#fff;margin:6px 2px;box-shadow:0 1px 4px rgba(13,27,75,0.05)}
@@ -135,10 +135,10 @@ tr.today-row td{
   background:transparent !important;
 }
 .today-row-card{
-  display:grid;
-  grid-template-columns:55% 20% 25%;
-  align-items:center;
+  display:table;
   width:100%;
+  border-collapse:separate;
+  border-spacing:0;
   background:linear-gradient(90deg,#a8c0f0 0%,#d4e4fc 20%,#e8effe 50%,#d4e4fc 80%,#a8c0f0 100%);
   border:2px solid #2a4db8;
   border-radius:14px;
@@ -154,18 +154,19 @@ tr.today-row td{
 .today-row-card .tcol-day,
 .today-row-card .tcol-status,
 .today-row-card .tcol-hours{
-  display:flex;
-  align-items:center;
+  display:table-cell;
+  vertical-align:middle;
   padding:8px 10px;
 }
+.today-row-card .tcol-day{
+  /* day column — content determines width like normal table */
+}
 .today-row-card .tcol-status{
-  justify-content:center;
+  text-align:center;
   white-space:nowrap;
 }
 .today-row-card .tcol-hours{
-  justify-content:flex-end;
-  flex-direction:column;
-  gap:4px;
+  text-align:right;
   white-space:nowrap;
 }
 .today-row-card .day-num-box{
@@ -187,7 +188,7 @@ tr.today-row td{
 .friday-row:hover .day-name-txt{color:var(--orange) !important}
 .friday-badge{font-size:9px;background:rgba(224,104,32,0.1);color:var(--orange);border:1px solid rgba(224,104,32,0.25);padding:1px 7px;border-radius:8px;font-weight:700;flex-shrink:0}
 .month-sep td{background:var(--bg3);padding:5px 11px;font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid var(--border)}
-.day-num-box{width:32px;height:32px;border-radius:7px;background:linear-gradient(135deg,var(--navy) 0%,#182f6e 100%);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;color:#fff;box-shadow:0 3px 10px rgba(42,77,184,0.3)}
+.day-num-box{width:32px;height:32px;border-radius:7px;background:linear-gradient(135deg,var(--navy) 0%,var(--accent-lt) 100%);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;color:#fff;box-shadow:0 3px 10px rgba(42,77,184,0.3)}
 .day-name-txt{font-size:12px;font-weight:700;flex:1;color:var(--navy)}
 .day-ot-badge{font-size:10px;font-weight:700;color:var(--accent-lt);background:#fff;border:1.5px solid var(--border2);padding:3px 8px;border-radius:8px;white-space:nowrap;box-shadow:0 1px 4px rgba(13,27,75,0.05);transition:all 0.2s ease}
 .day-ot-badge:hover{border-color:var(--accent-lt);box-shadow:0 5px 14px rgba(42,77,184,0.22);transform:translateY(-1px)}
@@ -490,7 +491,6 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
           <div class="att-layout">
             <div class="att-table-wrap">
               <table class="att-table">
-                <colgroup><col style="width:55%"><col style="width:20%"><col style="width:25%"></colgroup>
                 <thead><tr><th>اليوم</th><th>الحالة</th><th>ساعات / خصم</th></tr></thead>
                 <tbody id="att-tbody"></tbody>
               </table>
@@ -1176,7 +1176,7 @@ function renderAtt(){
       if(d.dedDay2&&d.dedDay2>0) parts.push(toAR(d.dedDay2)+'×يومين');
       if(d.dedDay1&&d.dedDay1>0) parts.push(toAR(d.dedDay1)+'×يوم');
       if(d.dedHalfInd&&d.dedHalfInd>0) parts.push(toAR(d.dedHalfInd)+'×نص');
-      dedBadge=`<span class="day-ded-badge">📉 ${parts.join(' ')}</span>`;
+      dedBadge=`<br><span class="day-ded-badge">📉 ${parts.join(' ')}</span>`;
     }
     if(!hoursBadge && !hasDed){
       hoursBadge=`<span style="color:var(--text3);font-size:11px">—</span>`;
@@ -1185,7 +1185,7 @@ function renderAtt(){
     if(isToday(d)){
       html+=`<tr class="today-row"><td colspan="3"><div class="today-row-card" onclick="openDay(${i})"><div class="tcol-day"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}</div><div class="tcol-status">${pill}</div><div class="tcol-hours">${hoursBadge}${dedBadge}</div></div></td></tr>`;
     } else {
-      html+=`<tr><td><div class="day-row ${fri?'friday-row':''} ${selIdx===i?'active-row':''}" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px"><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">${hoursBadge}${dedBadge}</div></td></tr>`;
+      html+=`<tr><td><div class="day-row ${fri?'friday-row':''} ${selIdx===i?'active-row':''}" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px">${hoursBadge}${dedBadge}</td></tr>`;
     }
   });
   tbody.innerHTML=html;scrollToToday();
