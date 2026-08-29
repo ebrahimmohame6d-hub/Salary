@@ -811,6 +811,18 @@ function periodLabel(y,m){
 }
 function isFriday(y,m,d){ return new Date(y,m-1,d).getDay()===5; }
 
+// بيحسب الشهر الحالي حسب دورة الأجر (من ٢٦ لحد ٢٥)، مش الشهر التقويمي العادي.
+// يعني لو النهارده ٢٦ أغسطس أو بعده، بيرجع سبتمبر مباشرة.
+function getCurrentPeriod(){
+  const now=new Date();
+  let y=now.getFullYear(), m=now.getMonth()+1;
+  if(now.getDate()>=26){
+    m++;
+    if(m>12){ m=1; y++; }
+  }
+  return {year:y, month:m};
+}
+
 function updateTodayCard(){
   const now=new Date();
   const d=document.getElementById('today-dayname');
@@ -1005,9 +1017,9 @@ function startApp(){
   curAttUser=S.username;
   curSalUser=S.username;
 
-  const now=new Date();
-  attYear=salYear=repYear=now.getFullYear();
-  attMonth=salMonth=repMonth=now.getMonth()+1;
+  const period=getCurrentPeriod();
+  attYear=salYear=repYear=period.year;
+  attMonth=salMonth=repMonth=period.month;
   updateLabels();
   updateTodayCard();
 
