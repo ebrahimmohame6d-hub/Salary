@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>HR System</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
 <style>
 :root{
   --navy:#0d1b4b;--navy2:#122258;--navy3:#1a2f6e;
@@ -633,13 +633,12 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
 
     <!-- SAVING FOR MARYOUMA PAGE (admin only) -->
     <div id="page-saving" class="page">
-      <div class="page-header"><h2>❤️ Saving for Maryouma</h2><p>حوش كل شهر وتابع إجمالي التوفير</p></div>
+      <div class="page-header"><h2>❤️ Saving for Maryouma</h2></div>
 
       <div class="card" style="text-align:center;padding:34px 16px">
-        <div style="font-size:22px;font-weight:900;background:linear-gradient(90deg,var(--navy),var(--accent-lt));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:6px">❤️ Saving for Maryouma</div>
-        <div style="font-size:12px;color:var(--text2);margin-bottom:22px">كل شهر بتحوش، التوتال بتاعك بيكبر هنا</div>
-        <div style="font-size:40px;font-weight:900;color:var(--accent-lt)" id="saving-total">٠ جنيه</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:4px">إجمالي المحفوظ</div>
+        <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:19px;font-weight:600;background:linear-gradient(90deg,var(--navy),var(--accent-lt));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:10px;line-height:1.5">I'm saving up for the day I can marry my Maryouma. ❤️</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:22px;font-weight:600">كل جنيه بنوفره النهارده، خطوة جديدة لفرحتنا إحنا الاتنين 💍</div>
+        <div style="display:inline-block;font-size:38px;font-weight:900;color:#fff;background:linear-gradient(135deg,var(--navy) 0%,var(--accent-lt) 100%);padding:12px 30px;border-radius:18px;box-shadow:0 8px 24px rgba(42,77,184,0.35)" id="saving-total">٠ جنيه</div>
       </div>
 
       <div class="card">
@@ -658,7 +657,6 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
             <input class="ot-input" type="number" id="sv-amount" min="0" step="1" placeholder="0" style="width:100%">
           </div>
         </div>
-        <input class="ot-input" type="text" id="sv-note" placeholder="ملاحظة (اختياري)" style="width:100%;margin-bottom:10px">
         <button class="sp-save-btn" onclick="addSaving()">💾 إضافة</button>
       </div>
 
@@ -1768,17 +1766,15 @@ function addSaving(){
   var month=parseInt(document.getElementById('sv-month').value)||1;
   var year=parseInt(document.getElementById('sv-year').value)||new Date().getFullYear();
   var amount=parseFloat(document.getElementById('sv-amount').value)||0;
-  var note=document.getElementById('sv-note').value.trim();
   if(amount<=0){ toast('❌ اكتب مبلغ أكبر من صفر'); return; }
   google.script.run
     .withSuccessHandler(function(res){
       renderSaving(res);
       document.getElementById('sv-amount').value='';
-      document.getElementById('sv-note').value='';
       toast('✅ اتضاف للتوفير!');
     })
     .withFailureHandler(function(e){ toast('❌ '+e.message); })
-    .addSavingEntry(S.username, month, year, amount, note);
+    .addSavingEntry(S.username, month, year, amount, '');
 }
 
 function deleteSaving(id){
@@ -1800,7 +1796,7 @@ function renderSaving(res){
   }
   listEl.innerHTML=list.map(function(e){
     return '<div class="sal-row">'
-      +'<span class="sal-label">'+monthName(e.month)+' '+toAR(e.year)+(e.note?' — '+e.note:'')+'</span>'
+      +'<span class="sal-label">'+monthName(e.month)+' '+toAR(e.year)+'</span>'
       +'<span style="display:flex;align-items:center;gap:8px">'
       +'<span class="sal-val" style="color:var(--green)">+ '+fNum(e.amount)+' جنيه</span>'
       +'<button class="btn-outline" style="padding:3px 9px;font-size:11px" onclick="deleteSaving(\''+e.id+'\')">🗑️</button>'
