@@ -443,6 +443,7 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
       <button class="nav-item active" onclick="showPage('att',this)"><span class="nav-icon">📅</span>الحضور</button>
       <button class="nav-item" onclick="showPage('salary',this)"><span class="nav-icon">💰</span>المرتب</button>
       <button class="nav-item admin-only" onclick="showPage('report',this)" style="display:none"><span class="nav-icon">📊</span>التقارير</button>
+      <button class="nav-item admin-only" onclick="showPage('saving',this)" style="display:none"><span class="nav-icon">❤️</span>Saving for Maryouma</button>
     </nav>
     <div class="sb-footer"><button class="logout-btn" onclick="logout()"><span>🚪</span>خروج</button></div>
   </aside>
@@ -457,6 +458,9 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
     </button>
     <button class="bn-item admin-only" id="bn-report" onclick="showPage('report',this,true)" style="display:none">
       <span class="bn-icon">📊</span>التقارير
+    </button>
+    <button class="bn-item admin-only" id="bn-saving" onclick="showPage('saving',this,true)" style="display:none">
+      <span class="bn-icon">❤️</span>Maryouma
     </button>
     <button class="bn-item" onclick="logout()">
       <span class="bn-icon">🚪</span>خروج
@@ -624,6 +628,43 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
             </table>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- SAVING FOR MARYOUMA PAGE (admin only) -->
+    <div id="page-saving" class="page">
+      <div class="page-header"><h2>❤️ Saving for Maryouma</h2><p>حوش كل شهر وتابع إجمالي التوفير</p></div>
+
+      <div class="card" style="text-align:center;padding:34px 16px">
+        <div style="font-size:22px;font-weight:900;background:linear-gradient(90deg,var(--navy),var(--accent-lt));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:6px">❤️ Saving for Maryouma</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:22px">كل شهر بتحوش، التوتال بتاعك بيكبر هنا</div>
+        <div style="font-size:40px;font-weight:900;color:var(--accent-lt)" id="saving-total">٠ جنيه</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">إجمالي المحفوظ</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">إضافة توفير الشهر</div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <div style="flex:1;min-width:120px;text-align:right">
+            <label style="display:block;font-size:10px;color:var(--text2);margin-bottom:4px;font-weight:700">الشهر</label>
+            <select id="sv-month" class="ot-select" style="width:100%"></select>
+          </div>
+          <div style="flex:1;min-width:100px;text-align:right">
+            <label style="display:block;font-size:10px;color:var(--text2);margin-bottom:4px;font-weight:700">السنة</label>
+            <input class="ot-input" type="number" id="sv-year" style="width:100%">
+          </div>
+          <div style="flex:1.4;min-width:140px;text-align:right">
+            <label style="display:block;font-size:10px;color:var(--text2);margin-bottom:4px;font-weight:700">المبلغ (جنيه)</label>
+            <input class="ot-input" type="number" id="sv-amount" min="0" step="1" placeholder="0" style="width:100%">
+          </div>
+        </div>
+        <input class="ot-input" type="text" id="sv-note" placeholder="ملاحظة (اختياري)" style="width:100%;margin-bottom:10px">
+        <button class="sp-save-btn" onclick="addSaving()">💾 إضافة</button>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">سجل التوفير</div></div>
+        <div id="saving-list"></div>
       </div>
     </div>
 
@@ -1030,6 +1071,7 @@ function startApp(){
       el.style.display = el.classList.contains('bn-item') ? 'flex' : 'block';
     });
     loadEmpSelectors();
+    initSavingForm();
   } else {
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='none');
   }
@@ -1696,6 +1738,77 @@ function renderReportContent(data){
   </tr>`).join('');
 }
 
+// ==================== SAVING FOR MARYOUMA ====================
+function initSavingForm(){
+  var sel=document.getElementById('sv-month');
+  if(!sel) return;
+  sel.innerHTML='';
+  MONTHS_AR.forEach(function(name,i){
+    sel.innerHTML+='<option value="'+(i+1)+'">'+name+'</option>';
+  });
+  var now=new Date();
+  sel.value=now.getMonth()+1;
+  var yEl=document.getElementById('sv-year');
+  if(yEl) yEl.value=now.getFullYear();
+}
+
+function loadSaving(){
+  if(!S.isAdmin) return;
+  document.getElementById('saving-list').innerHTML='<div class="loading"><div class="spinner"></div>جاري التحميل...</div>';
+  google.script.run
+    .withSuccessHandler(renderSaving)
+    .withFailureHandler(function(e){
+      document.getElementById('saving-list').innerHTML='<p style="color:var(--red)">خطأ: '+e.message+'</p>';
+    })
+    .getSavings(S.username);
+}
+
+function addSaving(){
+  if(!S.isAdmin) return;
+  var month=parseInt(document.getElementById('sv-month').value)||1;
+  var year=parseInt(document.getElementById('sv-year').value)||new Date().getFullYear();
+  var amount=parseFloat(document.getElementById('sv-amount').value)||0;
+  var note=document.getElementById('sv-note').value.trim();
+  if(amount<=0){ toast('❌ اكتب مبلغ أكبر من صفر'); return; }
+  google.script.run
+    .withSuccessHandler(function(res){
+      renderSaving(res);
+      document.getElementById('sv-amount').value='';
+      document.getElementById('sv-note').value='';
+      toast('✅ اتضاف للتوفير!');
+    })
+    .withFailureHandler(function(e){ toast('❌ '+e.message); })
+    .addSavingEntry(S.username, month, year, amount, note);
+}
+
+function deleteSaving(id){
+  if(!S.isAdmin) return;
+  google.script.run
+    .withSuccessHandler(renderSaving)
+    .withFailureHandler(function(e){ toast('❌ '+e.message); })
+    .deleteSavingEntry(S.username, id);
+}
+
+function renderSaving(res){
+  if(!res) return;
+  document.getElementById('saving-total').textContent=fNum(res.total)+' جنيه';
+  var list=(res.entries||[]).slice().sort(function(a,b){ return b.ts-a.ts; });
+  var listEl=document.getElementById('saving-list');
+  if(!list.length){
+    listEl.innerHTML='<div class="empty"><div class="empty-icon">❤️</div><p>لسه مفيش توفير متسجل</p></div>';
+    return;
+  }
+  listEl.innerHTML=list.map(function(e){
+    return '<div class="sal-row">'
+      +'<span class="sal-label">'+monthName(e.month)+' '+toAR(e.year)+(e.note?' — '+e.note:'')+'</span>'
+      +'<span style="display:flex;align-items:center;gap:8px">'
+      +'<span class="sal-val" style="color:var(--green)">+ '+fNum(e.amount)+' جنيه</span>'
+      +'<button class="btn-outline" style="padding:3px 9px;font-size:11px" onclick="deleteSaving(\''+e.id+'\')">🗑️</button>'
+      +'</span>'
+      +'</div>';
+  }).join('');
+}
+
 function getPillClass(s){
   if(s==='Present')return'p-present';if(s==='Absence')return'p-absent';
   if(s==='Annual')return'p-annual';if(s==='Day Off')return'p-dayoff';
@@ -1717,6 +1830,7 @@ function showPage(name, el, fromMobile){
   el.classList.add('active');
   if(name==='salary') loadSalary();
   if(name==='report' && S.isAdmin) loadReport();
+  if(name==='saving' && S.isAdmin) loadSaving();
 }
 
 function toast(msg){
