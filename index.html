@@ -390,8 +390,50 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
   .main{padding:68px 10px calc(var(--bottom-nav-h) + 10px + env(safe-area-inset-bottom))}
   .al-stat-num{font-size:22px}
 }
+
+/* ================= ANIMATIONS ADD-ON ================= */
+@keyframes aIn{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes popK{0%{opacity:0;transform:scale(.92) translateY(10px)}60%{opacity:1;transform:scale(1.02)}100%{opacity:1;transform:none}}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes avatarPulse{0%,100%{box-shadow:0 0 0 6px rgba(42,77,184,.06),0 0 26px rgba(42,77,184,.35)}50%{box-shadow:0 0 0 12px rgba(42,77,184,.12),0 0 46px rgba(42,77,184,.6)}}
+@keyframes shine{0%{left:-60%}60%,100%{left:130%}}
+@keyframes bgBreath{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.8}50%{transform:translate(-50%,-50%) scale(1.25);opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@keyframes todayGlow{0%,100%{box-shadow:0 2px 12px rgba(42,77,184,.15)}50%{box-shadow:0 0 0 4px rgba(42,77,184,.12),0 8px 26px rgba(42,77,184,.35)}}
+@keyframes rippleK{to{transform:scale(3.2);opacity:0}}
+@keyframes iconBounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}70%{transform:translateY(0)}85%{transform:translateY(-2px)}}
+@keyframes barGrow{from{width:0}}
+
+.a-in{animation:aIn .55s cubic-bezier(.22,1,.36,1) backwards}
+.a-pop{animation:popK .5s cubic-bezier(.34,1.56,.64,1) backwards}
+.shake{animation:shake .45s ease}
+
+/* Login */
+.login-card{animation:fadeUp .45s ease both,floatY 6s ease-in-out .6s infinite}
+.login-avatar{animation:avatarPulse 3s ease-in-out infinite}
+#login-screen::after{animation:bgBreath 7s ease-in-out infinite}
+.login-btn{position:relative;overflow:hidden}
+.login-btn::after{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.25),transparent);transform:skewX(-20deg);animation:shine 3.2s infinite;pointer-events:none}
+
+/* Ripple على كل الأزرار */
+.sp-save-btn,.sp-cancel-btn,.sp-clear-btn,.emp-btn,.s-opt,.ot-type-btn,.btn-outline,.month-nav button,.nav-item,.bn-item,.logout-btn{position:relative;overflow:hidden}
+.ripple{position:absolute;border-radius:50%;background:currentColor;opacity:.25;transform:scale(0);animation:rippleK .6s ease-out forwards;pointer-events:none}
+
+/* Hover / ثابتة */
+.nav-item:hover{transform:translateX(-4px)}
+.nav-item{transition:all .2s ease}
+.day-num-box{transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+.day-row:hover .day-num-box{transform:rotate(-8deg) scale(1.12)}
+.stat-card:hover .stat-icon{animation:iconBounce .7s ease}
+.today-row-card{animation:todayGlow 2.4s ease-in-out infinite}
+.al-bar{animation:barGrow .9s cubic-bezier(.22,1,.36,1)}
+.toast{transition:all .45s cubic-bezier(.34,1.56,.64,1)}
+.sp-save-btn:active,.login-btn:active{transform:scale(.96)}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
 </style>
-<base target="_blank">
 <base target="_blank">
 </head>
 <body>
@@ -1840,6 +1882,188 @@ function toast(msg){
     setTimeout(()=>t.style.display='none', 300);
   },2800);
 }
+
+// ==================== ANIMATIONS ADD-ON ====================
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fresh = {att:false, sal:false, rep:false};
+
+  // ---------- دخول العناصر بالتتابع ----------
+  function enter(list, base, step, cls){
+    base = base||0; step = step||50; cls = cls||'a-in';
+    Array.prototype.forEach.call(list, function(el, i){
+      el.classList.remove(cls);
+      void el.offsetWidth;
+      el.style.animationDelay = (base + Math.min(i*step, 700)) + 'ms';
+      el.classList.add(cls);
+    });
+  }
+
+  // ---------- عدّاد الأرقام (بيشتغل مع الأرقام العربي والإنجليزي) ----------
+  function runNode(n, dur){
+    var orig = n.data;
+    var src = orig.replace(/[٠-٩]/g, function(d){ return d.charCodeAt(0)-1632; });
+    var re = /\d+(?:,\d{3})*(?:\.\d+)?/g, nums=[], parts=[], last=0, m;
+    while((m = re.exec(src))){
+      parts.push(src.slice(last, m.index));
+      nums.push({v:parseFloat(m[0].replace(/,/g,'')), dec:(m[0].split('.')[1]||'').length, comma:m[0].indexOf(',')>-1});
+      last = m.index + m[0].length;
+    }
+    if(!nums.length) return;
+    parts.push(src.slice(last));
+    var id = {}; n._anim = id;
+    var t0 = performance.now();
+    function fmt(x, o){
+      var s = o.comma ? x.toLocaleString('en-US',{minimumFractionDigits:o.dec,maximumFractionDigits:o.dec}) : x.toFixed(o.dec);
+      return toAR(s);
+    }
+    function step(now){
+      if(!n.isConnected || n._anim!==id) return;
+      var p = Math.min(1,(now-t0)/dur), e = 1-Math.pow(1-p,3), out = parts[0];
+      nums.forEach(function(x,i){ out += fmt(x.v*e, x) + parts[i+1]; });
+      n.data = p<1 ? out : orig;
+      if(p<1) requestAnimationFrame(step);
+    }
+    step(t0);
+  }
+  // skip = selector لعناصر مش عايزينها تعدّ (زي أرقام الأيام وعناوين الشهور)
+  function animateNumbers(root, dur, skip){
+    if(reduce || !root) return;
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), nodes=[];
+    while(w.nextNode()){
+      var nd = w.currentNode;
+      if(!/[0-9٠-٩]/.test(nd.data)) continue;
+      if(skip && nd.parentElement && nd.parentElement.closest(skip)) continue;
+      nodes.push(nd);
+    }
+    nodes.forEach(function(n){ runNode(n, dur||1000); });
+  }
+
+  function wrap(name, fn){
+    var o = window[name];
+    if(typeof o!=='function') return;
+    window[name] = function(){ return fn.call(this, o, arguments); };
+  }
+
+  // ---------- Flags للتحميل الحقيقي (مش الريفرش الصامت كل ٣٠ ثانية) ----------
+  wrap('loadAttendance', function(o,a){ fresh.att=true; return o.apply(this,a); });
+  wrap('loadSalary',     function(o,a){ fresh.sal=true; return o.apply(this,a); });
+  wrap('loadReport',     function(o,a){ fresh.rep=true; return o.apply(this,a); });
+
+  // ---------- الحضور ----------
+  wrap('renderAtt', function(o,a){
+    var r = o.apply(this,a);
+    if(fresh.att){
+      fresh.att=false;
+      enter($('att-tbody').querySelectorAll('tr'), 0, 30);
+      // الأرقام في badges الساعات والخصم بس، من غير أرقام الأيام وعناوين الشهور
+      animateNumbers($('att-tbody'), 900, '.day-num-box,.month-sep');
+    }
+    return r;
+  });
+
+  // ---------- المرتب ----------
+  wrap('renderSalaryContent', function(o,a){
+    var r = o.apply(this,a);
+    if(fresh.sal){
+      fresh.sal=false;
+      var box = $('sal-content');
+      enter(box.querySelectorAll('.stat-card, #sal-content > div:not(.stats-grid)'), 0, 70);
+      enter(box.querySelectorAll('.sal-row, .ot-sum-row'), 250, 25);
+      animateNumbers(box, 1100);
+    }
+    return r;
+  });
+
+  // ---------- التقارير ----------
+  wrap('renderReportContent', function(o,a){
+    var r = o.apply(this,a);
+    if(fresh.rep){
+      fresh.rep=false;
+      enter($('rep-stats').querySelectorAll('.stat-card'), 0, 70);
+      enter($('rep-tbody').querySelectorAll('tr'), 200, 40);
+      animateNumbers($('rep-stats'), 1100);
+      animateNumbers($('rep-tbody'), 1000);
+    }
+    return r;
+  });
+
+  // ---------- التوفير ----------
+  wrap('renderSaving', function(o,a){
+    var r = o.apply(this,a);
+    animateNumbers($('saving-total'), 1400);
+    enter($('saving-list').querySelectorAll('.sal-row'), 100, 50);
+    $('saving-total').classList.remove('a-pop'); void $('saving-total').offsetWidth; $('saving-total').classList.add('a-pop');
+    return r;
+  });
+
+  // ---------- تغيير الصفحات ----------
+  wrap('showPage', function(o,a){
+    var r = o.apply(this,a);
+    var pg = $('page-'+a[0]);
+    if(pg) enter(pg.querySelectorAll(':scope > .page-header, :scope > .card'), 0, 80);
+    return r;
+  });
+
+  // ---------- فتح يوم (لوحة الديسكتوب) ----------
+  wrap('openDay', function(o,a){
+    var r = o.apply(this,a);
+    var f = $('sp-form');
+    if(f && f.style.display!=='none') enter([f], 0, 0, 'a-pop');
+    return r;
+  });
+
+  // ---------- بعد تسجيل الدخول ----------
+  wrap('startApp', function(o,a){
+    var r = o.apply(this,a);
+    animateNumbers($('sb-sal'), 1200);
+    animateNumbers($('mt-sal'), 1200);
+    enter(document.querySelectorAll('.sidebar .nav-item, .bn-item'), 100, 60);
+    enter(document.querySelectorAll('.user-box, .mt-user'), 0, 0, 'a-pop');
+    enter([$('app')], 0, 0);
+    return r;
+  });
+
+  // ---------- كارت الإجازة السنوية (البار + الأرقام) ----------
+  var al = $('sp-annual-leave');
+  if(al){
+    new MutationObserver(function(){
+      var bar = al.querySelector('.al-bar');
+      if(bar){
+        var w = bar.style.width;
+        bar.style.width = '0%'; void bar.offsetWidth;
+        requestAnimationFrame(function(){ bar.style.width = w; });
+      }
+      if(al.firstElementChild) enter([al.firstElementChild], 0, 0, 'a-pop');
+      animateNumbers(al, 1000);
+    }).observe(al, {childList:true});
+  }
+
+  // ---------- هزّة رسالة خطأ اللوجين ----------
+  var err = $('l-err');
+  if(err){
+    new MutationObserver(function(){
+      if(err.style.display==='block'){
+        err.classList.remove('shake'); void err.offsetWidth; err.classList.add('shake');
+      }
+    }).observe(err, {attributes:true, attributeFilter:['style']});
+  }
+
+  // ---------- Ripple على الأزرار ----------
+  document.addEventListener('pointerdown', function(e){
+    var b = e.target.closest && e.target.closest('.login-btn,.sp-save-btn,.sp-cancel-btn,.sp-clear-btn,.emp-btn,.s-opt,.ot-type-btn,.btn-outline,.month-nav button,.nav-item,.bn-item,.logout-btn');
+    if(!b || b.disabled || reduce) return;
+    var rect = b.getBoundingClientRect(), size = Math.max(rect.width, rect.height);
+    var s = document.createElement('span');
+    s.className = 'ripple';
+    s.style.width = s.style.height = size+'px';
+    s.style.left = (e.clientX - rect.left - size/2)+'px';
+    s.style.top  = (e.clientY - rect.top  - size/2)+'px';
+    b.appendChild(s);
+    setTimeout(function(){ s.remove(); }, 650);
+  });
+})();
 </script>
 </body>
 </html>
