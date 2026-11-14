@@ -108,7 +108,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 /* ===== ATTENDANCE TABLE ===== */
 .att-layout{display:grid;grid-template-columns:1fr 305px;gap:14px;align-items:start}
 .att-table-wrap{overflow-y:auto;max-height:72vh}
-.att-table{width:100%;border-collapse:collapse;font-size:12px}
+.att-table{width:100%;border-collapse:separate;border-spacing:0;font-size:12px}
 .att-table th{font-size:10px;font-weight:700;color:var(--text3);padding:7px 11px;text-align:right;border-bottom:1.5px solid var(--border);position:sticky;top:0;background:#fff;z-index:2;letter-spacing:0.04em;text-transform:uppercase}
 .att-table td{padding:0}
 .day-row{display:flex;align-items:center;padding:11px 13px;gap:9px;cursor:pointer;transition:all 0.2s ease;border:1.5px solid var(--border2);border-radius:10px;background:#fff;margin:6px 2px;box-shadow:0 1px 4px rgba(13,27,75,0.05)}
@@ -129,25 +129,24 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 }
 .day-row.active-row .day-name-txt{color:var(--accent-lt);font-weight:800}
 
-/* ===== TODAY ROW — نفس هيكل الصف العادي بس بلون مميز ===== */
-.today-row-card{
-  display:flex;align-items:center;gap:9px;
-  padding:11px 13px;
-  margin:6px 2px;
-  border:2px solid var(--accent-lt);
-  border-radius:10px;
+/* ===== TODAY ROW — الصف كله متلون ===== */
+.today-tr td{
   background:linear-gradient(90deg,#c9d9f7 0%,#e8effe 100%);
-  box-shadow:0 0 0 3px rgba(42,77,184,0.12),0 4px 14px rgba(42,77,184,0.18);
-  cursor:pointer;
-  transition:all 0.2s ease;
+  border-top:2px solid var(--accent-lt);
+  border-bottom:2px solid var(--accent-lt);
+  padding:6px 10px;
+  vertical-align:middle;
 }
-.today-row-card:active{transform:scale(0.98)}
-.today-row-card .day-num-box{
+.today-tr td:first-child{border-right:2px solid var(--accent-lt);border-radius:0 10px 10px 0}
+.today-tr td:last-child{border-left:2px solid var(--accent-lt);border-radius:10px 0 0 10px}
+.today-tr .day-row{margin:0;background:transparent !important;border-color:transparent !important;box-shadow:none !important}
+.today-tr .day-row:hover{transform:none}
+.today-tr .day-row .day-num-box{
   background:linear-gradient(135deg,#2a4db8 0%,#0d1b4b 100%) !important;
   box-shadow:0 3px 12px rgba(42,77,184,0.45) !important;
 }
-.today-row-card .day-name-txt{color:var(--accent-lt) !important;font-weight:800 !important}
-.today-row-card .friday-badge{background:rgba(224,104,32,0.15) !important;color:var(--orange) !important}
+.today-tr .day-name-txt{color:var(--accent-lt) !important;font-weight:800 !important}
+.today-tr .friday-badge{background:rgba(224,104,32,0.15) !important;color:var(--orange) !important}
 
 .friday-row{background:#fff8f0 !important;border-color:rgba(224,104,32,0.4) !important}
 .friday-row:hover{border-color:var(--orange) !important;box-shadow:0 6px 18px rgba(224,104,32,0.2) !important}
@@ -1201,7 +1200,7 @@ function isToday(d){
 }
 function scrollToToday(){
   setTimeout(function(){
-    const row=document.querySelector('.today-row-card');
+    const row=document.querySelector('.today-tr');
     if(row){
       row.scrollIntoView({behavior:'smooth',block:'center'});
     }
@@ -1244,7 +1243,7 @@ function renderAtt(){
     }
 
     if(isToday(d)){
-      html+=`<tr><td><div class="today-row-card" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}${delBtn}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px">${hoursBadge}${dedBadge}</td></tr>`;
+      html+=`<tr class="today-tr"><td><div class="day-row" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}${delBtn}</div></td><td>${pill}</td><td>${hoursBadge}${dedBadge}</td></tr>`;
     } else {
       html+=`<tr><td><div class="day-row ${fri?'friday-row':''} ${selIdx===i?'active-row':''}" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}${delBtn}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px">${hoursBadge}${dedBadge}</td></tr>`;
     }
