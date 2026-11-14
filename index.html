@@ -129,7 +129,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 }
 .day-row.active-row .day-name-txt{color:var(--accent-lt);font-weight:800}
 
-/* ===== TODAY ROW — ماية متحركة جوه الكارت ===== */
+/* ===== TODAY ROW — نص أزرق متحرك على الشمال ونص أبيض على اليمين ===== */
 .att-table-wrap{position:relative;z-index:0}
 
 .today-tr td{
@@ -148,24 +148,33 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .today-tr .pill{background:rgba(255,255,255,0.92)}
 .today-tr .friday-badge{background:rgba(224,104,32,0.15) !important;color:var(--orange) !important}
 
-/* الطبقة المتحركة (الماية) — بتتحط تلقائيًا فوق الصف */
+/* الطبقة اللي بتتحط فوق الكارت (خلفية بيضا + نص أزرق متحرك على الشمال) */
 .liquid-layer{
   position:absolute;
   z-index:-1;
-  overflow:hidden;
-  border-radius:10px;
+  background:#ffffff;
   border:2px solid #1f5a9e;
+  border-radius:10px;
   box-sizing:border-box;
-  box-shadow:0 4px 14px rgba(31,90,158,0.25);
+  overflow:hidden;
+  box-shadow:0 4px 14px rgba(31,90,158,0.2);
   pointer-events:none;
   display:none;
 }
+.liquid-clip{
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:54%;
+  overflow:hidden;
+}
 .liquid-fill{
   position:absolute;
-  top:-30%;
   left:-50%;
+  top:-50%;
   width:200%;
-  height:160%;
+  height:200%;
   background:
     radial-gradient(ellipse at 35% 45%,rgba(255,255,255,0.35) 0%,rgba(255,255,255,0) 55%),
     linear-gradient(90deg,#2f6db5 0%,#4a8fd6 20%,#7fb8ec 50%,#4a8fd6 80%,#2f6db5 100%);
@@ -2006,16 +2015,19 @@ function toast(msg){
   });
 })();
 
-// ==================== WATER EFFECT (ماية متحركة في الكارت كله) ====================
+// ==================== WATER EFFECT (نص أزرق متحرك جوه الكارت) ====================
 (function(){
   var wrap  = document.querySelector('.att-table-wrap');
   var tbody = document.getElementById('att-tbody');
 
   var layer = document.createElement('div');
   layer.className = 'liquid-layer';
+  var clip = document.createElement('div');
+  clip.className = 'liquid-clip';
   var fill = document.createElement('div');
   fill.className = 'liquid-fill';
-  layer.appendChild(fill);
+  clip.appendChild(fill);
+  layer.appendChild(clip);
   wrap.appendChild(layer);
 
   var tiltX = 0;                 // ميل التليفون: -1 شمال → 1 يمين
@@ -2035,7 +2047,7 @@ function toast(msg){
     }
     layer.style.display = 'block';
 
-    // نحط الطبقة بالظبط فوق الصف (مع مراعاة السكرول)
+    // تحديد مكان الطبقة بالظبط فوق الصف (مع مراعاة السكرول)
     var rr = row.getBoundingClientRect();
     var wr = wrap.getBoundingClientRect();
     layer.style.top    = (rr.top - wr.top + wrap.scrollTop - wrap.clientTop) + 'px';
@@ -2054,16 +2066,16 @@ function toast(msg){
     px += (clamp(tgtX,0,100) - px) * 0.05;
     py += (clamp(tgtY,0,100) - py) * 0.05;
 
-    // الحركة بتتحسب بالنسبة لحجم الطبقة المتحركة
+    // الحركة بالنسبة لحجم الماية نفسها (عشان تفضل مغطية المساحة كلها)
     fill.style.transform =
-      'translate(' + ((px - 50) / 2).toFixed(2) + '%,' +
-      ((py - 50) * 0.24).toFixed(2) + '%)';
+      'translate(' + ((px - 50) / 50 * 25).toFixed(2) + '%,' +
+      ((py - 50) / 50 * 25).toFixed(2) + '%)';
 
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);
 
-  // الماوس: بيتحرك فوق وتحت وشمال وشمال جوه الصف
+  // الماوس: بيتحرك فوق وتحت وشمال وشمال جوه الصف بس
   tbody.addEventListener('mousemove', function(e){
     var row = e.target.closest('.today-tr');
     if(!row){ mouseActive = false; return; }
