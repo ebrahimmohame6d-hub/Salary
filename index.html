@@ -129,22 +129,14 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 }
 .day-row.active-row .day-name-txt{color:var(--accent-lt);font-weight:800}
 
-/* ===== TODAY ROW — حواف غامقة + تدرج + نبض + طلوع ونزول ===== */
-@keyframes todayFloat{
-  0%,100%{transform:translateY(0);background-color:#d4e1fa}
-  50%{transform:translateY(-3px);background-color:#b4cbf5}
-}
-@keyframes todayShine{
-  0%{background-position:0% 50%}
-  100%{background-position:200% 50%}
-}
+/* ===== TODAY ROW — تدرج متحرك يتحكم فيه الميل والماوس ===== */
 .today-tr{
   background-color:#d4e1fa;
-  background-image:linear-gradient(90deg,#8fb0ec 0%,#f2f6ff 35%,#ffffff 50%,#f2f6ff 65%,#8fb0ec 100%);
+  background-image:linear-gradient(90deg,#7fa3e6 0%,#f2f6ff 30%,#ffffff 50%,#f2f6ff 70%,#7fa3e6 100%);
   background-size:200% 100%;
-  animation:todayFloat 2.4s ease-in-out infinite, todayShine 6s linear infinite;
-  position:relative;
-  z-index:1;
+  background-position:50% 50%;
+  box-shadow:0 2px 10px rgba(42,77,184,0.15);
+  will-change:background-position;
 }
 .today-tr td{
   background:transparent;
@@ -1997,6 +1989,61 @@ function toast(msg){
     b.appendChild(s);
     setTimeout(function(){ s.remove(); }, 650);
   });
+})();
+
+// ==================== WATER EFFECT (تدرج متحرك بالميل والماوس) ====================
+(function(){
+  var tbody = document.getElementById('att-tbody');
+  var tiltX = 0;          // -1 (ميل لليسار) → 1 (ميل لليمين)
+  var mouseX = 0;         // -1 (يسار الصف) → 1 (يمين الصف)
+  var mouseActive = false;
+  var pos = 50;           // الموضع الحالي للتدرج (%)
+  var t0 = performance.now();
+
+  function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+
+  // حركة تلقائية بتتحرك يمين وشمال زي المايه
+  function loop(now){
+    var row = document.querySelector('.today-tr');
+    if(row){
+      var wave = Math.sin((now - t0) / 1600) * 22;   // الموجة الأساسية
+      var tilt = tiltX * 30;                         // تأثير الميل
+      var mouse = mouseActive ? mouseX * 30 : 0;     // تأثير الماوس
+      // كلما الموضع يزيد، التدرج بيتحرك لليسار، فالعكس عشان الحركة تتبع الميل/الماوس
+      var target = clamp(50 - tilt - mouse + wave, 0, 100);
+      pos += (target - pos) * 0.04;                  // نعومة زي المايه
+      row.style.backgroundPosition = pos.toFixed(2) + '% 50%';
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  // الماوس: لما يقف على الصف، التدرج يتجه ناحية مكانه
+  tbody.addEventListener('mousemove', function(e){
+    var row = e.target.closest('.today-tr');
+    if(!row){ mouseActive = false; return; }
+    var r = row.getBoundingClientRect();
+    mouseX = clamp(((e.clientX - r.left) / r.width) * 2 - 1, -1, 1);
+    mouseActive = true;
+  });
+  tbody.addEventListener('mouseleave', function(){ mouseActive = false; });
+
+  // الميل: التليفون بيمال يمين أو شمال
+  function onTilt(e){
+    if(e.gamma == null) return;
+    tiltX = clamp(e.gamma / 30, -1, 1);
+  }
+  if(typeof DeviceOrientationEvent !== 'undefined' &&
+     typeof DeviceOrientationEvent.requestPermission === 'function'){
+    // iOS محتاج إذن بعد أول ضغطة من المستخدم
+    document.addEventListener('click', function(){
+      DeviceOrientationEvent.requestPermission()
+        .then(function(state){ if(state === 'granted') window.addEventListener('deviceorientation', onTilt); })
+        .catch(function(){});
+    }, { once: true });
+  } else {
+    window.addEventListener('deviceorientation', onTilt);
+  }
 })();
 </script>
 </body>
