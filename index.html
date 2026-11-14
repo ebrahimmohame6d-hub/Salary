@@ -129,31 +129,39 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 }
 .day-row.active-row .day-name-txt{color:var(--accent-lt);font-weight:800}
 
-/* ===== TODAY ROW — تدرج + نبض ===== */
-@keyframes todayPulse{
-  0%,100%{background-color:#d6e3fb}
-  50%{background-color:#bfd3f7}
+/* ===== TODAY ROW — حواف غامقة + تدرج + نبض + طلوع ونزول ===== */
+@keyframes todayFloat{
+  0%,100%{transform:translateY(0);background-color:#d4e1fa}
+  50%{transform:translateY(-3px);background-color:#b4cbf5}
+}
+@keyframes todayShine{
+  0%{background-position:0% 50%}
+  100%{background-position:200% 50%}
 }
 .today-tr{
-  background-image:linear-gradient(90deg,rgba(42,77,184,0.22) 0%,rgba(255,255,255,0.55) 50%,rgba(42,77,184,0.22) 100%);
-  animation:todayPulse 2.4s ease-in-out infinite;
+  background-color:#d4e1fa;
+  background-image:linear-gradient(90deg,#8fb0ec 0%,#f2f6ff 35%,#ffffff 50%,#f2f6ff 65%,#8fb0ec 100%);
+  background-size:200% 100%;
+  animation:todayFloat 2.4s ease-in-out infinite, todayShine 6s linear infinite;
+  position:relative;
+  z-index:1;
 }
 .today-tr td{
   background:transparent;
-  border-top:2px solid var(--accent-lt);
-  border-bottom:2px solid var(--accent-lt);
+  border-top:2px solid #1a3a9e;
+  border-bottom:2px solid #1a3a9e;
   padding:4px 10px;
   vertical-align:middle;
 }
-.today-tr td:first-child{border-right:2px solid var(--accent-lt);border-radius:0 10px 10px 0}
-.today-tr td:last-child{border-left:2px solid var(--accent-lt);border-radius:10px 0 0 10px}
+.today-tr td:first-child{border-right:2px solid #1a3a9e;border-radius:0 10px 10px 0}
+.today-tr td:last-child{border-left:2px solid #1a3a9e;border-radius:10px 0 0 10px}
 .today-tr .day-row{margin:0;background:transparent !important;border-color:transparent !important;box-shadow:none !important}
 .today-tr .day-row:hover{transform:none}
 .today-tr .day-row .day-num-box{
   background:linear-gradient(135deg,#2a4db8 0%,#0d1b4b 100%) !important;
   box-shadow:0 3px 12px rgba(42,77,184,0.45) !important;
 }
-.today-tr .day-name-txt{color:var(--accent-lt) !important;font-weight:800 !important}
+.today-tr .day-name-txt{color:#1a3a9e !important;font-weight:800 !important}
 .today-tr .friday-badge{background:rgba(224,104,32,0.15) !important;color:var(--orange) !important}
 
 .friday-row{background:#fff8f0 !important;border-color:rgba(224,104,32,0.4) !important}
