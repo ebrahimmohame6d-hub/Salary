@@ -129,29 +129,14 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 }
 .day-row.active-row .day-name-txt{color:var(--accent-lt);font-weight:800}
 
-/* ===== TODAY ROW — نص أزرق متحرك على الشمال ونص أبيض على اليمين ===== */
-.today-tr{
-  background-color:#ffffff;
-  background-image:
-    linear-gradient(to left,#ffffff 0 46%,rgba(255,255,255,0) 46%),
-    radial-gradient(ellipse at 30% 40%,rgba(255,255,255,0.28) 0%,rgba(255,255,255,0) 55%),
-    linear-gradient(90deg,#2f6db5 0%,#4a8fd6 25%,#6aaee6 50%,#4a8fd6 75%,#2f6db5 100%);
-  background-size:100% 100%,200% 200%,200% 200%;
-  background-position:0 0,
-    calc(var(--px,50) * 1%) calc(var(--py,50) * 1%),
-    calc(var(--px,50) * 1%) calc(var(--py,50) * 1%);
-  background-repeat:no-repeat;
-  will-change:background-position;
-}
+/* ===== TODAY ROW — ماية متحركة جوه الكارت ===== */
+.att-table-wrap{position:relative;z-index:0}
+
 .today-tr td{
   background:transparent;
-  border-top:2px solid #1f5a9e;
-  border-bottom:2px solid #1f5a9e;
   padding:4px 10px;
   vertical-align:middle;
 }
-.today-tr td:first-child{border-right:2px solid #1f5a9e;border-radius:0 10px 10px 0}
-.today-tr td:last-child{border-left:2px solid #1f5a9e;border-radius:10px 0 0 10px}
 .today-tr .day-row{margin:0;background:transparent !important;border-color:transparent !important;box-shadow:none !important}
 .today-tr .day-row:hover{transform:none}
 .today-tr .day-row .day-num-box{
@@ -159,9 +144,33 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
   color:#fff !important;
   box-shadow:0 3px 10px rgba(13,27,75,0.35) !important;
 }
-.today-tr .day-name-txt{color:#1f5a9e !important;font-weight:800 !important}
+.today-tr .day-name-txt{color:#0d1b4b !important;font-weight:800 !important}
 .today-tr .pill{background:rgba(255,255,255,0.92)}
 .today-tr .friday-badge{background:rgba(224,104,32,0.15) !important;color:var(--orange) !important}
+
+/* الطبقة المتحركة (الماية) — بتتحط تلقائيًا فوق الصف */
+.liquid-layer{
+  position:absolute;
+  z-index:-1;
+  overflow:hidden;
+  border-radius:10px;
+  border:2px solid #1f5a9e;
+  box-sizing:border-box;
+  box-shadow:0 4px 14px rgba(31,90,158,0.25);
+  pointer-events:none;
+  display:none;
+}
+.liquid-fill{
+  position:absolute;
+  top:-30%;
+  left:-50%;
+  width:200%;
+  height:160%;
+  background:
+    radial-gradient(ellipse at 35% 45%,rgba(255,255,255,0.35) 0%,rgba(255,255,255,0) 55%),
+    linear-gradient(90deg,#2f6db5 0%,#4a8fd6 20%,#7fb8ec 50%,#4a8fd6 80%,#2f6db5 100%);
+  will-change:transform;
+}
 .friday-row{background:#fff8f0 !important;border-color:rgba(224,104,32,0.4) !important}
 .friday-row:hover{border-color:var(--orange) !important;box-shadow:0 6px 18px rgba(224,104,32,0.2) !important}
 .friday-row .day-num-box{background:linear-gradient(135deg,var(--orange) 0%,#f5a35a 100%) !important;color:#fff !important;box-shadow:0 3px 10px rgba(224,104,32,0.35) !important}
@@ -1997,43 +2006,64 @@ function toast(msg){
   });
 })();
 
-// ==================== WATER EFFECT (ماية زرقا على الشمال بتتحرك جوه الكارت) ====================
+// ==================== WATER EFFECT (ماية متحركة في الكارت كله) ====================
 (function(){
+  var wrap  = document.querySelector('.att-table-wrap');
   var tbody = document.getElementById('att-tbody');
-  var tiltX = 0;            // ميل التليفون: -1 شمال → 1 يمين
-  var mouseX = 0, mouseY = 0;
+
+  var layer = document.createElement('div');
+  layer.className = 'liquid-layer';
+  var fill = document.createElement('div');
+  fill.className = 'liquid-fill';
+  layer.appendChild(fill);
+  wrap.appendChild(layer);
+
+  var tiltX = 0;                 // ميل التليفون: -1 شمال → 1 يمين
+  var mouseX = 0, mouseY = 0;    // الماوس داخل الصف: -1 → 1
   var mouseActive = false;
-  var px = 50, py = 50;     // موضع الماية (%)
+  var px = 50, py = 50;          // موضع الماية (0 → 100)
   var t0 = performance.now();
 
   function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
 
   function loop(now){
-    var row = document.querySelector('.today-tr');
-    if(row){
-      var t = now - t0;
-      var waveX = Math.sin(t / 1600) * 22;
-      var waveY = Math.sin(t / 2200) * 12;
-
-      // الماوس بيتحكم في الحركة لو موجود، ولو لأ الموجة التلقائية + الميل
-      var targetX = mouseActive
-        ? 50 + mouseX * 35
-        : clamp(50 - tiltX * 30 + waveX, 0, 100);
-      var targetY = mouseActive
-        ? 50 + mouseY * 35
-        : 50 + waveY;
-
-      px += (clamp(targetX,0,100) - px) * 0.05;
-      py += (clamp(targetY,0,100) - py) * 0.05;
-
-      row.style.setProperty('--px', px.toFixed(2));
-      row.style.setProperty('--py', py.toFixed(2));
+    var row = tbody.querySelector('.today-tr');
+    if(!row){
+      layer.style.display = 'none';
+      requestAnimationFrame(loop);
+      return;
     }
+    layer.style.display = 'block';
+
+    // نحط الطبقة بالظبط فوق الصف (مع مراعاة السكرول)
+    var rr = row.getBoundingClientRect();
+    var wr = wrap.getBoundingClientRect();
+    layer.style.top    = (rr.top - wr.top + wrap.scrollTop - wrap.clientTop) + 'px';
+    layer.style.left   = (rr.left - wr.left - wrap.clientLeft) + 'px';
+    layer.style.width  = rr.width + 'px';
+    layer.style.height = rr.height + 'px';
+
+    var t = now - t0;
+    var tgtX = mouseActive
+      ? 50 + mouseX * 50
+      : 50 - tiltX * 30 + Math.sin(t / 1600) * 22;
+    var tgtY = mouseActive
+      ? 50 + mouseY * 50
+      : 50 + Math.sin(t / 2200) * 12;
+
+    px += (clamp(tgtX,0,100) - px) * 0.05;
+    py += (clamp(tgtY,0,100) - py) * 0.05;
+
+    // الحركة بتتحسب بالنسبة لحجم الطبقة المتحركة
+    fill.style.transform =
+      'translate(' + ((px - 50) / 2).toFixed(2) + '%,' +
+      ((py - 50) * 0.24).toFixed(2) + '%)';
+
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);
 
-  // الماوس: بيتحرك فوق وتحت وشمال وشمال جوه الصف بس
+  // الماوس: بيتحرك فوق وتحت وشمال وشمال جوه الصف
   tbody.addEventListener('mousemove', function(e){
     var row = e.target.closest('.today-tr');
     if(!row){ mouseActive = false; return; }
