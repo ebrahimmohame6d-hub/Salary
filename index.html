@@ -1633,6 +1633,7 @@ function renderSalaryContent(d){
       <div class="card" style="margin:0">
         <div class="card-head"><div class="card-title">تفاصيل المرتب</div></div>
         <div class="sal-row"><span class="sal-label">المرتب الأساسي</span><span class="sal-val">${fNum(d.basicSalary)} جنيه</span></div>
+        ${d.baseDedAmount>0?`<div class="sal-row"><span class="sal-label">خصم من المرتب الأساسي (${toAR(d.dedFromBase)} ساعة)</span><span class="sal-val sal-minus">- ${fNum(d.baseDedAmount)} جنيه</span></div>`:''}
 ${(d.otNetAmount>0||d.otTotalAmount>0)?`<div class="sal-row"><span class="sal-label">أوفر تايم (${toAR(d.otEffHoursNet!==undefined?d.otEffHoursNet:d.otEffHoursWithFriday)} ساعة صافي)</span><span class="sal-val sal-plus">+ ${fNum(d.otNetAmount!==undefined?d.otNetAmount:d.otAmount)} جنيه</span></div>`:''}
         ${d.compHoursTotal>0?`<div class="sal-row"><span class="sal-label" style="color:var(--purple)">ساعات تعويض مسجلة</span><span class="sal-val" style="color:var(--purple)">${toAR(d.compHoursTotal)} ساعة</span></div>`:''}
         <div class="sal-row" style="margin-top:8px;padding-top:8px;border-top:1.5px solid var(--border2)">
