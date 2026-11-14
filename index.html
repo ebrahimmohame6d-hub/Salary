@@ -158,9 +158,6 @@ tr.today-row td{
   vertical-align:middle;
   padding:8px 10px;
 }
-.today-row-card .tcol-day{
-  /* day column — content determines width like normal table */
-}
 .today-row-card .tcol-status{
   text-align:center;
   white-space:nowrap;
@@ -433,6 +430,10 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 }
+
+/* ===== DELETE DAY BUTTON ===== */
+.day-del{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;flex-shrink:0;background:rgba(224,52,72,0.08);border:1px solid rgba(224,52,72,0.25);opacity:0.7;transition:all 0.15s;margin-right:auto}
+.day-del:hover,.day-del:active{opacity:1;background:rgba(224,52,72,0.2)}
 </style>
 <base target="_blank">
 </head>
@@ -569,16 +570,16 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
                 <div class="sp-section">الساعات الإضافية</div>
                 <div class="ot-box" id="d-ot-box">
                   <div class="ot-type-toggle">
-                    <button class="ot-type-btn ot-active-ot" id="d-btn-ot" onclick="setOTType('d','ot')">⏱ أوفر تايم</button>
-                    <button class="ot-type-btn" id="d-btn-comp" onclick="setOTType('d','comp')">🔄 ساعات تعويض</button>
+                    <button class="ot-type-btn ot-active-ot" id="d-btn-ot" onclick="setOTType('d','ot');persistDay('d')">⏱ أوفر تايم</button>
+                    <button class="ot-type-btn" id="d-btn-comp" onclick="setOTType('d','comp');persistDay('d')">🔄 ساعات تعويض</button>
                   </div>
                   <div class="ot-row">
                     <span class="ot-label">ساعات</span>
-                    <input class="ot-input" type="number" id="ot-hours" min="0" max="24" step="0.5" placeholder="0" oninput="calcOT()">
+                    <input class="ot-input" type="number" id="ot-hours" min="0" max="24" step="0.5" placeholder="0" oninput="calcOT()" onchange="persistDay('d')">
                   </div>
                   <div class="ot-row ot-rate-row">
                     <span class="ot-label">المعدل</span>
-                    <select class="ot-select" id="ot-rate" onchange="calcOT()">
+                    <select class="ot-select" id="ot-rate" onchange="calcOT();persistDay('d')">
                       <option value="1.5">× ١.٥ ساعة ونص</option>
                       <option value="2">× ٢ ساعتين</option>
                     </select>
@@ -591,26 +592,24 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
                   <div class="ind-ded-title">📉 خصومات إضافية</div>
                   <div class="ind-ded-row">
                     <span class="ind-ded-label">خصم ٣ أيام</span>
-                    <input class="ind-ded-input" type="number" id="ded-day3" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('d')">
+                    <input class="ind-ded-input" type="number" id="ded-day3" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('d')" onchange="persistDay('d')">
                   </div>
                   <div class="ind-ded-row">
                     <span class="ind-ded-label">خصم يومين</span>
-                    <input class="ind-ded-input" type="number" id="ded-day2" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('d')">
+                    <input class="ind-ded-input" type="number" id="ded-day2" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('d')" onchange="persistDay('d')">
                   </div>
                   <div class="ind-ded-row">
                     <span class="ind-ded-label">خصم يوم</span>
-                    <input class="ind-ded-input" type="number" id="ded-day1" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('d')">
+                    <input class="ind-ded-input" type="number" id="ded-day1" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('d')" onchange="persistDay('d')">
                   </div>
                   <div class="ind-ded-row">
                     <span class="ind-ded-label">خصم نص يوم</span>
-                    <input class="ind-ded-input" type="number" id="ded-half" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('d')">
+                    <input class="ind-ded-input" type="number" id="ded-half" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('d')" onchange="persistDay('d')">
                   </div>
                   <div class="ind-ded-hint">⚡ مستقلة عن الحالة — تُخصم من ساعات الأوفر (مش من المرتب مباشرة)</div>
                   <div class="ind-ded-result" id="d-ind-ded-result" style="display:none"></div>
                 </div>
-                <button class="sp-save-btn" id="sp-save" onclick="saveDay()">💾 حفظ</button>
-                <button class="sp-cancel-btn" onclick="clearSel()">إلغاء</button>
-                <button class="sp-clear-btn" onclick="clearDay()">🗑️ مسح الكل</button>
+                <button class="sp-cancel-btn" onclick="clearSel()">إغلاق</button>
               </div>
             </div>
           </div>
@@ -729,16 +728,16 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
   <div style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin:14px 0 8px">الساعات الإضافية</div>
   <div class="ot-box" id="m-ot-box">
     <div class="ot-type-toggle">
-      <button class="ot-type-btn ot-active-ot" id="m-btn-ot" onclick="setOTType('m','ot')">⏱ أوفر تايم</button>
-      <button class="ot-type-btn" id="m-btn-comp" onclick="setOTType('m','comp')">🔄 ساعات تعويض</button>
+      <button class="ot-type-btn ot-active-ot" id="m-btn-ot" onclick="setOTType('m','ot');persistDay('m')">⏱ أوفر تايم</button>
+      <button class="ot-type-btn" id="m-btn-comp" onclick="setOTType('m','comp');persistDay('m')">🔄 ساعات تعويض</button>
     </div>
     <div class="ot-row">
       <span class="ot-label">ساعات</span>
-      <input class="ot-input" type="number" id="m-ot-hours" min="0" max="24" step="0.5" placeholder="0" oninput="calcOTM()">
+      <input class="ot-input" type="number" id="m-ot-hours" min="0" max="24" step="0.5" placeholder="0" oninput="calcOTM()" onchange="persistDay('m')">
     </div>
     <div class="ot-row ot-rate-row">
       <span class="ot-label">المعدل</span>
-      <select class="ot-select" id="m-ot-rate" onchange="calcOTM()">
+      <select class="ot-select" id="m-ot-rate" onchange="calcOTM();persistDay('m')">
         <option value="1.5">× ١.٥ ساعة ونص</option>
         <option value="2">× ٢ ساعتين</option>
       </select>
@@ -751,26 +750,24 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
     <div class="ind-ded-title">📉 خصومات إضافية</div>
     <div class="ind-ded-row">
       <span class="ind-ded-label">خصم ٣ أيام</span>
-      <input class="ind-ded-input" type="number" id="m-ded-day3" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('m')">
+      <input class="ind-ded-input" type="number" id="m-ded-day3" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('m')" onchange="persistDay('m')">
     </div>
     <div class="ind-ded-row">
       <span class="ind-ded-label">خصم يومين</span>
-      <input class="ind-ded-input" type="number" id="m-ded-day2" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('m')">
+      <input class="ind-ded-input" type="number" id="m-ded-day2" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('m')" onchange="persistDay('m')">
     </div>
     <div class="ind-ded-row">
       <span class="ind-ded-label">خصم يوم</span>
-      <input class="ind-ded-input" type="number" id="m-ded-day1" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('m')">
+      <input class="ind-ded-input" type="number" id="m-ded-day1" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('m')" onchange="persistDay('m')">
     </div>
     <div class="ind-ded-row">
       <span class="ind-ded-label">خصم نص يوم</span>
-      <input class="ind-ded-input" type="number" id="m-ded-half" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('m')">
+      <input class="ind-ded-input" type="number" id="m-ded-half" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed('m')" onchange="persistDay('m')">
     </div>
     <div class="ind-ded-hint">⚡ مستقلة عن الحالة — تُخصم من ساعات الأوفر (مش من المرتب مباشرة)</div>
     <div class="ind-ded-result" id="m-ind-ded-result" style="display:none"></div>
   </div>
-  <button class="sp-save-btn" id="m-sp-save" onclick="saveDayM()">💾 حفظ</button>
-  <button class="sp-cancel-btn" onclick="closeDrawer()">إلغاء</button>
-  <button class="sp-clear-btn" onclick="clearDayM()">🗑️ مسح الكل</button>
+  <button class="sp-cancel-btn" onclick="closeDrawer()">إغلاق</button>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -1252,6 +1249,7 @@ function renderAtt(){
     const status=d.status||'';
     const fri=isFriday(d.year,d.month,d.day);
     const pill=status?`<span class="pill ${getPillClass(status)}">${statusLabel(status)}</span>`:`<span class="pill p-empty">—</span>`;
+    const delBtn = hasDayData(d) ? `<span class="day-del" title="مسح بيانات اليوم" onclick="event.stopPropagation();quickClear(${i})">🗑</span>` : '';
 
     let hoursBadge='';
     if(d.otHours && d.otHours>0){
@@ -1277,12 +1275,12 @@ function renderAtt(){
     }
 
     if(isToday(d)){
-      html+=`<tr class="today-row"><td colspan="3"><div class="today-row-card" onclick="openDay(${i})"><div class="tcol-day"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}</div><div class="tcol-status">${pill}</div><div class="tcol-hours">${hoursBadge}${dedBadge}</div></div></td></tr>`;
+      html+=`<tr class="today-row"><td colspan="3"><div class="today-row-card" onclick="openDay(${i})"><div class="tcol-day"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}${delBtn}</div><div class="tcol-status">${pill}</div><div class="tcol-hours">${hoursBadge}${dedBadge}</div></div></td></tr>`;
     } else {
-      html+=`<tr><td><div class="day-row ${fri?'friday-row':''} ${selIdx===i?'active-row':''}" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px">${hoursBadge}${dedBadge}</td></tr>`;
+      html+=`<tr><td><div class="day-row ${fri?'friday-row':''} ${selIdx===i?'active-row':''}" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}${delBtn}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px">${hoursBadge}${dedBadge}</td></tr>`;
     }
   });
-  tbody.innerHTML=html;scrollToToday();
+  tbody.innerHTML=html; if(!window._skipScroll) scrollToToday();
 }
 
 function openDay(i){
@@ -1334,8 +1332,6 @@ function openDrawer(){
   const overlay=document.getElementById('drawer-overlay');
   const drawer=document.getElementById('day-drawer');
   overlay.style.display='block';
-  document.getElementById('m-sp-save').disabled=false;
-  document.getElementById('m-sp-save').textContent='💾 حفظ';
   requestAnimationFrame(()=>{
     overlay.classList.add('show');
     drawer.classList.add('show');
@@ -1351,13 +1347,16 @@ function closeDrawer(){
   renderAtt();
 }
 
+// الحالة بتتسجل فورًا عند الضغط
 function pickS(el,status){
   document.querySelectorAll('#desktop-status-opts .s-opt').forEach(o=>o.classList.remove('sel'));
   el.classList.add('sel'); selStatus=status;
+  persistDay('d');
 }
 function pickSM(el,status){
   document.querySelectorAll('#mobile-status-opts .s-opt').forEach(o=>o.classList.remove('sel'));
   el.classList.add('sel'); selStatusM=status;
+  persistDay('m');
 }
 
 // ==================== OT CALC ====================
@@ -1398,115 +1397,65 @@ function clearSel(){
   renderAtt();scrollToToday();
 }
 
-// ==================== SAVE ====================
-function saveDay(){
-  if(selIdx===null) return;
-  isSaving=true;
-  const d=attData[selIdx];
-  const dayData={
+// ==================== AUTO SAVE ====================
+// بيجمع بيانات اليوم من الفورم (ديسكتوب أو موبايل) ويسجلها فورًا
+function buildDayData(d, panel){
+  var isM = panel==='m';
+  var p = isM ? 'm-' : '';
+  return {
     day:d.day, month:d.month, year:d.year, dayName:d.dayName, key:d.key,
-    status:selStatus||'',
-    otHours:parseFloat(document.getElementById('ot-hours').value)||0,
-    otRate:parseFloat(document.getElementById('ot-rate').value)||1.5,
-    otType:dOTType,
-    dedDay3:parseFloat(document.getElementById('ded-day3').value)||0,
-    dedDay2:parseFloat(document.getElementById('ded-day2').value)||0,
-    dedDay1:parseFloat(document.getElementById('ded-day1').value)||0,
-    dedHalfInd:parseFloat(document.getElementById('ded-half').value)||0
+    status: (isM ? selStatusM : selStatus) || '',
+    otHours: parseFloat(document.getElementById(p+'ot-hours').value)||0,
+    otRate: parseFloat(document.getElementById(p+'ot-rate').value)||1.5,
+    otType: isM ? mOTType : dOTType,
+    dedDay3: parseFloat(document.getElementById(p+'ded-day3').value)||0,
+    dedDay2: parseFloat(document.getElementById(p+'ded-day2').value)||0,
+    dedDay1: parseFloat(document.getElementById(p+'ded-day1').value)||0,
+    dedHalfInd: parseFloat(document.getElementById(p+'ded-half').value)||0
   };
-  document.getElementById('sp-save').disabled=true;
-  document.getElementById('sp-save').textContent='⏳ جاري الحفظ...';
+}
+
+function persistDay(panel){
+  if(selIdx===null) return;
+  var idx=selIdx;
+  var d=attData[idx];
+  var dayData=buildDayData(d,panel);
   google.script.run
-    .withSuccessHandler(res=>{
-      isSaving=false;
-      document.getElementById('sp-save').disabled=false;
-      document.getElementById('sp-save').textContent='💾 حفظ';
+    .withSuccessHandler(function(res){
       if(res==='ok'){
-        attData[selIdx]=dayData;
-        toast('✅ تم الحفظ!');
-        clearSel();
+        attData[idx]=dayData;
+        window._skipScroll=true; renderAtt(); window._skipScroll=false;
+        var info = dayData.status ? 'الحالة: '+statusLabel(dayData.status) : 'لم يتم التسجيل بعد';
+        var infoEl = document.getElementById(panel==='m' ? 'drawer-info' : 'sp-info');
+        if(infoEl) infoEl.textContent=info;
         if(dayData.status==='Annual' || d.status==='Annual') loadAnnualLeavePanel();
+        toast('✅ اتحفظ');
       } else toast('❌ خطأ: '+res);
     })
-    .withFailureHandler(e=>{
-      isSaving=false;
-      document.getElementById('sp-save').disabled=false;
-      document.getElementById('sp-save').textContent='💾 حفظ';
-      toast('❌ '+e.message);
-    })
+    .withFailureHandler(function(e){ toast('❌ '+e.message); })
     .saveAttendanceDay(curAttUser, attYear, attMonth, dayData);
 }
 
-function saveDayM(){
-  if(selIdx===null) return;
-  isSaving=true;
-  const d=attData[selIdx];
-  const dayData={
-    day:d.day, month:d.month, year:d.year, dayName:d.dayName, key:d.key,
-    status:selStatusM||'',
-    otHours:parseFloat(document.getElementById('m-ot-hours').value)||0,
-    otRate:parseFloat(document.getElementById('m-ot-rate').value)||1.5,
-    otType:mOTType,
-    dedDay3:parseFloat(document.getElementById('m-ded-day3').value)||0,
-    dedDay2:parseFloat(document.getElementById('m-ded-day2').value)||0,
-    dedDay1:parseFloat(document.getElementById('m-ded-day1').value)||0,
-    dedHalfInd:parseFloat(document.getElementById('m-ded-half').value)||0
-  };
-  document.getElementById('m-sp-save').disabled=true;
-  document.getElementById('m-sp-save').textContent='⏳ جاري الحفظ...';
+// مسح بيانات يوم معين من علامة 🗑 جنب اليوم
+function quickClear(i){
+  var d=attData[i];
+  var dayData={day:d.day,month:d.month,year:d.year,dayName:d.dayName,key:d.key,status:'',otHours:0,otRate:1.5,otType:'ot',dedDay3:0,dedDay2:0,dedDay1:0,dedHalfInd:0};
   google.script.run
-    .withSuccessHandler(res=>{
-      isSaving=false;
-      document.getElementById('m-sp-save').disabled=false;
-      document.getElementById('m-sp-save').textContent='💾 حفظ';
-      if(res==='ok'){attData[selIdx]=dayData;toast('✅ تم الحفظ!');closeDrawer();}
-      else toast('❌ خطأ: '+res);
-    })
-    .withFailureHandler(e=>{
-      isSaving=false;
-      document.getElementById('m-sp-save').disabled=false;
-      document.getElementById('m-sp-save').textContent='💾 حفظ';
-      toast('❌ '+e.message);
-    })
-    .saveAttendanceDay(curAttUser, attYear, attMonth, dayData);
-}
-
-function clearDay(){
-  if(selIdx===null) return;
-  isSaving=true;
-  const d=attData[selIdx];
-  const dayData={day:d.day,month:d.month,year:d.year,dayName:d.dayName,key:d.key,status:'',otHours:0,otRate:1.5,otType:'ot',dedDay3:0,dedDay2:0,dedDay1:0,dedHalfInd:0};
-  document.getElementById('sp-save').disabled=true;
-  google.script.run
-    .withSuccessHandler(res=>{
-      isSaving=false;
-      document.getElementById('sp-save').disabled=false;
+    .withSuccessHandler(function(res){
       if(res==='ok'){
-        attData[selIdx]=dayData;
-        toast('🗑️ تم المسح!');
-        clearSel();
+        attData[i]=dayData;
+        toast('🗑️ اتمسحت بيانات اليوم');
+        if(selIdx===i){ clearSel(); }
+        else { window._skipScroll=true; renderAtt(); window._skipScroll=false; }
         if(d.status==='Annual') loadAnnualLeavePanel();
       } else toast('❌ خطأ: '+res);
     })
-    .withFailureHandler(e=>{isSaving=false;document.getElementById('sp-save').disabled=false;toast('❌ '+e.message);})
+    .withFailureHandler(function(e){ toast('❌ '+e.message); })
     .saveAttendanceDay(curAttUser, attYear, attMonth, dayData);
 }
 
-function clearDayM(){
-  if(selIdx===null) return;
-  isSaving=true;
-  const d=attData[selIdx];
-  const dayData={day:d.day,month:d.month,year:d.year,dayName:d.dayName,key:d.key,status:'',otHours:0,otRate:1.5,otType:'ot',dedDay3:0,dedDay2:0,dedDay1:0,dedHalfInd:0};
-  document.getElementById('m-sp-save').disabled=true;
-  google.script.run
-    .withSuccessHandler(res=>{
-      isSaving=false;
-      document.getElementById('m-sp-save').disabled=false;
-      if(res==='ok'){attData[selIdx]=dayData;toast('🗑️ تم المسح!');closeDrawer();}
-      else toast('❌ خطأ: '+res);
-    })
-    .withFailureHandler(e=>{isSaving=false;document.getElementById('m-sp-save').disabled=false;toast('❌ '+e.message);})
-    .saveAttendanceDay(curAttUser, attYear, attMonth, dayData);
+function hasDayData(d){
+  return !!(d.status || d.otHours>0 || d.dedDay1>0 || d.dedDay2>0 || d.dedDay3>0 || d.dedHalfInd>0);
 }
 
 // ==================== SALARY ====================
@@ -1874,10 +1823,10 @@ function showPage(name, el, fromMobile){
 
 function toast(msg){
   const t=document.getElementById('toast');
-  t.textContent=msg; 
+  t.textContent=msg;
   t.style.display='block';
   requestAnimationFrame(()=>t.classList.add('show'));
-  clearTimeout(t._t); 
+  clearTimeout(t._t);
   t._t=setTimeout(()=>{
     t.classList.remove('show');
     setTimeout(()=>t.style.display='none', 300);
