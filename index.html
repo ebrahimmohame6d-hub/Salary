@@ -129,10 +129,17 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 }
 .day-row.active-row .day-name-txt{color:var(--accent-lt);font-weight:800}
 
-/* ===== TODAY ROW — الصف كله متلون ===== */
-/* ===== TODAY ROW — نفس ارتفاع الصفوف العادية ومن غير فواصل ===== */
+/* ===== TODAY ROW — تدرج + نبض ===== */
+@keyframes todayPulse{
+  0%,100%{background-color:#d6e3fb}
+  50%{background-color:#bfd3f7}
+}
+.today-tr{
+  background-image:linear-gradient(90deg,rgba(42,77,184,0.22) 0%,rgba(255,255,255,0.55) 50%,rgba(42,77,184,0.22) 100%);
+  animation:todayPulse 2.4s ease-in-out infinite;
+}
 .today-tr td{
-  background:#dce7fb;
+  background:transparent;
   border-top:2px solid var(--accent-lt);
   border-bottom:2px solid var(--accent-lt);
   padding:4px 10px;
