@@ -128,56 +128,27 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
   font-weight:700;
 }
 .day-row.active-row .day-name-txt{color:var(--accent-lt);font-weight:800}
-/* ===== TODAY ROW — single rounded card via colspan ===== */
-tr.today-row td{
-  padding:0 !important;
-  border:none !important;
-  background:transparent !important;
-}
+
+/* ===== TODAY ROW — نفس هيكل الصف العادي بس بلون مميز ===== */
 .today-row-card{
-  display:table;
-  width:100%;
-  border-collapse:separate;
-  border-spacing:0;
-  background:linear-gradient(90deg,#a8c0f0 0%,#d4e4fc 20%,#e8effe 50%,#d4e4fc 80%,#a8c0f0 100%);
-  border:2px solid #2a4db8;
-  border-radius:14px;
-  box-shadow:0 2px 12px rgba(42,77,184,0.15);
-  overflow:hidden;
+  display:flex;align-items:center;gap:9px;
+  padding:11px 13px;
+  margin:6px 2px;
+  border:2px solid var(--accent-lt);
+  border-radius:10px;
+  background:linear-gradient(90deg,#c9d9f7 0%,#e8effe 100%);
+  box-shadow:0 0 0 3px rgba(42,77,184,0.12),0 4px 14px rgba(42,77,184,0.18);
   cursor:pointer;
   transition:all 0.2s ease;
-  margin:6px 2px;
 }
-.today-row-card:active{
-  transform:scale(0.98);
-}
-.today-row-card .tcol-day,
-.today-row-card .tcol-status,
-.today-row-card .tcol-hours{
-  display:table-cell;
-  vertical-align:middle;
-  padding:8px 10px;
-}
-.today-row-card .tcol-status{
-  text-align:center;
-  white-space:nowrap;
-}
-.today-row-card .tcol-hours{
-  text-align:right;
-  white-space:nowrap;
-}
+.today-row-card:active{transform:scale(0.98)}
 .today-row-card .day-num-box{
   background:linear-gradient(135deg,#2a4db8 0%,#0d1b4b 100%) !important;
   box-shadow:0 3px 12px rgba(42,77,184,0.45) !important;
 }
-.today-row-card .day-name-txt{
-  color:#2a4db8 !important;
-  font-weight:800 !important;
-}
-.today-row-card .friday-badge{
-  background:rgba(224,104,32,0.15) !important;
-  color:var(--orange) !important;
-}
+.today-row-card .day-name-txt{color:var(--accent-lt) !important;font-weight:800 !important}
+.today-row-card .friday-badge{background:rgba(224,104,32,0.15) !important;color:var(--orange) !important}
+
 .friday-row{background:#fff8f0 !important;border-color:rgba(224,104,32,0.4) !important}
 .friday-row:hover{border-color:var(--orange) !important;box-shadow:0 6px 18px rgba(224,104,32,0.2) !important}
 .friday-row .day-num-box{background:linear-gradient(135deg,var(--orange) 0%,#f5a35a 100%) !important;color:#fff !important;box-shadow:0 3px 10px rgba(224,104,32,0.35) !important}
@@ -396,7 +367,6 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
 @keyframes shine{0%{left:-60%}60%,100%{left:130%}}
 @keyframes bgBreath{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.8}50%{transform:translate(-50%,-50%) scale(1.25);opacity:1}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
-@keyframes todayGlow{0%,100%{box-shadow:0 2px 12px rgba(42,77,184,.15)}50%{box-shadow:0 0 0 4px rgba(42,77,184,.12),0 8px 26px rgba(42,77,184,.35)}}
 @keyframes rippleK{to{transform:scale(3.2);opacity:0}}
 @keyframes iconBounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}70%{transform:translateY(0)}85%{transform:translateY(-2px)}}
 @keyframes barGrow{from{width:0}}
@@ -422,7 +392,6 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
 .day-num-box{transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
 .day-row:hover .day-num-box{transform:rotate(-8deg) scale(1.12)}
 .stat-card:hover .stat-icon{animation:iconBounce .7s ease}
-.today-row-card{animation:todayGlow 2.4s ease-in-out infinite}
 .al-bar{animation:barGrow .9s cubic-bezier(.22,1,.36,1)}
 .toast{transition:all .45s cubic-bezier(.34,1.56,.64,1)}
 .sp-save-btn:active,.login-btn:active{transform:scale(.96)}
@@ -432,7 +401,7 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
 }
 
 /* ===== DELETE DAY BUTTON ===== */
-.day-del{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;flex-shrink:0;background:rgba(224,52,72,0.08);border:1px solid rgba(224,52,72,0.25);opacity:0.7;transition:all 0.15s;margin-right:auto}
+.day-del{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;flex-shrink:0;background:rgba(224,52,72,0.08);border:1px solid rgba(224,52,72,0.25);opacity:0.7;transition:all 0.15s;margin-inline-start:auto}
 .day-del:hover,.day-del:active{opacity:1;background:rgba(224,52,72,0.2)}
 </style>
 <base target="_blank">
@@ -1275,7 +1244,7 @@ function renderAtt(){
     }
 
     if(isToday(d)){
-      html+=`<tr class="today-row"><td colspan="3"><div class="today-row-card" onclick="openDay(${i})"><div class="tcol-day"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}${delBtn}</div><div class="tcol-status">${pill}</div><div class="tcol-hours">${hoursBadge}${dedBadge}</div></div></td></tr>`;
+      html+=`<tr><td><div class="today-row-card" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}${delBtn}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px">${hoursBadge}${dedBadge}</td></tr>`;
     } else {
       html+=`<tr><td><div class="day-row ${fri?'friday-row':''} ${selIdx===i?'active-row':''}" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}${delBtn}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px">${hoursBadge}${dedBadge}</td></tr>`;
     }
