@@ -129,7 +129,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 }
 .day-row.active-row .day-name-txt{color:var(--accent-lt);font-weight:800}
 
-/* ===== TODAY ROW — نص أزرق متحرك على الشمال ونص أبيض على اليمين ===== */
+/* ===== TODAY ROW — ماية زرقا متحركة في الكارت كله ===== */
 .att-table-wrap{position:relative;z-index:0}
 
 .today-tr td{
@@ -148,7 +148,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .today-tr .pill{background:rgba(255,255,255,0.92)}
 .today-tr .friday-badge{background:rgba(224,104,32,0.15) !important;color:var(--orange) !important}
 
-/* الطبقة اللي بتتحط فوق الكارت (خلفية بيضا + نص أزرق متحرك على الشمال) */
+/* الطبقة اللي بتغطي الكارت كله (خلفية بيضا + ماية زرقا متحركة) */
 .liquid-layer{
   position:absolute;
   z-index:-1;
@@ -161,24 +161,15 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
   pointer-events:none;
   display:none;
 }
-.liquid-clip{
-  position:absolute;
-  left:0;
-  top:0;
-  bottom:0;
-  width:54%;
-  overflow:hidden;
-}
 .liquid-fill{
   position:absolute;
-  left:-50%;
-  top:-50%;
-  width:200%;
-  height:200%;
-  background:
-    radial-gradient(ellipse at 35% 45%,rgba(255,255,255,0.35) 0%,rgba(255,255,255,0) 55%),
-    linear-gradient(90deg,#2f6db5 0%,#4a8fd6 20%,#7fb8ec 50%,#4a8fd6 80%,#2f6db5 100%);
-  will-change:transform;
+  inset:0;
+  background-repeat:no-repeat;
+  background-size:250% 160%;
+  background-image:
+    radial-gradient(ellipse at 40% 50%,rgba(255,255,255,0.3) 0%,rgba(255,255,255,0) 50%),
+    linear-gradient(90deg,transparent 0%,#2f6db5 22%,#7fb8ec 50%,#4a8fd6 78%,transparent 100%);
+  will-change:background-position;
 }
 .friday-row{background:#fff8f0 !important;border-color:rgba(224,104,32,0.4) !important}
 .friday-row:hover{border-color:var(--orange) !important;box-shadow:0 6px 18px rgba(224,104,32,0.2) !important}
@@ -2015,19 +2006,16 @@ function toast(msg){
   });
 })();
 
-// ==================== WATER EFFECT (نص أزرق متحرك جوه الكارت) ====================
+// ==================== WATER EFFECT (ماية زرقا متحركة في الكارت كله) ====================
 (function(){
   var wrap  = document.querySelector('.att-table-wrap');
   var tbody = document.getElementById('att-tbody');
 
   var layer = document.createElement('div');
   layer.className = 'liquid-layer';
-  var clip = document.createElement('div');
-  clip.className = 'liquid-clip';
   var fill = document.createElement('div');
   fill.className = 'liquid-fill';
-  clip.appendChild(fill);
-  layer.appendChild(clip);
+  layer.appendChild(fill);
   wrap.appendChild(layer);
 
   var tiltX = 0;                 // ميل التليفون: -1 شمال → 1 يمين
@@ -2058,18 +2046,15 @@ function toast(msg){
     var t = now - t0;
     var tgtX = mouseActive
       ? 50 + mouseX * 50
-      : 50 - tiltX * 30 + Math.sin(t / 1600) * 22;
+      : 50 - tiltX * 30 + Math.sin(t / 1600) * 35;
     var tgtY = mouseActive
       ? 50 + mouseY * 50
-      : 50 + Math.sin(t / 2200) * 12;
+      : 50 + Math.sin(t / 2200) * 25;
 
     px += (clamp(tgtX,0,100) - px) * 0.05;
     py += (clamp(tgtY,0,100) - py) * 0.05;
 
-    // الحركة بالنسبة لحجم الماية نفسها (عشان تفضل مغطية المساحة كلها)
-    fill.style.transform =
-      'translate(' + ((px - 50) / 50 * 25).toFixed(2) + '%,' +
-      ((py - 50) / 50 * 25).toFixed(2) + '%)';
+    fill.style.backgroundPosition = px.toFixed(2) + '% ' + py.toFixed(2) + '%';
 
     requestAnimationFrame(loop);
   }
