@@ -107,7 +107,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 
 /* ===== ATTENDANCE TABLE ===== */
 .att-layout{display:grid;grid-template-columns:1fr 305px;gap:14px;align-items:start}
-.att-table-wrap{overflow-y:auto;max-height:72vh}
+.att-table-wrap{overflow-y:auto;max-height:72vh;position:relative;z-index:0}
 .att-table{width:100%;border-collapse:separate;border-spacing:0;font-size:12px}
 .att-table th{font-size:10px;font-weight:700;color:var(--text3);padding:7px 11px;text-align:right;border-bottom:1.5px solid var(--border);position:sticky;top:0;background:#fff;z-index:2;letter-spacing:0.04em;text-transform:uppercase}
 .att-table td{padding:0}
@@ -130,8 +130,6 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .day-row.active-row .day-name-txt{color:var(--accent-lt);font-weight:800}
 
 /* ===== TODAY ROW — ماية زرقا متحركة في الكارت كله ===== */
-.att-table-wrap{position:relative;z-index:0}
-
 .today-tr td{
   background:transparent;
   padding:4px 10px;
@@ -171,6 +169,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
     linear-gradient(90deg,transparent 0%,#2f6db5 22%,#7fb8ec 50%,#4a8fd6 78%,transparent 100%);
   will-change:background-position;
 }
+
 .friday-row{background:#fff8f0 !important;border-color:rgba(224,104,32,0.4) !important}
 .friday-row:hover{border-color:var(--orange) !important;box-shadow:0 6px 18px rgba(224,104,32,0.2) !important}
 .friday-row .day-num-box{background:linear-gradient(135deg,var(--orange) 0%,#f5a35a 100%) !important;color:#fff !important;box-shadow:0 3px 10px rgba(224,104,32,0.35) !important}
@@ -1205,9 +1204,11 @@ function loadAttendance(){
   document.getElementById('att-content').style.display='none';
   google.script.run
     .withSuccessHandler(data=>{
-      attData=data; renderAtt(); setTimeout(scrollToToday, 300);
+      attData=data;
+      renderAtt();
       document.getElementById('att-loading').style.display='none';
       document.getElementById('att-content').style.display='block';
+      scrollToToday();
     })
     .withFailureHandler(e=>{
       // Silent retry — spinner keeps spinning
@@ -1221,14 +1222,22 @@ function isToday(d){
   const now=new Date();
   return d.year===now.getFullYear() && d.month===(now.getMonth()+1) && d.day===now.getDate();
 }
+
+// النزول لليوم النهارده: بيحاول كذا مرة عشان الأنيميشن والتحميل يخلصوا قبل ما نحسب المكان
 function scrollToToday(){
-  setTimeout(function(){
-    const row=document.querySelector('.today-tr');
-    if(row){
-      row.scrollIntoView({behavior:'smooth',block:'center'});
-    }
-  }, 150);
+  [100, 400, 800, 1400].forEach(function(delay){
+    setTimeout(function(){
+      var row = document.querySelector('.today-tr');
+      if(!row) return;
+      var r = row.getBoundingClientRect();
+      var topBarH = window.innerWidth <= 768 ? 56 : 0; // الهيدر الثابت على الموبايل
+      var visibleH = window.innerHeight - topBarH;
+      var target = window.pageYOffset + r.top - topBarH - (visibleH / 2 - r.height / 2);
+      window.scrollTo({ top: Math.max(0, target), behavior: 'auto' });
+    }, delay);
+  });
 }
+
 function renderAtt(){
   const tbody=document.getElementById('att-tbody');
   let html='', lastMonth=null;
@@ -1271,7 +1280,7 @@ function renderAtt(){
       html+=`<tr><td><div class="day-row ${fri?'friday-row':''} ${selIdx===i?'active-row':''}" onclick="openDay(${i})"><div class="day-num-box">${toAR(d.day)}</div><div class="day-name-txt">${d.dayName}</div>${fri?'<span class="friday-badge">جمعة</span>':''}${delBtn}</div></td><td style="padding:8px 10px">${pill}</td><td style="padding:8px 10px">${hoursBadge}${dedBadge}</td></tr>`;
     }
   });
-  tbody.innerHTML=html; if(!window._skipScroll) scrollToToday();
+  tbody.innerHTML=html;
 }
 
 function openDay(i){
@@ -1385,7 +1394,7 @@ function clearSel(){
   if(ddr) ddr.style.display='none';
   document.querySelectorAll('#desktop-status-opts .s-opt').forEach(o=>o.classList.remove('sel'));
   dOTType='ot'; setOTType('d','ot');
-  renderAtt();scrollToToday();
+  renderAtt();
 }
 
 // ==================== AUTO SAVE ====================
@@ -1415,7 +1424,7 @@ function persistDay(panel){
     .withSuccessHandler(function(res){
       if(res==='ok'){
         attData[idx]=dayData;
-        window._skipScroll=true; renderAtt(); window._skipScroll=false;
+        renderAtt();
         var info = dayData.status ? 'الحالة: '+statusLabel(dayData.status) : 'لم يتم التسجيل بعد';
         var infoEl = document.getElementById(panel==='m' ? 'drawer-info' : 'sp-info');
         if(infoEl) infoEl.textContent=info;
@@ -1437,7 +1446,7 @@ function quickClear(i){
         attData[i]=dayData;
         toast('🗑️ اتمسحت بيانات اليوم');
         if(selIdx===i){ clearSel(); }
-        else { window._skipScroll=true; renderAtt(); window._skipScroll=false; }
+        else { renderAtt(); }
         if(d.status==='Annual') loadAnnualLeavePanel();
       } else toast('❌ خطأ: '+res);
     })
