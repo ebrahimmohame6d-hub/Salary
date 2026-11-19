@@ -383,6 +383,58 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 }
+
+/* ===== هيدر كروت + صورة أكبر ===== */
+.pf-header{display:grid;grid-template-columns:1fr 1fr auto;gap:16px;align-items:stretch;
+  background:none;border:none;box-shadow:none;padding:0;overflow:visible}
+.pf-header::before{display:none}
+
+.pf-card{position:relative;overflow:hidden;border-radius:22px;padding:22px 26px;
+  background:linear-gradient(135deg,#fffaf0,#f1e4cc);border:1.5px solid var(--border2);
+  box-shadow:0 10px 30px rgba(74,47,29,.14);display:flex;flex-direction:column;justify-content:center;gap:8px;
+  animation:pfIn .7s cubic-bezier(.22,1,.36,1) both;
+  transition:transform .45s ease,box-shadow .45s ease}
+.pf-card:hover{transform:translateY(-5px);box-shadow:0 16px 38px rgba(139,90,43,.28)}
+.pf-card::after{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,.45),transparent);
+  transform:skewX(-20deg);animation:shine 5s 1s infinite;pointer-events:none}
+.pf-sal-card{background:linear-gradient(135deg,#4a2f1d,#8b5a2b);border-color:transparent;
+  animation:pfIn .7s .15s cubic-bezier(.22,1,.36,1) both,pfGlow 3s ease-in-out infinite}
+.pf-sal-lbl{font-size:12px;font-weight:700;color:rgba(255,255,255,.7);letter-spacing:.05em}
+.pf-sal{background:none !important;animation:none !important;box-shadow:none !important;
+  padding:0 !important;font-size:34px !important;font-weight:900;color:#fff}
+
+/* الصورة أكبر */
+.pf-photo{width:180px;height:180px;border-radius:38px;padding:5px;
+  animation:pfSpin 6s linear infinite,pfFloat 4s ease-in-out infinite,pfIn .7s .3s both}
+.pf-photo .in{border-radius:33px}
+.pf-photo .in .ico{font-size:44px}
+.pf-photo .in{font-size:13px}
+
+/* ===== السايدبار يبقى شريط فوق (ديسكتوب بس) ===== */
+@media (min-width:769px){
+  .sidebar{position:sticky;top:0;right:auto;width:100%;height:auto;flex-direction:row;
+    align-items:center;justify-content:space-between;padding:8px 22px;
+    box-shadow:0 4px 18px rgba(0,0,0,.18);animation:pfIn .6s ease both}
+  .sb-header{border:none;padding:0}
+  .sb-logo{margin:0}
+  .sb-nav{flex:1;display:flex;flex-direction:row;justify-content:center;gap:6px;padding:0;overflow:visible}
+  .nav-lbl{display:none}
+  .nav-item{width:auto;margin:0;padding:9px 18px;border-radius:30px;white-space:nowrap}
+  .nav-item:hover,.nav-item:active{transform:translateY(-2px)}
+  .sb-footer{border:none;padding:0}
+  .logout-btn{width:auto;padding:9px 16px}
+  .main{margin-right:0;min-height:auto}
+}
+
+/* موبايل */
+@media (max-width:768px){
+  .pf-header{grid-template-columns:1fr 1fr}
+  .pf-photo{grid-column:1/-1;order:-1;margin:0 auto;width:140px;height:140px;border-radius:30px}
+  .pf-photo .in{border-radius:26px}
+  .pf-card{padding:16px}
+  .pf-sal{font-size:22px !important}
+}
 </style>
 <base target="_blank">
 </head>
@@ -417,7 +469,7 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
     </div>
   </div>
 
-  <!-- DESKTOP SIDEBAR -->
+  <!-- DESKTOP SIDEBAR (بقى شريط فوق) -->
   <aside class="sidebar">
     <div class="sb-header">
       <div class="sb-logo">
@@ -461,13 +513,16 @@ table.gtbl tr:last-child td{border-bottom:none}table.gtbl tr:active td{backgroun
 
   <main class="main">
 
-    <!-- PORTFOLIO HEADER: الاسم + المرتب + الصورة -->
+    <!-- PORTFOLIO HEADER: كروت منفصلة (الاسم + المرتب + الصورة) -->
     <header class="pf-header">
-      <div class="pf-text">
+      <div class="pf-card pf-text">
         <div class="pf-role" id="pf-role">—</div>
         <div class="pf-name" id="pf-name">—</div>
       </div>
-      <div class="pf-sal" id="pf-sal">—</div>
+      <div class="pf-card pf-sal-card">
+        <div class="pf-sal-lbl">💰 المرتب الأساسي</div>
+        <div class="pf-sal" id="pf-sal">—</div>
+      </div>
       <div class="pf-photo" id="pf-photo" onclick="pickPhoto()">
         <div class="in" id="pf-photo-in"><span class="ico">👤</span></div>
       </div>
@@ -1003,7 +1058,7 @@ function startApp(){
 
   if(S.isAdmin){
     document.querySelectorAll('.admin-only').forEach(el=>{
-      el.style.display = el.classList.contains('bn-item') ? 'flex' : 'block';
+      el.style.display = el.classList.contains('bn-item') ? 'flex' : (el.classList.contains('nav-item') ? 'flex' : 'block');
     });
     loadEmpSelectors();
     initSavingForm();
