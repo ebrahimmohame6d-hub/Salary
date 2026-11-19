@@ -1221,17 +1221,17 @@ function isToday(d){
   return d.year===now.getFullYear() && d.month===(now.getMonth()+1) && d.day===now.getDate();
 }
 
-// النزول لليوم النهارده: بيحاول كذا مرة عشان الأنيميشن والتحميل يخلصوا قبل ما نحسب المكان
+// النزول لليوم النهارده جوه حاوية الجدول نفسها (مش الصفحة)
 function scrollToToday(){
   [100, 400, 800, 1400].forEach(function(delay){
     setTimeout(function(){
-      var row = document.querySelector('.today-tr');
-      if(!row) return;
-      var r = row.getBoundingClientRect();
-      var topBarH = window.innerWidth <= 768 ? 56 : 0; // الهيدر الثابت على الموبايل
-      var visibleH = window.innerHeight - topBarH;
-      var target = window.pageYOffset + r.top - topBarH - (visibleH / 2 - r.height / 2);
-      window.scrollTo({ top: Math.max(0, target), behavior: 'auto' });
+      var wrap = document.querySelector('.att-table-wrap');
+      var row  = document.querySelector('.today-tr');
+      if(!wrap || !row) return;
+      // موضع الصف جوه الحاوية بالنسبة لأول الجدول
+      var rowTop = row.getBoundingClientRect().top - wrap.getBoundingClientRect().top + wrap.scrollTop;
+      var target = rowTop - (wrap.clientHeight / 2) + (row.offsetHeight / 2);
+      wrap.scrollTo({ top: Math.max(0, target), behavior: 'auto' });
     }, delay);
   });
 }
