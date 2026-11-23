@@ -465,6 +465,25 @@ button:active{transform:scale(.95)}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 }
+
+/* ===== AVATAR LABEL ===== */
+.avatar-btn{width:auto;min-width:64px;height:auto;min-height:46px;padding:4px 8px;flex-direction:column;gap:1px}
+.avatar-btn.has-img{width:42px;min-width:0;height:42px;min-height:0;padding:0}
+.avatar-btn .avatar-ph{font-size:17px;line-height:1}
+.avatar-btn .avatar-lbl{font-size:10px;font-weight:700;color:#fff;line-height:1.2;white-space:nowrap}
+@media (max-width:768px){
+  .avatar-btn{top:5px;left:6px;min-width:58px;min-height:46px}
+  .avatar-btn.has-img{top:9px;width:38px;height:38px;min-width:0;min-height:0}
+  .mt-user{padding-left:70px}
+}
+
+/* ===== MOBILE SHEET FIX ===== */
+@media (max-width:768px), (hover:none){
+  .card:hover,.stat-card:hover,.user-card:hover{transform:none !important}
+}
+@media (max-width:768px){
+  .card{transform:none !important}
+}
 </style>
 <base target="_blank">
 </head>
@@ -519,6 +538,7 @@ button:active{transform:scale(.95)}
   <div class="avatar-btn" id="avatar-btn" title="تغيير الصورة" onclick="document.getElementById('avatar-file').click()">
     <img id="avatar-img" alt="">
     <span class="avatar-ph" id="avatar-ph">📷</span>
+    <span class="avatar-lbl" id="avatar-lbl">اضف صورة</span>
   </div>
   <input type="file" id="avatar-file" accept="image/*" style="display:none" onchange="onAvatarFile(this)">
 
@@ -2417,6 +2437,64 @@ function toast(msg){
   } else {
     window.addEventListener('deviceorientation', onTilt);
   }
+})();
+
+// ==================== AVATAR LABEL + SCROLL TO TODAY ====================
+(function(){
+  var oldApply = window.applyAvatar;
+  window.applyAvatar = function(){
+    if(oldApply) oldApply.apply(this, arguments);
+    var img=document.getElementById('avatar-img');
+    var b=document.getElementById('avatar-btn');
+    var l=document.getElementById('avatar-lbl');
+    var has = img && img.style.display==='block';
+    if(b) b.classList.toggle('has-img', !!has);
+    if(l) l.style.display = has ? 'none' : 'block';
+  };
+
+  window.scrollToToday = function(){
+    [100, 400, 800, 1400, 2200].forEach(function(delay){
+      setTimeout(function(){
+        var row=document.querySelector('.today-tr');
+        var pg=document.getElementById('page-att');
+        if(!row || !pg || !pg.classList.contains('active')) return;
+
+        var wrap=document.querySelector('.att-table-wrap');
+        if(wrap && getComputedStyle(wrap).overflowY!=='visible' && wrap.scrollHeight>wrap.clientHeight+4){
+          var rowTop=row.getBoundingClientRect().top - wrap.getBoundingClientRect().top + wrap.scrollTop;
+          wrap.scrollTo({top:Math.max(0, rowTop - wrap.clientHeight/2 + row.offsetHeight/2), behavior:'auto'});
+        }
+
+        if(window.innerWidth<=768){
+          var r=row.getBoundingClientRect();
+          var top=r.top + window.pageYOffset - (window.innerHeight/2) + r.height/2;
+          window.scrollTo({top:Math.max(0, top), behavior:'auto'});
+        }
+      }, delay);
+    });
+  };
+})();
+
+// ==================== MOBILE SHEET FIX ====================
+(function(){
+  var oldOpen = window.openDay;
+  window.openDay = function(){
+    var p=document.getElementById('desktop-side-panel');
+    if(window.innerWidth<=768 && p && p.parentNode!==document.body){
+      document.body.appendChild(p);
+    }
+    return oldOpen.apply(this, arguments);
+  };
+  window.addEventListener('resize', function(){
+    var p=document.getElementById('desktop-side-panel');
+    var lay=document.querySelector('.att-layout');
+    if(window.innerWidth>768 && p && lay && p.parentNode===document.body){
+      lay.appendChild(p);
+      p.classList.remove('sheet-open');
+      var bd=document.getElementById('sheet-bd');
+      if(bd) bd.classList.remove('show');
+    }
+  });
 })();
 </script>
 </body>
