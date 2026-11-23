@@ -356,6 +356,13 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .ic-btn:hover{transform:scale(1.18) rotate(-6deg);background:var(--bg3)}
 .ic-btn.del{border-color:rgba(224,52,72,.4)}.ic-btn.del:hover{background:rgba(224,52,72,.12)}
 .mt-key{background:rgba(255,255,255,.12);border:none;color:#fff;border-radius:8px;width:34px;height:34px;font-size:16px;cursor:pointer;margin-inline-start:auto;margin-inline-end:10px}
+.fg select{background:rgba(255,255,255,0.06);border:1.5px solid rgba(42,77,184,0.25);border-radius:var(--radius-sm);padding:12px 13px;font-size:14px;color:#fff;font-family:'Cairo',sans-serif;direction:ltr;-webkit-appearance:none;appearance:none;cursor:pointer;transition:border-color .2s,box-shadow .2s}
+.fg select:focus{outline:none;border-color:var(--accent-lt);box-shadow:0 0 0 3px rgba(42,77,184,.15)}
+.fg select option{color:#0d1b4b;background:#fff}
+.bonus-edit{display:flex;align-items:center;gap:6px}
+.bonus-input{width:110px !important;flex:none !important;padding:7px 9px !important;font-size:13px !important}
+.bonus-save{width:34px;height:34px;border-radius:8px;border:none;background:linear-gradient(135deg,#1a8a55,#2cb87a);color:#fff;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 3px 10px rgba(26,138,85,.35);transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
+.bonus-save:hover{transform:scale(1.15) rotate(-5deg)}
 /* ===== RESPONSIVE =====
 @media (max-width:768px){
   .sidebar{display:none}
@@ -450,6 +457,7 @@ button:active{transform:scale(.95)}
       <div class="fg"><label>اسم المستخدم</label><input id="r-user" placeholder="username" dir="ltr" autocomplete="off"></div>
       <div class="fg"><label>كلمة المرور</label><input id="r-pass" type="password" placeholder="••••" dir="ltr" autocomplete="new-password"></div>
       <div class="fg"><label>المرتب الأساسي (جنيه)</label><input id="r-salary" type="number" min="0" placeholder="5500" dir="ltr"></div>
+      <div class="fg"><label>الوظيفة</label><select id="r-role"><option value="">اختار الوظيفة</option><option value="QC">QC</option><option value="SL">SL</option><option value="Labeler">Labeler</option></select></div>
       <button class="login-btn" id="r-btn" onclick="doRegister()">إنشاء حساب</button>
       <div class="login-err" id="r-err"></div>
       <div class="login-ok" id="r-ok"></div>
@@ -912,6 +920,7 @@ function loadAttendanceSilent(){
 }
 
 function loadSalarySilent(){
+  if(document.activeElement && document.activeElement.id==='bonus-input') return;
   var salLoading=document.getElementById('sal-loading');
   if(salLoading.style.display!=='none') return;
   google.script.run
@@ -1119,18 +1128,20 @@ function doRegister(){
   var u=document.getElementById('r-user').value.trim().toLowerCase();
   var p=document.getElementById('r-pass').value.trim();
   var s=document.getElementById('r-salary').value;
+  var role=document.getElementById('r-role').value;
   var err=document.getElementById('r-err'), ok=document.getElementById('r-ok');
   var btn=document.getElementById('r-btn');
   err.style.display='none'; ok.style.display='none';
-  if(!u||!p||!s){ err.textContent='املا كل الخانات'; err.style.display='block'; return; }
+  if(!u||!p||!s||!role){ err.textContent='املا كل الخانات واختار الوظيفة'; err.style.display='block'; return; }
   btn.disabled=true;
-  rpcOnce('registerUser',[u,p,parseFloat(s)],function(res){
+  rpcOnce('registerUser',[u,p,parseFloat(s),role],function(res){
     btn.disabled=false;
     if(!res.success){ err.textContent=res.msg; err.style.display='block'; return; }
     ok.textContent=res.msg; ok.style.display='block';
     document.getElementById('r-user').value='';
     document.getElementById('r-pass').value='';
     document.getElementById('r-salary').value='';
+    document.getElementById('r-role').value='';
   },function(e){
     btn.disabled=false;
     err.textContent='خطأ: '+e; err.style.display='block';
@@ -1141,7 +1152,7 @@ function startApp(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='block';
   document.getElementById('sb-name').textContent=S.displayName;
-  document.getElementById('sb-role').textContent=S.isAdmin?'Admin':'Labeler';
+  document.getElementById('sb-role').textContent=S.isAdmin?'Admin':(S.role||'Labeler');
   document.getElementById('sb-sal').textContent=fNum(S.salary)+' جنيه';
   document.getElementById('mt-name').textContent=S.displayName;
   document.getElementById('mt-sal').textContent=fNum(S.salary)+' جنيه';
@@ -1814,6 +1825,7 @@ function renderSalaryContent(d){
       </div>
       <div class="card" style="margin:0">
         <div class="card-head"><div class="card-title">تفاصيل المرتب</div></div>
+        ${S.isAdmin?`<div class="sal-row"><span class="sal-label">Bonus / KPI</span><span class="bonus-edit"><input class="ot-input bonus-input" type="number" id="bonus-input" min="0" step="1" placeholder="0" value="${d.bonus||''}" onkeydown="if(event.key==='Enter')saveBonus()"><button class="bonus-save" onclick="saveBonus()" title="حفظ">✓</button></span></div>`:(d.bonus>0?`<div class="sal-row"><span class="sal-label">Bonus / KPI</span><span class="sal-val sal-plus">+ ${fNum(d.bonus)} جنيه</span></div>`:'')}
         <div class="sal-row"><span class="sal-label">المرتب الأساسي</span><span class="sal-val">${fNum(d.basicSalary)} جنيه</span></div>
         ${d.baseDedAmount>0?`<div class="sal-row"><span class="sal-label">خصم من المرتب الأساسي (${toAR(d.dedFromBase)} ساعة = ${toAR(d.dedFromBase/8)} يوم)</span><span class="sal-val sal-minus">- ${fNum(d.baseDedAmount)} جنيه</span></div>`:''}
         ${(d.otNetAmount>0||d.otTotalAmount>0)?`<div class="sal-row"><span class="sal-label">أوفر تايم (${toAR(d.otEffHoursNet!==undefined?d.otEffHoursNet:d.otEffHoursWithFriday)} ساعة صافي)</span><span class="sal-val sal-plus">+ ${fNum(d.otNetAmount!==undefined?d.otNetAmount:d.otAmount)} جنيه</span></div>`:''}
@@ -1824,6 +1836,16 @@ function renderSalaryContent(d){
         </div>
       </div>
     </div>`;
+}
+
+function saveBonus(){
+  if(!S.isAdmin) return;
+  var v=parseFloat(document.getElementById('bonus-input').value)||0;
+  if(v<0){ toast('❌ الرقم لازم يكون صفر أو أكتر'); return; }
+  rpcOnce('setBonus',[S.username,S.pass,curSalUser,salYear,salMonth,v],function(){
+    toast(v>0?'✅ اتضاف البونص على المرتب':'🗑️ اتمسح البونص');
+    loadSalary();
+  },function(e){ toast('❌ '+e); });
 }
 
 function buildOTSummary(d){
@@ -1997,10 +2019,10 @@ function renderUsers(list){
     var pend=u.status==='pending';
     var top, actions='';
     if(pend){
-      top='<div class="uc-top"><div class="det-title" style="font-size:16px">'+u.displayName+'</div><span class="pill p-friday">⏳ مستني موافقة</span></div>';
+      top='<div class="uc-top"><div class="det-title" style="font-size:16px">'+u.displayName+' <span class="pill p-annual" style="margin-inline-start:6px;vertical-align:middle">'+(u.role||'Labeler')+'</span></div><span class="pill p-friday">⏳ مستني موافقة</span></div>';
       actions='<div class="user-actions"><button class="u-btn u-ok" onclick="userAction(\''+u.username+'\',\'approve\',this)">✅ موافقة</button><button class="u-btn u-no" onclick="userAction(\''+u.username+'\',\'reject\',this)">❌ رفض</button></div>';
     } else {
-      top='<div class="uc-top"><div class="det-title" style="font-size:16px">'+u.displayName+'</div><div class="uc-icons">'
+      top='<div class="uc-top"><div class="det-title" style="font-size:16px">'+u.displayName+' <span class="pill p-annual" style="margin-inline-start:6px;vertical-align:middle">'+(u.role||'Labeler')+'</span></div><div class="uc-icons">'
         +'<button class="ic-btn" title="تعديل" onclick="openEdit(\''+u.username+'\')">✏️</button>'
         +(u.isAdmin?'':'<button class="ic-btn del" title="حذف" onclick="delUser(\''+u.username+'\',this)">🗑️</button>')
         +'</div></div>';
