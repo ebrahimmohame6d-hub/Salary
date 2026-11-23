@@ -345,7 +345,18 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .user-removed{animation:userOut .45s ease forwards}
 @keyframes userOut{to{opacity:0;transform:translateX(60px) scale(.9)}}
 
-/* ===== RESPONSIVE ===== */
+/* users v2 */
+.nav-badge{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:#e03448;color:#fff;font-size:11px;font-weight:800;display:none;align-items:center;justify-content:center;margin-inline-start:auto;animation:badgePulse 1.6s ease-in-out infinite}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(224,52,72,.55);transform:scale(1)}50%{box-shadow:0 0 0 7px rgba(224,52,72,0);transform:scale(1.12)}}
+.bn-item .bn-icon{position:relative}
+.bn-item .nav-badge{position:absolute;top:-4px;left:-2px;margin:0;min-width:17px;height:17px;font-size:10px;padding:0 4px}
+.uc-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.uc-icons{display:flex;gap:6px}
+.ic-btn{width:34px;height:34px;border-radius:9px;border:1.5px solid var(--border2);background:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .2s}
+.ic-btn:hover{transform:scale(1.18) rotate(-6deg);background:var(--bg3)}
+.ic-btn.del{border-color:rgba(224,52,72,.4)}.ic-btn.del:hover{background:rgba(224,52,72,.12)}
+.mt-key{background:rgba(255,255,255,.12);border:none;color:#fff;border-radius:8px;width:34px;height:34px;font-size:16px;cursor:pointer;margin-inline-start:auto;margin-inline-end:10px}
+/* ===== RESPONSIVE =====
 @media (max-width:768px){
   .sidebar{display:none}
   .bottom-nav{display:flex}
@@ -461,6 +472,7 @@ button:active{transform:scale(.95)}
       <div class="mt-logo-av"><img src="https://i.ibb.co/WpxRj6z9/Screenshot-2026-03-31-220317.png" alt="Logo"></div>
       <span class="mt-title">Attend &amp; Salary</span>
     </div>
+    <button class="mt-key" onclick="openPw()" title="تغيير الباسورد">🔑</button>
     <div class="mt-user">
       <div class="mt-name" id="mt-name">—</div>
       <div class="mt-sal" id="mt-sal">—</div>
@@ -485,9 +497,9 @@ button:active{transform:scale(.95)}
       <button class="nav-item" data-page="salary" onclick="showPage('salary')"><span class="nav-icon">💰</span>المرتب</button>
       <button class="nav-item" data-page="dayview" onclick="showPage('dayview')"><span class="nav-icon">🔎</span>تفاصيل اليوم</button>
       <button class="nav-item admin-only" data-page="saving" onclick="showPage('saving')" style="display:none"><span class="nav-icon">❤️</span>Saving for Maryouma</button>
-      <button class="nav-item admin-only" data-page="users" onclick="showPage('users')" style="display:none"><span class="nav-icon">👥</span>اليوزرات</button>
+      <button class="nav-item admin-only" data-page="users" onclick="showPage('users')" style="display:none"><span class="nav-icon">👥</span>اليوزرات<span class="nav-badge users-badge"></span></button>
     </nav>
-    <div class="sb-footer"><button class="logout-btn" onclick="logout()"><span>🚪</span>خروج</button></div>
+    <div class="sb-footer"><button class="logout-btn" onclick="openPw()" style="margin-bottom:4px"><span>🔑</span>تغيير الباسورد</button><button class="logout-btn" onclick="logout()"><span>🚪</span>خروج</button></div>
   </aside>
 
   <nav class="bottom-nav">
@@ -495,7 +507,7 @@ button:active{transform:scale(.95)}
     <button class="bn-item" data-page="salary" onclick="showPage('salary')"><span class="bn-icon">💰</span>المرتب</button>
     <button class="bn-item" data-page="dayview" onclick="showPage('dayview')"><span class="bn-icon">🔎</span>اليوم</button>
     <button class="bn-item admin-only" data-page="saving" onclick="showPage('saving')" style="display:none"><span class="bn-icon">❤️</span>Maryouma</button>
-    <button class="bn-item admin-only" data-page="users" onclick="showPage('users')" style="display:none"><span class="bn-icon">👥</span>اليوزرات</button>
+    <button class="bn-item admin-only" data-page="users" onclick="showPage('users')" style="display:none"><span class="bn-icon">👥<span class="nav-badge users-badge"></span></span>اليوزرات</button>
     <button class="bn-item" onclick="logout()"><span class="bn-icon">🚪</span>خروج</button>
   </nav>
 
@@ -718,6 +730,29 @@ button:active{transform:scale(.95)}
 <div class="viewer" id="viewer" onclick="closeViewer()">
   <button class="viewer-close" onclick="event.stopPropagation();closeViewer()">✕</button>
   <img id="viewer-img" alt="">
+</div>
+
+<!-- CHANGE PASSWORD -->
+<div class="choice-overlay" id="pw-overlay" onclick="if(event.target===this)closePw()">
+  <div class="choice-box" style="max-width:340px">
+    <div class="choice-title">🔑 تغيير الباسورد</div>
+    <div style="text-align:right;margin-bottom:10px"><label style="display:block;font-size:10px;color:var(--text2);margin-bottom:4px;font-weight:700">الباسورد القديم</label><input class="ot-input" type="password" id="pw-old" autocomplete="current-password" style="width:100%"></div>
+    <div style="text-align:right;margin-bottom:10px"><label style="display:block;font-size:10px;color:var(--text2);margin-bottom:4px;font-weight:700">الباسورد الجديد</label><input class="ot-input" type="password" id="pw-new" autocomplete="new-password" style="width:100%"></div>
+    <div class="det-msg" id="pw-msg" style="color:var(--red);text-align:right"></div>
+    <button class="sp-save-btn" id="pw-btn" onclick="savePw()" style="margin-top:8px">💾 تغيير</button>
+    <button class="choice-btn ghost" onclick="closePw()">إلغاء</button>
+  </div>
+</div>
+
+<!-- EDIT USER -->
+<div class="choice-overlay" id="edit-overlay" onclick="if(event.target===this)closeEdit()">
+  <div class="choice-box" style="max-width:340px">
+    <div class="choice-title" id="eu-title">تعديل</div>
+    <div style="text-align:right;margin-bottom:10px"><label style="display:block;font-size:10px;color:var(--text2);margin-bottom:4px;font-weight:700">الباسورد</label><input class="ot-input" id="eu-pass" style="width:100%"></div>
+    <div style="text-align:right;margin-bottom:14px"><label style="display:block;font-size:10px;color:var(--text2);margin-bottom:4px;font-weight:700">المرتب الأساسي (جنيه)</label><input class="ot-input" type="number" id="eu-salary" min="0" style="width:100%"></div>
+    <button class="sp-save-btn" onclick="saveEdit()">💾 حفظ</button>
+    <button class="choice-btn ghost" onclick="closeEdit()">إلغاء</button>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -1132,6 +1167,7 @@ function startApp(){
     document.getElementById('dv-emp-card').style.display='block';
     loadEmpSelectors();
     initSavingForm();
+    startBadgeTimer();
   } else {
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='none');
   }
@@ -1144,6 +1180,7 @@ function startApp(){
 
 function logout(){
   stopAutoRefresh();
+  clearInterval(badgeTimer); setUsersBadge(0);
   S={};
   document.getElementById('app').style.display='none';
   document.getElementById('login-screen').style.display='flex';
@@ -1932,28 +1969,46 @@ function loadUsers(){
   });
 }
 
+var usersCache=[], badgeTimer=null, editTarget='';
+function setUsersBadge(n){
+  document.querySelectorAll('.users-badge').forEach(function(b){ b.textContent=toAR(n); b.style.display=n>0?'flex':'none'; });
+}
+function refreshUsersBadge(){
+  if(!S.isAdmin) return;
+  rpcOnce('getUsers',[S.username,S.pass],function(l){
+    setUsersBadge(l.filter(function(u){return u.status==='pending';}).length);
+  },function(){});
+}
+function startBadgeTimer(){
+  clearInterval(badgeTimer);
+  refreshUsersBadge();
+  badgeTimer=setInterval(refreshUsersBadge,30000);
+}
+
 function renderUsers(list){
+  usersCache=list;
   var order={pending:0,approved:1};
   list.sort(function(a,b){ return (order[a.status]-order[b.status])||(b.createdAt-a.createdAt); });
   var pc=list.filter(function(u){return u.status==='pending';}).length;
+  setUsersBadge(pc);
   var html='';
-  if(pc) html+='<div class="card pending-banner" style="border-color:var(--orange);text-align:center;font-weight:800;color:var(--orange)">⏳ فيه '+toAR(pc)+' طلب مستني موافقتك</div>';
+  if(pc) html+='<div class="card pending-banner" style="border-color:var(--orange);text-align:center;font-weight:800;color:var(--orange)">⏳ فيه '+toAR(pc)+(pc===1?' طلب':' طلبات')+' مستني موافقتك</div>';
   html+=list.map(function(u,i){
     var pend=u.status==='pending';
-    var pill=pend?'<span class="pill p-friday">⏳ مستني موافقة</span>':'<span class="pill p-present">✓ مفعّل</span>';
-    var dt=u.createdAt?new Date(u.createdAt).toLocaleDateString('ar-EG'):'—';
-    var actions='';
-    if(pend) actions='<div class="user-actions"><button class="u-btn u-ok" onclick="userAction(\''+u.username+'\',\'approve\',this)">✅ موافقة</button><button class="u-btn u-no" onclick="userAction(\''+u.username+'\',\'reject\',this)">❌ رفض</button></div>';
-    else if(!u.builtin) actions='<div class="user-actions"><button class="u-btn u-no" onclick="userAction(\''+u.username+'\',\'reject\',this)">🗑️ حذف الحساب</button></div>';
+    var top, actions='';
+    if(pend){
+      top='<div class="uc-top"><div class="det-title" style="font-size:16px">'+u.displayName+'</div><span class="pill p-friday">⏳ مستني موافقة</span></div>';
+      actions='<div class="user-actions"><button class="u-btn u-ok" onclick="userAction(\''+u.username+'\',\'approve\',this)">✅ موافقة</button><button class="u-btn u-no" onclick="userAction(\''+u.username+'\',\'reject\',this)">❌ رفض</button></div>';
+    } else {
+      top='<div class="uc-top"><div class="det-title" style="font-size:16px">'+u.displayName+'</div><div class="uc-icons">'
+        +'<button class="ic-btn" title="تعديل" onclick="openEdit(\''+u.username+'\')">✏️</button>'
+        +(u.isAdmin?'':'<button class="ic-btn del" title="حذف" onclick="delUser(\''+u.username+'\',this)">🗑️</button>')
+        +'</div></div>';
+    }
     return '<div class="user-card a-in '+(pend?'pending':'')+'" style="animation-delay:'+Math.min(i*70,600)+'ms">'
-      +'<div class="user-card-head"><div class="det-title" style="font-size:16px">'+u.displayName+'</div>'+pill+'</div>'
-      +dvRow('اسم المستخدم','<span dir="ltr">'+u.username+'</span>')
+      +top
       +dvRow('الباسورد','<span dir="ltr">'+u.password+'</span>')
-      +dvRow('الصلاحية',u.isAdmin?'Admin':'Labeler')
-      +dvRow('المرتب الأساسي',fNum(u.salary)+' جنيه')
-      +dvRow('معدل اليوم',fNum(u.dayRate)+' جنيه')
-      +dvRow('معدل الساعة',fNum(u.hourRate)+' جنيه')
-      +(u.builtin?'':dvRow('تاريخ الطلب',dt))
+      +dvRow('المرتب','<span>'+fNum(u.salary)+' جنيه</span>')
       +actions+'</div>';
   }).join('');
   document.getElementById('users-list').innerHTML=html;
@@ -1969,6 +2024,69 @@ function userAction(target,action,btn){
     else loadUsers();
     loadEmpSelectors();
   },function(e){ toast('❌ '+e); });
+}
+
+function delUser(target,btn){
+  if(!confirm('تحذف حساب '+target+'؟')) return;
+  var cardEl=btn&&btn.closest('.user-card');
+  rpcOnce('deleteUser',[S.username,S.pass,target],function(){
+    toast('🗑️ اتحذف الحساب');
+    if(cardEl) cardEl.classList.add('user-removed');
+    setTimeout(loadUsers,450);
+    loadEmpSelectors();
+  },function(e){ toast('❌ '+e); });
+}
+
+function openEdit(target){
+  var u=usersCache.find(function(x){return x.username===target;});
+  if(!u) return;
+  editTarget=target;
+  document.getElementById('eu-title').textContent='تعديل '+u.displayName;
+  document.getElementById('eu-pass').value=u.password;
+  document.getElementById('eu-salary').value=u.salary;
+  document.getElementById('edit-overlay').classList.add('show');
+}
+function closeEdit(){ document.getElementById('edit-overlay').classList.remove('show'); }
+function saveEdit(){
+  var p=document.getElementById('eu-pass').value.trim();
+  var s=parseFloat(document.getElementById('eu-salary').value);
+  if(p.length<4){ toast('❌ الباسورد ٤ حروف على الأقل'); return; }
+  if(!(s>0)){ toast('❌ اكتب مرتب صحيح'); return; }
+  rpcOnce('updateUser',[S.username,S.pass,editTarget,p,s],function(){
+    if(editTarget===S.username){
+      S.pass=p; S.salary=s;
+      try{ localStorage.setItem('hr_cred_'+S.username,p); }catch(e){}
+    }
+    closeEdit();
+    toast('✅ اتعدل');
+    loadUsers();
+    loadEmpSelectors();
+  },function(e){ toast('❌ '+e); });
+}
+
+// ==================== CHANGE PASSWORD ====================
+function openPw(){
+  document.getElementById('pw-old').value='';
+  document.getElementById('pw-new').value='';
+  document.getElementById('pw-msg').textContent='';
+  document.getElementById('pw-overlay').classList.add('show');
+}
+function closePw(){ document.getElementById('pw-overlay').classList.remove('show'); }
+function savePw(){
+  var o=document.getElementById('pw-old').value.trim();
+  var n=document.getElementById('pw-new').value.trim();
+  var msg=document.getElementById('pw-msg'), btn=document.getElementById('pw-btn');
+  msg.textContent='';
+  if(!o||!n){ msg.textContent='املا الخانتين'; return; }
+  btn.disabled=true;
+  rpcOnce('changePassword',[S.username,o,n],function(res){
+    btn.disabled=false;
+    if(!res.success){ msg.textContent=res.msg; return; }
+    S.pass=n;
+    try{ localStorage.setItem('hr_cred_'+S.username,n); }catch(e){}
+    closePw();
+    toast(res.msg);
+  },function(e){ btn.disabled=false; msg.textContent='خطأ: '+e; });
 }
 
 // ==================== TOAST ====================
