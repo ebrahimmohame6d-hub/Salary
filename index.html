@@ -363,6 +363,24 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .bonus-input{width:110px !important;flex:none !important;padding:7px 9px !important;font-size:13px !important}
 .bonus-save{width:34px;height:34px;border-radius:8px;border:none;background:linear-gradient(135deg,#1a8a55,#2cb87a);color:#fff;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 3px 10px rgba(26,138,85,.35);transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
 .bonus-save:hover{transform:scale(1.15) rotate(-5deg)}
+  /* ===== CUSTOM DROPDOWN ===== */
+.dd{position:relative}
+.dd-btn{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.06);border:1.5px solid rgba(42,77,184,0.25);border-radius:var(--radius-sm);padding:12px 13px;font-size:14px;color:#fff;font-family:'Cairo',sans-serif;direction:ltr;cursor:pointer;transition:border-color .2s,box-shadow .2s,background .2s;user-select:none}
+.dd-btn:hover{border-color:rgba(42,77,184,0.6);background:rgba(42,77,184,0.08)}
+.dd.open .dd-btn{border-color:var(--accent-lt);background:rgba(42,77,184,0.1);box-shadow:0 0 0 3px rgba(42,77,184,0.15)}
+.dd-ph{color:rgba(255,255,255,0.3)}
+.dd-arrow{color:#7ea6ff;font-size:16px;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.dd.open .dd-arrow{transform:rotate(180deg)}
+.dd-list{position:absolute;top:calc(100% + 6px);left:0;right:0;padding:6px;border-radius:12px;background:linear-gradient(180deg,#16244f 0%,#0a1230 100%);border:1px solid rgba(42,77,184,0.5);box-shadow:0 14px 34px rgba(0,0,0,0.55),0 0 24px rgba(42,77,184,0.18);z-index:30;opacity:0;transform:translateY(-10px) scale(.96);transform-origin:top center;pointer-events:none;transition:opacity .22s ease,transform .3s cubic-bezier(.34,1.56,.64,1)}
+.dd.open .dd-list{opacity:1;transform:none;pointer-events:auto}
+.dd-item{padding:11px 13px;border-radius:8px;font-size:14px;font-weight:600;color:rgba(255,255,255,0.75);cursor:pointer;direction:ltr;text-align:left;transition:background .18s,color .18s,transform .18s}
+.dd-item:hover{background:rgba(42,77,184,0.35);color:#fff;transform:translateX(5px)}
+.dd-item.sel{background:linear-gradient(90deg,#2a4db8 0%,#0d1b4b 100%);color:#fff;font-weight:800}
+.dd.open .dd-item{animation:ddIn .35s cubic-bezier(.22,1,.36,1) backwards}
+.dd.open .dd-item:nth-child(1){animation-delay:.04s}
+.dd.open .dd-item:nth-child(2){animation-delay:.09s}
+.dd.open .dd-item:nth-child(3){animation-delay:.14s}
+@keyframes ddIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 /* ===== RESPONSIVE ===== */
 @media (max-width:768px){
   .sidebar{display:none}
@@ -457,7 +475,21 @@ button:active{transform:scale(.95)}
       <div class="fg"><label>اسم المستخدم</label><input id="r-user" placeholder="username" dir="ltr" autocomplete="off"></div>
       <div class="fg"><label>كلمة المرور</label><input id="r-pass" type="password" placeholder="••••" dir="ltr" autocomplete="new-password"></div>
       <div class="fg"><label>المرتب الأساسي (جنيه)</label><input id="r-salary" type="number" min="0" placeholder="5500" dir="ltr"></div>
-      <div class="fg"><label>الوظيفة</label><select id="r-role"><option value="">اختار الوظيفة</option><option value="QC">QC</option><option value="SL">SL</option><option value="Labeler">Labeler</option></select></div>
+     <div class="fg">
+  <label>الوظيفة</label>
+  <div class="dd" id="r-dd">
+    <div class="dd-btn" onclick="toggleDD(event)">
+      <span id="r-dd-txt" class="dd-ph">—</span>
+      <span class="dd-arrow">▾</span>
+    </div>
+    <div class="dd-list">
+      <div class="dd-item" onclick="pickDD('QC')">QC</div>
+      <div class="dd-item" onclick="pickDD('SL')">SL</div>
+      <div class="dd-item" onclick="pickDD('Labeler')">Labeler</div>
+    </div>
+    <input type="hidden" id="r-role" value="">
+  </div>
+</div>
       <button class="login-btn" id="r-btn" onclick="doRegister()">إنشاء حساب</button>
       <div class="login-err" id="r-err"></div>
       <div class="login-ok" id="r-ok"></div>
