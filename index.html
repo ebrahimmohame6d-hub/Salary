@@ -40,9 +40,16 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .login-btn{width:100%;background:linear-gradient(90deg,#2a4db8 0%,#0d1b4b 100%);border:1px solid rgba(42,77,184,0.5);border-radius:var(--radius-sm);padding:14px;font-size:15px;font-weight:800;color:#fff;cursor:pointer;font-family:'Cairo',sans-serif;margin-top:6px;transition:all 0.2s;-webkit-appearance:none;box-shadow:0 4px 20px rgba(42,77,184,0.35);position:relative;overflow:hidden}
 .login-btn:hover{box-shadow:0 6px 28px rgba(42,77,184,0.5);transform:translateY(-1px)}
 .login-btn:active{transform:scale(0.96)}
+.login-btn:disabled{opacity:.6}
 .login-btn::after{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.25),transparent);transform:skewX(-20deg);animation:shine 3.2s infinite;pointer-events:none}
 @keyframes shine{0%{left:-60%}60%,100%{left:130%}}
 .login-err{background:rgba(224,52,72,0.12);border:1px solid rgba(224,52,72,0.35);border-radius:var(--radius-sm);padding:9px 13px;font-size:12px;color:#ff8a95;margin-top:10px;display:none;text-align:center}
+.login-ok{background:rgba(44,184,122,.12);border:1px solid rgba(44,184,122,.4);border-radius:var(--radius-sm);padding:9px 13px;font-size:12px;color:#5de8b0;margin-top:10px;display:none;text-align:center;animation:popK .45s cubic-bezier(.34,1.56,.64,1)}
+.login-link{margin-top:16px;font-size:12px;color:rgba(255,255,255,.55);cursor:pointer;transition:color .2s}
+.login-link b{color:#7ea6ff;background:linear-gradient(#7ea6ff,#7ea6ff) 0 100%/0 2px no-repeat;transition:background-size .35s ease;padding-bottom:2px}
+.login-link:hover{color:#fff}.login-link:hover b{background-size:100% 2px}
+.swap-in{animation:swapIn .5s cubic-bezier(.22,1,.36,1) both}
+@keyframes swapIn{from{opacity:0;transform:translateX(-24px) scale(.97)}to{opacity:1;transform:none}}
 .shake{animation:shake .45s ease}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 
@@ -88,9 +95,9 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .mt-name{font-size:13px;font-weight:700;color:#fff}
 .mt-sal{font-size:11px;color:#5de8b0;font-weight:600}
 
-/* ===== AVATAR (صورة الشخص) ===== */
+/* ===== AVATAR ===== */
 .avatar-btn{position:fixed;top:14px;left:14px;width:42px;height:42px;border-radius:10px;background:var(--navy);border:2px solid rgba(42,77,184,0.6);box-shadow:0 4px 12px rgba(13,27,75,0.3);cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center;z-index:400;transition:transform 0.2s ease}
-.avatar-btn:hover{transform:scale(1.06)}
+.avatar-btn:hover{transform:rotate(-8deg) scale(1.12)}
 .avatar-btn:active{transform:scale(0.96)}
 .avatar-btn img{width:100%;height:100%;object-fit:cover;display:none}
 .avatar-btn .avatar-ph{font-size:18px;color:#fff}
@@ -103,19 +110,21 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .page-header{margin-bottom:16px}
 .page-header h2{font-size:20px;font-weight:800;color:var(--navy);margin-bottom:2px}
 .page-header p{font-size:12px;color:var(--text2)}
-.card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:13px;box-shadow:0 1px 6px rgba(26,42,74,0.06)}
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:13px;box-shadow:0 1px 6px rgba(26,42,74,0.06);transition:transform .25s ease,box-shadow .25s ease}
+.card:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(42,77,184,.14)}
 .card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:11px;border-bottom:1px solid var(--border);gap:8px;flex-wrap:wrap}
 .card-title{font-size:13px;font-weight:700;color:var(--navy)}
-.period-badge{background:#eef3fc;border:1.5px solid #c8d8f5;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--accent-lt);white-space:nowrap}
+.period-badge{background:#eef3fc;border:1.5px solid #c8d8f5;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--accent-lt);white-space:nowrap;background-image:linear-gradient(110deg,transparent 30%,rgba(42,77,184,.14) 50%,transparent 70%);background-size:250% 100%;animation:badgeShine 4s linear infinite}
+@keyframes badgeShine{from{background-position:150% 0}to{background-position:-100% 0}}
 .month-nav{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .month-nav button{background:var(--bg3);border:1.5px solid var(--border2);color:var(--text2);width:32px;height:32px;border-radius:var(--radius-sm);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
-.month-nav button:hover{background:#e2e8f0}
+.month-nav button:hover{background:#e2e8f0;transform:scale(1.15)}
 .month-nav button:active{border-color:var(--accent-lt);color:var(--accent-lt);transform:scale(0.95)}
 .month-nav span{font-size:12px;font-weight:700;color:var(--navy);min-width:70px;text-align:center}
 .emp-sel{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px}
-.emp-btn{padding:5px 14px;border-radius:30px;background:var(--bg3);border:1.5px solid var(--border2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Cairo',sans-serif;transition:all 0.15s;min-height:34px}
+.emp-btn{padding:5px 14px;border-radius:30px;background:var(--bg3);border:1.5px solid var(--border2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Cairo',sans-serif;transition:all 0.15s;min-height:34px;animation:popK .45s cubic-bezier(.34,1.56,.64,1) backwards}
 .emp-btn:hover{background:#fff;border-color:var(--accent-lt);color:var(--accent-lt);transform:translateY(-1px)}
-.emp-btn.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.emp-btn.active{background:var(--navy);border-color:var(--navy);color:#fff;box-shadow:0 4px 14px rgba(13,27,75,.35)}
 
 /* ===== ATTENDANCE TABLE ===== */
 .att-layout{display:grid;grid-template-columns:1fr 305px;gap:14px;align-items:start}
@@ -143,7 +152,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .day-comp-badge{color:var(--purple);border:1.5px solid #c4b5fd}
 .day-ded-badge{color:var(--red);border:1.5px solid rgba(224,52,72,0.3);margin-top:2px}
 
-/* ===== TODAY ROW — ماية زرقا متحركة ===== */
+/* ===== TODAY ROW ===== */
 .today-tr td{background:transparent;padding:4px 10px;vertical-align:middle}
 .today-tr .day-row{margin:0;background:transparent !important;border-color:transparent !important;box-shadow:none !important}
 .today-tr .day-row:hover{transform:none}
@@ -156,7 +165,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .liquid-fill{position:absolute;inset:0;background-repeat:no-repeat;background-size:250% 160%;background-image:radial-gradient(ellipse at 40% 50%,rgba(255,255,255,0.25) 0%,rgba(255,255,255,0) 50%),linear-gradient(90deg,transparent 0%,#2f6db5 22%,#4a8fd6 50%,#2f6db5 78%,transparent 100%);will-change:background-position}
 
 /* ===== PILLS ===== */
-.pill{display:inline-flex;align-items:center;gap:3px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;background:#fff;box-shadow:0 1px 4px rgba(13,27,75,0.05);transition:all 0.2s ease}
+.pill{display:inline-flex;align-items:center;gap:3px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;background:#fff;box-shadow:0 1px 4px rgba(13,27,75,0.05);transition:all 0.2s ease;animation:popK .45s cubic-bezier(.34,1.56,.64,1) backwards}
 .pill:hover{transform:translateY(-1px)}
 .p-present{background:#fff;color:#1a8a55;border:1.5px solid #b6e8ce}
 .p-absent{background:#fff;color:#c01c2e;border:1.5px solid #f5b8bf}
@@ -168,10 +177,11 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .p-ded{background:#fff;color:#c01c2e;border:1.5px solid #f5b8bf}
 .p-empty{background:transparent;color:var(--text3);border:1px dashed var(--text3);font-weight:500;box-shadow:none}
 
-/* ===== SIDE PANEL (desktop) ===== */
-.side-panel{background:var(--bg3);border:1.5px solid var(--border2);border-radius:var(--radius);padding:14px;position:sticky;top:22px;max-height:80vh;overflow-y:auto}
-.today-card{background:linear-gradient(135deg,var(--navy) 0%,var(--accent-lt) 100%);border-radius:var(--radius);padding:20px 14px 16px;color:#fff;text-align:center;position:relative;overflow:hidden}
-.today-card::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.08) 1px,transparent 1px);background-size:20px 20px}
+/* ===== SIDE PANEL ===== */
+.side-panel{background:var(--bg3);border:1.5px solid var(--border2);border-radius:var(--radius);padding:14px;position:sticky;top:22px;max-height:80vh;overflow-y:auto;animation:aIn .5s ease backwards}
+.today-card{background:linear-gradient(135deg,var(--navy) 0%,var(--accent-lt) 100%);border-radius:var(--radius);padding:20px 14px 16px;color:#fff;text-align:center;position:relative;overflow:hidden;animation:floatY 5s ease-in-out infinite}
+.today-card::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,0.08) 1px,transparent 1px);background-size:20px 20px;animation:dotsMove 8s linear infinite}
+@keyframes dotsMove{to{background-position:20px 20px}}
 .today-card-inner{position:relative;z-index:1}
 .today-lbl{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;opacity:0.6;margin-bottom:10px}
 .today-dayname{font-size:26px;font-weight:900;margin-bottom:4px;line-height:1.1}
@@ -195,23 +205,24 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 @keyframes barGrow{from{width:0}}
 .al-footer{font-size:11px;opacity:0.65;display:flex;align-items:center;justify-content:center;gap:4px;border-top:1px solid rgba(255,255,255,0.15);padding-top:10px}
 
-/* ===== SMALL DAY CARD (inside side panel / mobile sheet) ===== */
 .day-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px}
 .sheet-backdrop{display:none;position:fixed;inset:0;background:rgba(5,10,26,0.45);z-index:440}
 .sheet-grip{display:none;width:42px;height:4px;border-radius:4px;background:var(--bg4);margin:0 auto 12px}
 
 /* ===== SECTIONS & OPTIONS ===== */
-.sp-section{font-size:11px;font-weight:800;color:var(--accent-lt);letter-spacing:0.05em;text-transform:uppercase;margin:6px 0 10px;padding-right:9px;border-right:3px solid var(--accent-lt)}
+.sp-section{font-size:11px;font-weight:800;color:var(--accent-lt);letter-spacing:0.05em;text-transform:uppercase;margin:6px 0 10px;padding-right:9px;border-right:3px solid var(--accent-lt);animation:slideR .5s ease backwards}
+@keyframes slideR{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
 .status-opts{display:flex;flex-direction:column;gap:5px;margin-bottom:4px}
 .status-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .s-opt{display:flex;align-items:center;gap:7px;padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--text2);border:1.5px solid var(--border2);background:var(--bg3);transition:all 0.18s;font-family:'Cairo',sans-serif;width:100%;text-align:right;position:relative;overflow:hidden}
 .s-opt:hover{background:#fff;border-color:var(--accent-lt);color:var(--accent-lt);font-weight:700;transform:translateY(-1px)}
-.s-opt.sel{border-color:var(--accent-lt);border-width:2px;background:#fff;color:var(--accent-lt);font-weight:800;box-shadow:0 0 0 3px rgba(42,77,184,0.12),0 6px 16px rgba(42,77,184,0.18)}
+.s-opt.sel{border-color:var(--accent-lt);border-width:2px;background:#fff;color:var(--accent-lt);font-weight:800;box-shadow:0 0 0 3px rgba(42,77,184,0.12),0 6px 16px rgba(42,77,184,0.18);animation:selPulse .5s ease}
+@keyframes selPulse{0%{transform:scale(.94)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
 .s-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .d-green{background:var(--green)}.d-red{background:var(--red)}.d-blue{background:var(--accent-lt)}
 .d-gray{background:var(--text3)}.d-orange{background:var(--orange)}.d-purple{background:var(--purple)}
 
-.ot-box{background:#fff;border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:12px;transition:all 0.2s}
+.ot-box{background:#fff;border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:12px;transition:all 0.2s;animation:aIn .45s ease backwards}
 .ot-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}.ot-row:last-child{margin-bottom:0}
 .ot-label{font-size:11px;color:var(--text2);flex-shrink:0;width:60px}
 .ot-input{background:#fff;border:1.5px solid var(--border2);border-radius:6px;padding:9px 10px;font-size:14px;color:var(--text);font-family:'Cairo',sans-serif;flex:1;min-width:0;direction:ltr;-webkit-appearance:none}
@@ -228,7 +239,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .ot-box.is-comp .ot-comp-note{display:block}
 .ot-box.is-comp .ot-result,.ot-box.is-comp .ot-rate-row{display:none !important}
 
-.ind-ded-box{background:#fff5f6;border:1.5px solid rgba(224,52,72,0.2);border-radius:var(--radius-sm);padding:12px}
+.ind-ded-box{background:#fff5f6;border:1.5px solid rgba(224,52,72,0.2);border-radius:var(--radius-sm);padding:12px;animation:aIn .45s ease backwards}
 .ind-ded-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .ind-ded-row:last-child{margin-bottom:0}
 .ind-ded-label{font-size:11px;color:var(--text2);flex-shrink:0;width:80px}
@@ -237,17 +248,19 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .ind-ded-hint{font-size:10px;color:var(--text3);margin-top:6px;padding-top:6px;border-top:1px solid rgba(224,52,72,0.1);text-align:right}
 .ind-ded-result{font-size:11px;color:var(--red);font-weight:700;margin-top:8px;padding-top:8px;border-top:1px solid rgba(224,52,72,0.15);text-align:right}
 
-/* ===== DAY DETAILS ELEMENTS ===== */
+/* ===== DAY DETAILS ===== */
 .det-title{font-size:18px;font-weight:900;color:var(--navy)}
 .det-sub{font-size:12px;color:var(--accent-lt);font-weight:700;margin-top:4px}
 .det-times{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.time-chip{font-size:12px;background:#eef3fc;border:1.5px solid #c8d8f5;border-radius:20px;padding:5px 12px;color:var(--accent-lt);font-weight:700}
+.time-chip{font-size:12px;background:#eef3fc;border:1.5px solid #c8d8f5;border-radius:20px;padding:5px 12px;color:var(--accent-lt);font-weight:700;animation:popK .45s cubic-bezier(.34,1.56,.64,1) backwards}
 .muted{font-size:12px;color:var(--text3)}
 .det-msg{font-size:12px;color:var(--accent-lt);font-weight:700;margin-top:8px;min-height:16px}
-.photo-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-.photo-thumb{width:64px;height:64px;border-radius:10px;background:var(--bg3);border:1.5px solid var(--border2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.photo-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;animation:slideR .4s ease backwards}
+.photo-thumb{width:64px;height:64px;border-radius:10px;background:var(--bg3);border:1.5px solid var(--border2);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;transition:transform .2s}
+.photo-thumb:hover{transform:scale(1.08) rotate(2deg)}
 .photo-thumb img{width:100%;height:100%;object-fit:cover}
-.photo-add{width:64px;height:64px;border-radius:10px;border:2px dashed var(--border2);background:var(--bg3);color:var(--accent-lt);font-size:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s}
+.photo-add{width:64px;height:64px;border-radius:10px;border:2px dashed var(--border2);background:var(--bg3);color:var(--accent-lt);font-size:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s;animation:addPulse 2.4s ease-in-out infinite}
+@keyframes addPulse{0%,100%{box-shadow:0 0 0 0 rgba(42,77,184,.3)}50%{box-shadow:0 0 0 8px rgba(42,77,184,0)}}
 .photo-add:hover{background:#fff;transform:translateY(-1px)}
 .photo-act{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .photo-name{font-size:12px;font-weight:700;color:var(--navy);margin-inline-end:4px}
@@ -255,7 +268,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .pb:hover{background:var(--bg3)}
 .pb.del{border-color:rgba(224,52,72,0.4);color:var(--red)}
 .choice-overlay{display:none;position:fixed;inset:0;background:rgba(5,10,26,0.55);backdrop-filter:blur(3px);z-index:500;align-items:center;justify-content:center;padding:16px}
-.choice-overlay.show{display:flex}
+.choice-overlay.show{display:flex;animation:fadeIn .25s ease}
 .choice-box{background:#fff;border-radius:18px;padding:20px;width:100%;max-width:300px;box-shadow:0 20px 50px rgba(0,0,0,0.3);animation:popK .35s cubic-bezier(.34,1.56,.64,1)}
 @keyframes popK{0%{opacity:0;transform:scale(.92) translateY(10px)}60%{opacity:1;transform:scale(1.02)}100%{opacity:1;transform:none}}
 .choice-title{font-size:14px;font-weight:800;color:var(--navy);text-align:center;margin-bottom:14px}
@@ -263,21 +276,23 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .choice-btn:hover{background:#fff;transform:translateY(-1px)}
 .choice-btn.ghost{background:none;border-color:var(--border);color:var(--text2);margin-bottom:0}
 .viewer{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:600;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
-.viewer.show{display:flex}
+.viewer.show{display:flex;animation:fadeIn .25s ease}
 .viewer img{max-width:100%;max-height:100%;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.viewer.show img{animation:popK .4s cubic-bezier(.34,1.56,.64,1)}
 .viewer-close{position:absolute;top:16px;left:16px;width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,0.15);color:#fff;font-size:18px;cursor:pointer}
 
-/* ===== DAY VIEW PAGE (صفحة تفاصيل اليوم) ===== */
+/* ===== DAY VIEW ===== */
 .dv-date-row{display:flex;align-items:center;gap:8px}
 .dv-date-row .btn-outline{width:40px;height:42px;font-size:18px;padding:0;flex-shrink:0}
 .dv-date-input{flex:1;min-width:0;background:#fff;border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:10px 12px;font-size:15px;font-weight:700;color:var(--navy);font-family:'Cairo',sans-serif;direction:ltr;text-align:center;-webkit-appearance:none;height:42px}
 .dv-date-input:focus{outline:none;border-color:var(--accent-lt)}
 .dv-today-btn{margin-top:10px}
-.dv-hero{border-color:var(--border2)}
+.dv-hero{border-color:var(--border2);animation:aIn .5s ease backwards}
 
 /* ===== SALARY & STATS ===== */
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px}
-.stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px;position:relative;overflow:hidden;box-shadow:0 1px 6px rgba(26,42,74,0.05);transition:all 0.2s ease}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px;position:relative;overflow:hidden;box-shadow:0 1px 6px rgba(26,42,74,0.05);transition:all 0.2s ease;animation:aIn .55s cubic-bezier(.22,1,.36,1) backwards}
+.stat-card:nth-child(2){animation-delay:.08s}.stat-card:nth-child(3){animation-delay:.16s}.stat-card:nth-child(4){animation-delay:.24s}
 .stat-card:hover{border-color:var(--accent-lt);box-shadow:0 8px 20px rgba(42,77,184,0.18);transform:translateY(-2px)}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
 .sc-blue::before{background:linear-gradient(90deg,#3060b8,#1e3259)}
@@ -288,13 +303,14 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .stat-num{font-size:20px;font-weight:800;line-height:1;margin-bottom:3px;color:var(--navy)}
 .stat-label{font-size:10px;color:var(--text2)}
 .sal-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.sal-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)}
+.sal-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);transition:background .2s,padding .2s}
+.sal-row:hover{background:var(--bg3);padding-inline:8px;border-radius:6px}
 .sal-row:last-child{border:none}
 .sal-label{font-size:12px;color:var(--text2)}
 .sal-val{font-size:12px;font-weight:700;color:var(--navy)}
 .sal-plus{color:var(--green)}
 .sal-minus{color:var(--red)}
-.ot-summary{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px;margin-top:10px}
+.ot-summary{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px;margin-top:10px;animation:aIn .45s ease backwards}
 .ot-sum-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px}
 .ot-sum-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;gap:8px}
 .ot-sum-row:last-child{border:none}
@@ -305,13 +321,29 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .sp-save-btn{width:100%;background:linear-gradient(90deg,var(--navy) 0%,var(--accent-lt) 100%);border:none;border-radius:var(--radius-sm);padding:13px;font-size:14px;font-weight:800;color:#fff;cursor:pointer;font-family:'Cairo',sans-serif;margin-bottom:8px;-webkit-appearance:none;transition:all 0.15s;box-shadow:0 4px 14px rgba(42,77,184,0.25)}
 .sp-save-btn:hover{transform:translateY(-1px)}
 .sp-save-btn:active{transform:scale(0.96)}
-.loading{text-align:center;padding:30px;color:var(--text2);font-size:12px}
-.spinner{width:22px;height:22px;border:2px solid var(--border2);border-top-color:var(--accent-lt);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 9px}
+.loading{text-align:center;padding:30px;color:var(--text2);font-size:12px;animation:fadeIn .4s ease}
+.spinner{width:22px;height:22px;border:2px solid var(--border2);border-top-color:var(--accent-lt);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 9px;box-shadow:0 0 12px rgba(42,77,184,.3)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .empty{text-align:center;padding:28px;color:var(--text2)}
-.empty-icon{font-size:26px;margin-bottom:7px;opacity:0.35}
+.empty-icon{font-size:26px;margin-bottom:7px;opacity:0.35;animation:floatY 3s ease-in-out infinite}
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) scale(0.95);background:var(--navy);color:#fff;padding:10px 20px;border-radius:30px;font-size:12px;font-weight:600;box-shadow:0 8px 28px rgba(26,42,74,0.3);display:none;z-index:9999;white-space:nowrap;opacity:0;transition:all 0.3s ease}
-.toast.show{opacity:1;transform:translateX(-50%) scale(1)}
+.toast.show{opacity:1;transform:translateX(-50%) scale(1);animation:toastBounce .45s cubic-bezier(.34,1.56,.64,1)}
+@keyframes toastBounce{0%{transform:translateX(-50%) translateY(30px) scale(.8)}100%{transform:translateX(-50%) scale(1)}}
+
+/* ===== USERS PAGE ===== */
+.user-card{background:#fff;border:1.5px solid var(--border2);border-radius:var(--radius);padding:14px;margin-bottom:10px;transition:transform .25s ease,box-shadow .25s ease,border-color .25s}
+.user-card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(42,77,184,.18);border-color:var(--accent-lt)}
+.user-card.pending{border-color:rgba(224,144,32,.7);background:#fffaf0;animation:pendingGlow 2s ease-in-out infinite}
+@keyframes pendingGlow{0%,100%{box-shadow:0 0 0 0 rgba(224,144,32,.35)}50%{box-shadow:0 0 0 7px rgba(224,144,32,0)}}
+.user-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.user-actions{display:flex;gap:8px;margin-top:10px}
+.u-btn{flex:1;padding:10px;border-radius:var(--radius-sm);border:none;font-family:'Cairo',sans-serif;font-size:13px;font-weight:800;cursor:pointer;color:#fff;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s}
+.u-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.2)}.u-btn:active{transform:scale(.95)}
+.u-ok{background:linear-gradient(90deg,#1a8a55,#2cb87a)}.u-no{background:linear-gradient(90deg,#c01c2e,#e03448)}
+.pending-banner{animation:bannerBounce 1.6s ease-in-out infinite}
+@keyframes bannerBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.user-removed{animation:userOut .45s ease forwards}
+@keyframes userOut{to{opacity:0;transform:translateX(60px) scale(.9)}}
 
 /* ===== RESPONSIVE ===== */
 @media (max-width:768px){
@@ -340,8 +372,6 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
   .period-badge{font-size:10px;padding:3px 10px}
   .status-grid{grid-template-columns:1fr 1fr}
   .bn-icon{padding:4px 10px}
-
-  /* الكارت الصغير على الموبايل بيطلع من تحت (Bottom Sheet) */
   .side-panel.sheet-open{display:block;position:fixed;left:0;right:0;bottom:0;top:auto;max-height:88vh;overflow-y:auto;z-index:450;border-radius:20px 20px 0 0;border:none;padding:12px 14px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,0.3);animation:sheetUp .28s ease}
   .side-panel.sheet-open .sheet-grip{display:block}
   .sheet-backdrop.show{display:block}
@@ -365,11 +395,22 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .a-in{animation:aIn .55s cubic-bezier(.22,1,.36,1) backwards}
 .a-pop{animation:popK .5s cubic-bezier(.34,1.56,.64,1) backwards}
 .login-card{animation:fadeUp .45s ease both,floatY 6s ease-in-out .6s infinite}
+.login-card input:focus{transform:translateY(-2px)}
 .login-avatar{animation:avatarPulse 3s ease-in-out infinite}
+.avatar-btn{animation:avatarPulse 3s ease-in-out infinite}
 #login-screen::after{animation:bgBreath 7s ease-in-out infinite}
 .stat-card:hover .stat-icon{animation:iconBounce .7s ease}
 .ripple{position:absolute;border-radius:50%;background:currentColor;opacity:.25;transform:scale(0);animation:rippleK .6s ease-out forwards;pointer-events:none}
 .s-opt,.ot-type-btn,.btn-outline,.month-nav button,.nav-item,.bn-item,.logout-btn,.emp-btn,.pb,.choice-btn{position:relative;overflow:hidden}
+button:active{transform:scale(.95)}
+.sb-logo-av{transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.sb-logo-av:hover{transform:rotate(360deg) scale(1.1)}
+.nav-icon,.bn-icon{display:inline-block;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.nav-item:hover .nav-icon{transform:scale(1.35) rotate(-10deg)}
+.bn-item.active .bn-icon{animation:iconBounce .6s ease}
+.user-box{animation:aIn .6s cubic-bezier(.22,1,.36,1) .1s backwards}
+#sp-day{animation:swapIn .35s ease}
+#saving-total{animation:floatY 4s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 }
@@ -385,24 +426,36 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
     <h2>Attend &amp; Salary</h2>
     <div class="login-online">متصل</div>
     <p class="login-sub">نظام إدارة الحضور والمرتبات</p>
-    <div class="fg"><label>اسم المستخدم</label><input id="l-user" placeholder="username" dir="ltr" autocomplete="username" oninput="onUserInput()"></div>
-    <div class="fg"><label>كلمة المرور</label><input id="l-pass" type="password" placeholder="••••" dir="ltr" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <button class="login-btn" onclick="doLogin()">دخول</button>
-    <div class="login-err" id="l-err"></div>
+
+    <div id="login-box">
+      <div class="fg"><label>اسم المستخدم</label><input id="l-user" placeholder="username" dir="ltr" autocomplete="username" oninput="onUserInput()"></div>
+      <div class="fg"><label>كلمة المرور</label><input id="l-pass" type="password" placeholder="••••" dir="ltr" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="login-btn" onclick="doLogin()">دخول</button>
+      <div class="login-err" id="l-err"></div>
+      <div class="login-link" onclick="showRegister()">معندكش حساب؟ <b>إنشاء حساب</b></div>
+    </div>
+
+    <div id="reg-box" style="display:none">
+      <div class="fg"><label>اسم المستخدم</label><input id="r-user" placeholder="username" dir="ltr" autocomplete="off"></div>
+      <div class="fg"><label>كلمة المرور</label><input id="r-pass" type="password" placeholder="••••" dir="ltr" autocomplete="new-password"></div>
+      <div class="fg"><label>المرتب الأساسي (جنيه)</label><input id="r-salary" type="number" min="0" placeholder="5500" dir="ltr"></div>
+      <button class="login-btn" id="r-btn" onclick="doRegister()">إنشاء حساب</button>
+      <div class="login-err" id="r-err"></div>
+      <div class="login-ok" id="r-ok"></div>
+      <div class="login-link" onclick="showLogin()">عندك حساب؟ <b>تسجيل الدخول</b></div>
+    </div>
   </div>
 </div>
 
 <!-- APP -->
 <div id="app">
 
-  <!-- صورة الشخص -->
   <div class="avatar-btn" id="avatar-btn" title="تغيير الصورة" onclick="document.getElementById('avatar-file').click()">
     <img id="avatar-img" alt="">
     <span class="avatar-ph" id="avatar-ph">📷</span>
   </div>
   <input type="file" id="avatar-file" accept="image/*" style="display:none" onchange="onAvatarFile(this)">
 
-  <!-- MOBILE TOP BAR -->
   <div class="mobile-topbar">
     <div class="mt-logo">
       <div class="mt-logo-av"><img src="https://i.ibb.co/WpxRj6z9/Screenshot-2026-03-31-220317.png" alt="Logo"></div>
@@ -414,7 +467,6 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
   </div>
 
-  <!-- DESKTOP SIDEBAR -->
   <aside class="sidebar">
     <div class="sb-header">
       <div class="sb-logo">
@@ -433,20 +485,20 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
       <button class="nav-item" data-page="salary" onclick="showPage('salary')"><span class="nav-icon">💰</span>المرتب</button>
       <button class="nav-item" data-page="dayview" onclick="showPage('dayview')"><span class="nav-icon">🔎</span>تفاصيل اليوم</button>
       <button class="nav-item admin-only" data-page="saving" onclick="showPage('saving')" style="display:none"><span class="nav-icon">❤️</span>Saving for Maryouma</button>
+      <button class="nav-item admin-only" data-page="users" onclick="showPage('users')" style="display:none"><span class="nav-icon">👥</span>اليوزرات</button>
     </nav>
     <div class="sb-footer"><button class="logout-btn" onclick="logout()"><span>🚪</span>خروج</button></div>
   </aside>
 
-  <!-- MOBILE BOTTOM NAV -->
   <nav class="bottom-nav">
     <button class="bn-item active" data-page="att" onclick="showPage('att')"><span class="bn-icon">📅</span>الحضور</button>
     <button class="bn-item" data-page="salary" onclick="showPage('salary')"><span class="bn-icon">💰</span>المرتب</button>
     <button class="bn-item" data-page="dayview" onclick="showPage('dayview')"><span class="bn-icon">🔎</span>اليوم</button>
     <button class="bn-item admin-only" data-page="saving" onclick="showPage('saving')" style="display:none"><span class="bn-icon">❤️</span>Maryouma</button>
+    <button class="bn-item admin-only" data-page="users" onclick="showPage('users')" style="display:none"><span class="bn-icon">👥</span>اليوزرات</button>
     <button class="bn-item" onclick="logout()"><span class="bn-icon">🚪</span>خروج</button>
   </nav>
 
-  <!-- خلفية الكارت على الموبايل -->
   <div class="sheet-backdrop" id="sheet-bd" onclick="closeDay()"></div>
 
   <main class="main">
@@ -482,11 +534,9 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
               </table>
             </div>
 
-            <!-- الكارت الصغير (ديسكتوب: على الجنب / موبايل: بيطلع من تحت) -->
             <div class="side-panel" id="desktop-side-panel">
               <div class="sheet-grip"></div>
 
-              <!-- الوضع العادي: كارت النهارده + رصيد الإجازة -->
               <div id="sp-ph">
                 <div class="today-card">
                   <div class="today-card-inner">
@@ -500,7 +550,6 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
                 <div id="sp-annual-leave" style="margin-top:13px;display:none"></div>
               </div>
 
-              <!-- كارت اليوم المختار (الحالة + الأوفر + الخصم) -->
               <div id="sp-day" style="display:none">
                 <div class="day-card-head">
                   <div>
@@ -583,7 +632,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
       </div>
     </div>
 
-    <!-- DAY VIEW PAGE (تفاصيل اليوم) -->
+    <!-- DAY VIEW PAGE -->
     <div id="page-dayview" class="page">
       <div class="page-header"><h2>تفاصيل اليوم</h2><p>اختار التاريخ وشوف اتسجل إيه في اليوم ده</p></div>
 
@@ -644,6 +693,12 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
       </div>
     </div>
 
+    <!-- USERS PAGE -->
+    <div id="page-users" class="page">
+      <div class="page-header"><h2>👥 اليوزرات</h2><p>كل الحسابات وطلبات الإنشاء الجديدة</p></div>
+      <div id="users-list"></div>
+    </div>
+
   </main>
 </div>
 
@@ -694,7 +749,7 @@ function callAppsScript(fnName, args, onSuccess, onFailure, attempt){
   xhr.send();
 }
 
-// طلب واحد من غير إعادة محاولة تلقائية (للرفع)
+// طلب واحد من غير إعادة محاولة تلقائية
 function rpcOnce(fnName, args, onOk, onErr){
   var payload = btoa(unescape(encodeURIComponent(JSON.stringify({ fn: fnName, args: args }))));
   var xhr = new XMLHttpRequest();
@@ -737,8 +792,6 @@ let dOTType='ot';
 let autoRefreshTimer=null;
 let isSaving=false;
 let photoCache={};
-
-// حالة صفحة "تفاصيل اليوم"
 let dvUser='', dvRec=null, dvPhotos=[], dvReq=0;
 
 const REFRESH_INTERVAL = 30000;
@@ -774,12 +827,10 @@ function updateTodayCard(){
   document.getElementById('today-date').textContent=toAR(now.getDate())+' '+MONTHS_AR[now.getMonth()]+' '+toAR(now.getFullYear());
 }
 
-// الوقت الحالي بصيغة HH:mm
 function nowHHMM(){
   var n=new Date();
   return String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
 }
-// تحويل HH:mm لصيغة عربي (١٠:٢٥ ص)
 function fmtTime(hhmm){
   if(!hhmm) return '';
   var p=hhmm.split(':'), h=parseInt(p[0],10), m=p[1];
@@ -805,7 +856,7 @@ function startAutoRefresh(){
   }
   autoRefreshTimer=setInterval(function(){
     if(isSaving) return;
-    if(selIdx!==null) return; // الكارت مفتوح — ماتحدثش وانت بتعدل
+    if(selIdx!==null) return;
     var attActive=document.getElementById('page-att').classList.contains('active');
     var salActive=document.getElementById('page-salary').classList.contains('active');
     if(attActive) loadAttendanceSilent();
@@ -836,8 +887,7 @@ function loadSalarySilent(){
     .calcSalaryWithLeave(curSalUser, salYear, salMonth);
 }
 
-// ==================== AUTO SAVE (patch) ====================
-// بيحفظ اليوم بعد تعديل جزء منه، ويحافظ على باقي الحقول
+// ==================== AUTO SAVE ====================
 function cleanRec(d){
   return {
     day:d.day, month:d.month, year:d.year, dayName:d.dayName, key:d.key,
@@ -976,7 +1026,7 @@ function buildAnnualLeaveCard(al, year){
     </div></div>`;
 }
 
-// ==================== LOGIN ====================
+// ==================== LOGIN / REGISTER ====================
 function onUserInput(){
   var u=document.getElementById('l-user').value.trim().toLowerCase();
   if(!u) return;
@@ -999,7 +1049,7 @@ function doLogin(){
         localStorage.setItem('hr_last_user', u);
         localStorage.setItem('hr_cred_'+u, p);
       } catch(e){}
-      S=res; startApp();
+      S=res; S.pass=p; startApp();
     })
     .withFailureHandler(e=>{ err.textContent='خطأ: '+e.message; err.style.display='block'; })
     .login(u,p);
@@ -1016,6 +1066,41 @@ function loadSavedLogin(){
   } catch(e){}
 }
 loadSavedLogin();
+
+function swapBox(hide, show){
+  document.getElementById(hide).style.display='none';
+  var el=document.getElementById(show);
+  el.style.display='block';
+  el.classList.remove('swap-in'); void el.offsetWidth; el.classList.add('swap-in');
+}
+function showRegister(){
+  swapBox('login-box','reg-box');
+  document.getElementById('r-err').style.display='none';
+  document.getElementById('r-ok').style.display='none';
+}
+function showLogin(){ swapBox('reg-box','login-box'); }
+
+function doRegister(){
+  var u=document.getElementById('r-user').value.trim().toLowerCase();
+  var p=document.getElementById('r-pass').value.trim();
+  var s=document.getElementById('r-salary').value;
+  var err=document.getElementById('r-err'), ok=document.getElementById('r-ok');
+  var btn=document.getElementById('r-btn');
+  err.style.display='none'; ok.style.display='none';
+  if(!u||!p||!s){ err.textContent='املا كل الخانات'; err.style.display='block'; return; }
+  btn.disabled=true;
+  rpcOnce('registerUser',[u,p,parseFloat(s)],function(res){
+    btn.disabled=false;
+    if(!res.success){ err.textContent=res.msg; err.style.display='block'; return; }
+    ok.textContent=res.msg; ok.style.display='block';
+    document.getElementById('r-user').value='';
+    document.getElementById('r-pass').value='';
+    document.getElementById('r-salary').value='';
+  },function(e){
+    btn.disabled=false;
+    err.textContent='خطأ: '+e; err.style.display='block';
+  });
+}
 
 function startApp(){
   document.getElementById('login-screen').style.display='none';
@@ -1145,8 +1230,7 @@ function switchDv(u,el){
 // ==================== PAGES ====================
 function setPageVisible(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  var pg=document.getElementById('page-'+name);
-  pg.classList.add('active');
+  document.getElementById('page-'+name).classList.add('active');
 }
 
 function showPage(name){
@@ -1159,9 +1243,10 @@ function showPage(name){
   if(name==='salary') loadSalary();
   if(name==='dayview'){ dvInit(); dvLoad(); }
   if(name==='saving' && S.isAdmin) loadSaving();
+  if(name==='users' && S.isAdmin) loadUsers();
 }
 
-// ==================== الكارت الصغير (اختيار حالة اليوم) ====================
+// ==================== الكارت الصغير ====================
 function openDay(i){
   selIdx=i;
   document.getElementById('sp-ph').style.display='none';
@@ -1305,7 +1390,6 @@ function statusLabel(s){
   return m[s]||s;
 }
 
-// ==================== الكارت الصغير: تعبئة البيانات ====================
 function renderDetails(){
   var d=attData[selIdx];
   if(!d) return;
@@ -1334,7 +1418,7 @@ function renderDetails(){
   calcIndDed();
 }
 
-// ==================== صفحة تفاصيل اليوم (تاريخ + أوقات + صور) ====================
+// ==================== صفحة تفاصيل اليوم ====================
 function pad2(n){ return String(n).padStart(2,'0'); }
 function isoOf(dt){ return dt.getFullYear()+'-'+pad2(dt.getMonth()+1)+'-'+pad2(dt.getDate()); }
 
@@ -1363,7 +1447,6 @@ function dvLoad(){
   if(!v) return;
   var p=v.split('-');
   var y=parseInt(p[0],10), m=parseInt(p[1],10), d=parseInt(p[2],10);
-  // الفترة: من ٢٦ للشهر اللي قبله لـ ٢٥
   var py=y, pm=m;
   if(d>=26){ pm++; if(pm>12){ pm=1; py++; } }
   var key=y+'_'+m+'_'+d;
@@ -1440,7 +1523,7 @@ function renderDv(){
   renderDvPhotos();
 }
 
-// ---------- صور اليوم (في صفحة التفاصيل) ----------
+// ---------- صور اليوم ----------
 function dvPhotosLoad(reqId){
   var d=dvRec;
   if(!d) return;
@@ -1529,7 +1612,6 @@ function onPhotoPicked(input){
   uploadPhoto(file);
 }
 
-// تصغير الصورة وتحويلها لـ JPEG base64
 function compressImage(file, cb){
   var reader=new FileReader();
   reader.onload=function(e){
@@ -1840,6 +1922,55 @@ function renderSaving(res){
   }).join('');
 }
 
+// ==================== USERS (admin) ====================
+function loadUsers(){
+  if(!S.isAdmin) return;
+  var box=document.getElementById('users-list');
+  box.innerHTML='<div class="loading"><div class="spinner"></div>جاري التحميل...</div>';
+  rpcOnce('getUsers',[S.username,S.pass],renderUsers,function(e){
+    box.innerHTML='<p style="color:var(--red)">خطأ: '+e+'</p>';
+  });
+}
+
+function renderUsers(list){
+  var order={pending:0,approved:1};
+  list.sort(function(a,b){ return (order[a.status]-order[b.status])||(b.createdAt-a.createdAt); });
+  var pc=list.filter(function(u){return u.status==='pending';}).length;
+  var html='';
+  if(pc) html+='<div class="card pending-banner" style="border-color:var(--orange);text-align:center;font-weight:800;color:var(--orange)">⏳ فيه '+toAR(pc)+' طلب مستني موافقتك</div>';
+  html+=list.map(function(u,i){
+    var pend=u.status==='pending';
+    var pill=pend?'<span class="pill p-friday">⏳ مستني موافقة</span>':'<span class="pill p-present">✓ مفعّل</span>';
+    var dt=u.createdAt?new Date(u.createdAt).toLocaleDateString('ar-EG'):'—';
+    var actions='';
+    if(pend) actions='<div class="user-actions"><button class="u-btn u-ok" onclick="userAction(\''+u.username+'\',\'approve\',this)">✅ موافقة</button><button class="u-btn u-no" onclick="userAction(\''+u.username+'\',\'reject\',this)">❌ رفض</button></div>';
+    else if(!u.builtin) actions='<div class="user-actions"><button class="u-btn u-no" onclick="userAction(\''+u.username+'\',\'reject\',this)">🗑️ حذف الحساب</button></div>';
+    return '<div class="user-card a-in '+(pend?'pending':'')+'" style="animation-delay:'+Math.min(i*70,600)+'ms">'
+      +'<div class="user-card-head"><div class="det-title" style="font-size:16px">'+u.displayName+'</div>'+pill+'</div>'
+      +dvRow('اسم المستخدم','<span dir="ltr">'+u.username+'</span>')
+      +dvRow('الباسورد','<span dir="ltr">'+u.password+'</span>')
+      +dvRow('الصلاحية',u.isAdmin?'Admin':'Labeler')
+      +dvRow('المرتب الأساسي',fNum(u.salary)+' جنيه')
+      +dvRow('معدل اليوم',fNum(u.dayRate)+' جنيه')
+      +dvRow('معدل الساعة',fNum(u.hourRate)+' جنيه')
+      +(u.builtin?'':dvRow('تاريخ الطلب',dt))
+      +actions+'</div>';
+  }).join('');
+  document.getElementById('users-list').innerHTML=html;
+}
+
+function userAction(target,action,btn){
+  var msg=action==='approve'?'توافق على الحساب ده؟':'متأكد؟ الحساب هيتمسح ومش هيتفعل';
+  if(!confirm(msg)) return;
+  var cardEl=btn&&btn.closest('.user-card');
+  rpcOnce('setUserStatus',[S.username,S.pass,target,action],function(){
+    toast(action==='approve'?'✅ اتفعل الحساب':'🗑️ اتلغى الحساب');
+    if(cardEl && action==='reject'){ cardEl.classList.add('user-removed'); setTimeout(loadUsers,450); }
+    else loadUsers();
+    loadEmpSelectors();
+  },function(e){ toast('❌ '+e); });
+}
+
 // ==================== TOAST ====================
 function toast(msg){
   const t=document.getElementById('toast');
@@ -1984,7 +2115,7 @@ function toast(msg){
   }
 
   document.addEventListener('pointerdown', function(e){
-    var b=e.target.closest && e.target.closest('.login-btn,.sp-save-btn,.emp-btn,.s-opt,.ot-type-btn,.btn-outline,.month-nav button,.nav-item,.bn-item,.logout-btn,.pb,.choice-btn');
+    var b=e.target.closest && e.target.closest('.login-btn,.sp-save-btn,.emp-btn,.s-opt,.ot-type-btn,.btn-outline,.month-nav button,.nav-item,.bn-item,.logout-btn,.pb,.choice-btn,.u-btn');
     if(!b || b.disabled || reduce) return;
     var rect=b.getBoundingClientRect(), size=Math.max(rect.width, rect.height);
     var s=document.createElement('span');
@@ -1997,7 +2128,7 @@ function toast(msg){
   });
 })();
 
-// ==================== WATER EFFECT (ماية زرقا متحركة في الكارت كله) ====================
+// ==================== WATER EFFECT ====================
 (function(){
   var wrap=document.querySelector('.att-table-wrap');
   var tbody=document.getElementById('att-tbody');
