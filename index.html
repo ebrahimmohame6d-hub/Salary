@@ -195,6 +195,11 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 @keyframes barGrow{from{width:0}}
 .al-footer{font-size:11px;opacity:0.65;display:flex;align-items:center;justify-content:center;gap:4px;border-top:1px solid rgba(255,255,255,0.15);padding-top:10px}
 
+/* ===== SMALL DAY CARD (inside side panel / mobile sheet) ===== */
+.day-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px}
+.sheet-backdrop{display:none;position:fixed;inset:0;background:rgba(5,10,26,0.45);z-index:440}
+.sheet-grip{display:none;width:42px;height:4px;border-radius:4px;background:var(--bg4);margin:0 auto 12px}
+
 /* ===== SECTIONS & OPTIONS ===== */
 .sp-section{font-size:11px;font-weight:800;color:var(--accent-lt);letter-spacing:0.05em;text-transform:uppercase;margin:6px 0 10px;padding-right:9px;border-right:3px solid var(--accent-lt)}
 .status-opts{display:flex;flex-direction:column;gap:5px;margin-bottom:4px}
@@ -206,7 +211,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .d-green{background:var(--green)}.d-red{background:var(--red)}.d-blue{background:var(--accent-lt)}
 .d-gray{background:var(--text3)}.d-orange{background:var(--orange)}.d-purple{background:var(--purple)}
 
-.ot-box{background:var(--bg3);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:12px;transition:all 0.2s}
+.ot-box{background:#fff;border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:12px;transition:all 0.2s}
 .ot-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}.ot-row:last-child{margin-bottom:0}
 .ot-label{font-size:11px;color:var(--text2);flex-shrink:0;width:60px}
 .ot-input{background:#fff;border:1.5px solid var(--border2);border-radius:6px;padding:9px 10px;font-size:14px;color:var(--text);font-family:'Cairo',sans-serif;flex:1;min-width:0;direction:ltr;-webkit-appearance:none}
@@ -232,10 +237,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .ind-ded-hint{font-size:10px;color:var(--text3);margin-top:6px;padding-top:6px;border-top:1px solid rgba(224,52,72,0.1);text-align:right}
 .ind-ded-result{font-size:11px;color:var(--red);font-weight:700;margin-top:8px;padding-top:8px;border-top:1px solid rgba(224,52,72,0.15);text-align:right}
 
-/* ===== DETAILS PAGE ===== */
-.det-back{background:var(--bg3);border:1.5px solid var(--border2);color:var(--accent-lt);padding:8px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif;margin-bottom:12px;transition:all .15s}
-.det-back:hover{background:#fff}
-.det-hero{border-color:var(--border2)}
+/* ===== DAY DETAILS ELEMENTS ===== */
 .det-title{font-size:18px;font-weight:900;color:var(--navy)}
 .det-sub{font-size:12px;color:var(--accent-lt);font-weight:700;margin-top:4px}
 .det-times{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
@@ -264,6 +266,14 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .viewer.show{display:flex}
 .viewer img{max-width:100%;max-height:100%;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
 .viewer-close{position:absolute;top:16px;left:16px;width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,0.15);color:#fff;font-size:18px;cursor:pointer}
+
+/* ===== DAY VIEW PAGE (صفحة تفاصيل اليوم) ===== */
+.dv-date-row{display:flex;align-items:center;gap:8px}
+.dv-date-row .btn-outline{width:40px;height:42px;font-size:18px;padding:0;flex-shrink:0}
+.dv-date-input{flex:1;min-width:0;background:#fff;border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:10px 12px;font-size:15px;font-weight:700;color:var(--navy);font-family:'Cairo',sans-serif;direction:ltr;text-align:center;-webkit-appearance:none;height:42px}
+.dv-date-input:focus{outline:none;border-color:var(--accent-lt)}
+.dv-today-btn{margin-top:10px}
+.dv-hero{border-color:var(--border2)}
 
 /* ===== SALARY & STATS ===== */
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:16px}
@@ -328,13 +338,21 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
   .att-table th{font-size:9px;padding:6px 9px}
   .toast{bottom:calc(var(--bottom-nav-h) + 10px + env(safe-area-inset-bottom))}
   .period-badge{font-size:10px;padding:3px 10px}
-  .status-grid{grid-template-columns:1fr}
+  .status-grid{grid-template-columns:1fr 1fr}
+  .bn-icon{padding:4px 10px}
+
+  /* الكارت الصغير على الموبايل بيطلع من تحت (Bottom Sheet) */
+  .side-panel.sheet-open{display:block;position:fixed;left:0;right:0;bottom:0;top:auto;max-height:88vh;overflow-y:auto;z-index:450;border-radius:20px 20px 0 0;border:none;padding:12px 14px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,0.3);animation:sheetUp .28s ease}
+  .side-panel.sheet-open .sheet-grip{display:block}
+  .sheet-backdrop.show{display:block}
 }
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
 @media (max-width:380px){
   .stats-grid{gap:6px}
   .stat-num{font-size:15px}
   .stat-label{font-size:9px}
   .main{padding:68px 10px calc(var(--bottom-nav-h) + 10px + env(safe-area-inset-bottom))}
+  .bn-item{font-size:9px}
 }
 
 /* ===== ANIMATIONS ===== */
@@ -351,7 +369,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 #login-screen::after{animation:bgBreath 7s ease-in-out infinite}
 .stat-card:hover .stat-icon{animation:iconBounce .7s ease}
 .ripple{position:absolute;border-radius:50%;background:currentColor;opacity:.25;transform:scale(0);animation:rippleK .6s ease-out forwards;pointer-events:none}
-.s-opt,.ot-type-btn,.btn-outline,.month-nav button,.nav-item,.bn-item,.logout-btn,.emp-btn,.pb,.choice-btn,.det-back{position:relative;overflow:hidden}
+.s-opt,.ot-type-btn,.btn-outline,.month-nav button,.nav-item,.bn-item,.logout-btn,.emp-btn,.pb,.choice-btn{position:relative;overflow:hidden}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 }
@@ -413,6 +431,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="nav-lbl">القائمة</div>
       <button class="nav-item active" data-page="att" onclick="showPage('att')"><span class="nav-icon">📅</span>الحضور</button>
       <button class="nav-item" data-page="salary" onclick="showPage('salary')"><span class="nav-icon">💰</span>المرتب</button>
+      <button class="nav-item" data-page="dayview" onclick="showPage('dayview')"><span class="nav-icon">🔎</span>تفاصيل اليوم</button>
       <button class="nav-item admin-only" data-page="saving" onclick="showPage('saving')" style="display:none"><span class="nav-icon">❤️</span>Saving for Maryouma</button>
     </nav>
     <div class="sb-footer"><button class="logout-btn" onclick="logout()"><span>🚪</span>خروج</button></div>
@@ -422,9 +441,13 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
   <nav class="bottom-nav">
     <button class="bn-item active" data-page="att" onclick="showPage('att')"><span class="bn-icon">📅</span>الحضور</button>
     <button class="bn-item" data-page="salary" onclick="showPage('salary')"><span class="bn-icon">💰</span>المرتب</button>
+    <button class="bn-item" data-page="dayview" onclick="showPage('dayview')"><span class="bn-icon">🔎</span>اليوم</button>
     <button class="bn-item admin-only" data-page="saving" onclick="showPage('saving')" style="display:none"><span class="bn-icon">❤️</span>Maryouma</button>
     <button class="bn-item" onclick="logout()"><span class="bn-icon">🚪</span>خروج</button>
   </nav>
+
+  <!-- خلفية الكارت على الموبايل -->
+  <div class="sheet-backdrop" id="sheet-bd" onclick="closeDay()"></div>
 
   <main class="main">
 
@@ -458,7 +481,12 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
                 <tbody id="att-tbody"></tbody>
               </table>
             </div>
+
+            <!-- الكارت الصغير (ديسكتوب: على الجنب / موبايل: بيطلع من تحت) -->
             <div class="side-panel" id="desktop-side-panel">
+              <div class="sheet-grip"></div>
+
+              <!-- الوضع العادي: كارت النهارده + رصيد الإجازة -->
               <div id="sp-ph">
                 <div class="today-card">
                   <div class="today-card-inner">
@@ -466,78 +494,68 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
                     <div class="today-dayname" id="today-dayname">—</div>
                     <div class="today-date" id="today-date">—</div>
                     <hr class="today-divider">
-                    <div class="today-hint">اضغط على يوم عشان تفتح تفاصيله</div>
+                    <div class="today-hint">اضغط على يوم عشان تسجل حالته</div>
                   </div>
                 </div>
                 <div id="sp-annual-leave" style="margin-top:13px;display:none"></div>
               </div>
+
+              <!-- كارت اليوم المختار (الحالة + الأوفر + الخصم) -->
+              <div id="sp-day" style="display:none">
+                <div class="day-card-head">
+                  <div>
+                    <div class="det-title" id="det-title" style="font-size:15px">—</div>
+                    <div class="det-sub" id="det-sub">—</div>
+                  </div>
+                  <button class="pb" onclick="closeDay()">✕ إغلاق</button>
+                </div>
+                <div class="det-times" id="det-times" style="margin:0 0 12px"></div>
+
+                <div class="sp-section">الحالة</div>
+                <div class="status-opts status-grid" id="det-status-opts" style="margin-bottom:12px">
+                  <button class="s-opt" data-s="Present" onclick="pickStatus('Present')"><span class="s-dot d-green"></span>حضور</button>
+                  <button class="s-opt" data-s="Absence" onclick="pickStatus('Absence')"><span class="s-dot d-red"></span>غياب</button>
+                  <button class="s-opt" data-s="Annual" onclick="pickStatus('Annual')"><span class="s-dot d-blue"></span>إجازة سنوية</button>
+                  <button class="s-opt" data-s="Day Off" onclick="pickStatus('Day Off')"><span class="s-dot d-gray"></span>يوم راحة</button>
+                  <button class="s-opt" data-s="Compensation" onclick="pickStatus('Compensation')"><span class="s-dot d-purple"></span>تعويض</button>
+                  <button class="s-opt" data-s="Friday + Double Paid" onclick="pickStatus('Friday + Double Paid')"><span class="s-dot d-orange"></span>دابل</button>
+                </div>
+
+                <div class="sp-section">الساعات الإضافية</div>
+                <div class="ot-box" id="det-ot-box" style="margin-bottom:12px">
+                  <div class="ot-type-toggle">
+                    <button class="ot-type-btn ot-active-ot" id="det-btn-ot" onclick="pickOTKind('ot')">⏱ أوفر تايم</button>
+                    <button class="ot-type-btn" id="det-btn-comp" onclick="pickOTKind('comp')">🔄 ساعات تعويض</button>
+                  </div>
+                  <div class="ot-row">
+                    <span class="ot-label">ساعات</span>
+                    <input class="ot-input" type="number" id="det-ot-hours" min="0" max="24" step="0.5" placeholder="0" oninput="calcOT()" onchange="onOtHours()">
+                  </div>
+                  <div class="ot-row ot-rate-row">
+                    <span class="ot-label">المعدل</span>
+                    <select class="ot-select" id="det-ot-rate" onchange="calcOT();onOtRate()">
+                      <option value="1.5">× ١.٥ ساعة ونص</option>
+                      <option value="2">× ٢ ساعتين</option>
+                    </select>
+                  </div>
+                  <div class="ot-result" id="det-ot-result" style="display:none"></div>
+                  <div class="ot-comp-note">🟣 ساعات تعويض — لا تُضاف للمرتب</div>
+                </div>
+
+                <div class="sp-section">خصم مستقل عن الحالة</div>
+                <div class="ind-ded-box">
+                  <div class="ind-ded-row"><span class="ind-ded-label">خصم ٣ أيام</span><input class="ind-ded-input" type="number" id="det-ded-day3" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed()" onchange="onDed()"></div>
+                  <div class="ind-ded-row"><span class="ind-ded-label">خصم يومين</span><input class="ind-ded-input" type="number" id="det-ded-day2" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed()" onchange="onDed()"></div>
+                  <div class="ind-ded-row"><span class="ind-ded-label">خصم يوم</span><input class="ind-ded-input" type="number" id="det-ded-day1" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed()" onchange="onDed()"></div>
+                  <div class="ind-ded-row"><span class="ind-ded-label">خصم نص يوم</span><input class="ind-ded-input" type="number" id="det-ded-half" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed()" onchange="onDed()"></div>
+                  <div class="ind-ded-hint">⚡ مستقلة عن الحالة — تُخصم من ساعات الأوفر (ولو الأوفر مش كفاية يتخصم من المرتب الأساسي)</div>
+                  <div class="ind-ded-result" id="det-ded-result" style="display:none"></div>
+                </div>
+              </div>
             </div>
+
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- DAY DETAILS PAGE -->
-    <div id="page-details" class="page">
-      <button class="det-back" onclick="closeDetails()">↩ رجوع للحضور</button>
-
-      <div class="card det-hero">
-        <div class="det-title" id="det-title">—</div>
-        <div class="det-sub" id="det-sub">—</div>
-        <div class="det-times" id="det-times"></div>
-      </div>
-
-      <div class="card">
-        <div class="sp-section">الحالة</div>
-        <div class="status-opts status-grid" id="det-status-opts">
-          <button class="s-opt" data-s="Present" onclick="pickStatus('Present')"><span class="s-dot d-green"></span>حضور</button>
-          <button class="s-opt" data-s="Absence" onclick="pickStatus('Absence')"><span class="s-dot d-red"></span>غياب</button>
-          <button class="s-opt" data-s="Annual" onclick="pickStatus('Annual')"><span class="s-dot d-blue"></span>إجازة سنوية</button>
-          <button class="s-opt" data-s="Day Off" onclick="pickStatus('Day Off')"><span class="s-dot d-gray"></span>يوم راحة</button>
-          <button class="s-opt" data-s="Compensation" onclick="pickStatus('Compensation')"><span class="s-dot d-purple"></span>تعويض</button>
-          <button class="s-opt" data-s="Friday + Double Paid" onclick="pickStatus('Friday + Double Paid')"><span class="s-dot d-orange"></span>دابل</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="sp-section">الساعات الإضافية</div>
-        <div class="ot-box" id="det-ot-box">
-          <div class="ot-type-toggle">
-            <button class="ot-type-btn ot-active-ot" id="det-btn-ot" onclick="pickOTKind('ot')">⏱ أوفر تايم</button>
-            <button class="ot-type-btn" id="det-btn-comp" onclick="pickOTKind('comp')">🔄 ساعات تعويض</button>
-          </div>
-          <div class="ot-row">
-            <span class="ot-label">ساعات</span>
-            <input class="ot-input" type="number" id="det-ot-hours" min="0" max="24" step="0.5" placeholder="0" oninput="calcOT()" onchange="onOtHours()">
-          </div>
-          <div class="ot-row ot-rate-row">
-            <span class="ot-label">المعدل</span>
-            <select class="ot-select" id="det-ot-rate" onchange="calcOT();onOtRate()">
-              <option value="1.5">× ١.٥ ساعة ونص</option>
-              <option value="2">× ٢ ساعتين</option>
-            </select>
-          </div>
-          <div class="ot-result" id="det-ot-result" style="display:none"></div>
-          <div class="ot-comp-note">🟣 ساعات تعويض — لا تُضاف للمرتب</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="sp-section">خصم مستقل عن الحالة</div>
-        <div class="ind-ded-box">
-          <div class="ind-ded-row"><span class="ind-ded-label">خصم ٣ أيام</span><input class="ind-ded-input" type="number" id="det-ded-day3" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed()" onchange="onDed()"></div>
-          <div class="ind-ded-row"><span class="ind-ded-label">خصم يومين</span><input class="ind-ded-input" type="number" id="det-ded-day2" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed()" onchange="onDed()"></div>
-          <div class="ind-ded-row"><span class="ind-ded-label">خصم يوم</span><input class="ind-ded-input" type="number" id="det-ded-day1" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed()" onchange="onDed()"></div>
-          <div class="ind-ded-row"><span class="ind-ded-label">خصم نص يوم</span><input class="ind-ded-input" type="number" id="det-ded-half" min="0" max="5" step="1" placeholder="0" oninput="calcIndDed()" onchange="onDed()"></div>
-          <div class="ind-ded-hint">⚡ مستقلة عن الحالة — تُخصم من ساعات الأوفر (ولو الأوفر مش كفاية يتخصم من المرتب الأساسي)</div>
-          <div class="ind-ded-result" id="det-ded-result" style="display:none"></div>
-        </div>
-      </div>
-
-      <div class="card" id="det-photo-card" style="display:none">
-        <div class="sp-section">📷 صور اليوم</div>
-        <div id="det-photos"></div>
-        <div class="det-msg" id="det-photo-msg"></div>
       </div>
     </div>
 
@@ -562,6 +580,35 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
         </div>
         <div id="sal-loading" class="loading"><div class="spinner"></div>جاري التحميل...</div>
         <div id="sal-content"></div>
+      </div>
+    </div>
+
+    <!-- DAY VIEW PAGE (تفاصيل اليوم) -->
+    <div id="page-dayview" class="page">
+      <div class="page-header"><h2>تفاصيل اليوم</h2><p>اختار التاريخ وشوف اتسجل إيه في اليوم ده</p></div>
+
+      <div class="card admin-only" id="dv-emp-card" style="display:none">
+        <div class="card-head"><div class="card-title">اختر الموظف</div></div>
+        <div class="emp-sel" id="dv-emp-sel"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">📆 التاريخ</div></div>
+        <div class="dv-date-row">
+          <button class="btn-outline" onclick="dvShiftDay(-1)">‹</button>
+          <input type="date" class="dv-date-input" id="dv-date" onchange="dvLoad()">
+          <button class="btn-outline" onclick="dvShiftDay(1)">›</button>
+        </div>
+        <button class="btn-outline dv-today-btn" onclick="dvGoToday()">النهارده</button>
+      </div>
+
+      <div id="dv-loading" class="loading" style="display:none"><div class="spinner"></div>جاري التحميل...</div>
+      <div id="dv-result"></div>
+
+      <div class="card" id="dv-photo-card" style="display:none">
+        <div class="sp-section" id="dv-photo-title">📷 صور اليوم</div>
+        <div id="dv-photos"></div>
+        <div class="det-msg" id="dv-photo-msg"></div>
       </div>
     </div>
 
@@ -689,8 +736,10 @@ let isMobile=false;
 let dOTType='ot';
 let autoRefreshTimer=null;
 let isSaving=false;
-let photoList=[];
 let photoCache={};
+
+// حالة صفحة "تفاصيل اليوم"
+let dvUser='', dvRec=null, dvPhotos=[], dvReq=0;
 
 const REFRESH_INTERVAL = 30000;
 const MONTHS_AR=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
@@ -756,8 +805,7 @@ function startAutoRefresh(){
   }
   autoRefreshTimer=setInterval(function(){
     if(isSaving) return;
-    var detailsOpen=document.getElementById('page-details').classList.contains('active');
-    if(detailsOpen) return;
+    if(selIdx!==null) return; // الكارت مفتوح — ماتحدثش وانت بتعدل
     var attActive=document.getElementById('page-att').classList.contains('active');
     var salActive=document.getElementById('page-salary').classList.contains('active');
     if(attActive) loadAttendanceSilent();
@@ -980,6 +1028,8 @@ function startApp(){
 
   curAttUser=S.username;
   curSalUser=S.username;
+  dvUser=S.username;
+  dvRec=null;
 
   const period=getCurrentPeriod();
   attYear=salYear=period.year;
@@ -994,6 +1044,7 @@ function startApp(){
     });
     document.getElementById('att-emp-card').style.display='block';
     document.getElementById('sal-emp-card').style.display='block';
+    document.getElementById('dv-emp-card').style.display='block';
     loadEmpSelectors();
     initSavingForm();
   } else {
@@ -1015,7 +1066,11 @@ function logout(){
   document.getElementById('l-err').style.display='none';
   document.querySelectorAll('.admin-only').forEach(el=>el.style.display='none');
   document.getElementById('sp-annual-leave').style.display='none';
-  selIdx=null;
+  closeDay();
+  dvRec=null; dvPhotos=[];
+  document.getElementById('dv-date').value='';
+  document.getElementById('dv-result').innerHTML='';
+  document.getElementById('dv-photo-card').style.display='none';
   showPage('att');
 }
 
@@ -1030,6 +1085,7 @@ function updateLabels(){
 }
 
 function changeMonth(dir){
+  closeDay();
   attMonth+=dir;
   if(attMonth>12){attMonth=1;attYear++}
   if(attMonth<1){attMonth=12;attYear--}
@@ -1052,15 +1108,18 @@ function loadEmpSelectors(){
     empList=list;
     const aS=document.getElementById('att-emp-sel');
     const sS=document.getElementById('sal-emp-sel');
-    aS.innerHTML=''; sS.innerHTML='';
+    const dS=document.getElementById('dv-emp-sel');
+    aS.innerHTML=''; sS.innerHTML=''; dS.innerHTML='';
     list.forEach(emp=>{
       aS.innerHTML+=`<button class="emp-btn ${emp.username===curAttUser?'active':''}" onclick="switchAtt('${emp.username}','${emp.displayName}',this)">${emp.displayName}</button>`;
       sS.innerHTML+=`<button class="emp-btn ${emp.username===curSalUser?'active':''}" onclick="switchSal('${emp.username}',this)">${emp.displayName}</button>`;
+      dS.innerHTML+=`<button class="emp-btn ${emp.username===dvUser?'active':''}" onclick="switchDv('${emp.username}',this)">${emp.displayName}</button>`;
     });
   }).getEmployeeList();
 }
 
 function switchAtt(u,n,el){
+  closeDay();
   curAttUser=u;
   document.getElementById('att-lbl').textContent=n;
   document.getElementById('att-emp-sel').querySelectorAll('.emp-btn').forEach(b=>b.classList.remove('active'));
@@ -1076,6 +1135,13 @@ function switchSal(u,el){
   loadSalary();
 }
 
+function switchDv(u,el){
+  dvUser=u;
+  document.getElementById('dv-emp-sel').querySelectorAll('.emp-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  dvLoad();
+}
+
 // ==================== PAGES ====================
 function setPageVisible(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1084,29 +1150,40 @@ function setPageVisible(name){
 }
 
 function showPage(name){
-  if(name!=='details') selIdx=null;
+  closeDay();
   setPageVisible(name);
-  var navKey = name==='details' ? 'att' : name;
   document.querySelectorAll('[data-page]').forEach(n=>{
-    n.classList.toggle('active', n.dataset.page===navKey);
+    n.classList.toggle('active', n.dataset.page===name);
   });
   if(name==='att') renderAtt();
   if(name==='salary') loadSalary();
+  if(name==='dayview'){ dvInit(); dvLoad(); }
   if(name==='saving' && S.isAdmin) loadSaving();
 }
 
+// ==================== الكارت الصغير (اختيار حالة اليوم) ====================
 function openDay(i){
   selIdx=i;
-  photoList=[];
-  setPageVisible('details');
+  document.getElementById('sp-ph').style.display='none';
+  document.getElementById('sp-day').style.display='block';
   renderDetails();
-  loadDayPhotos();
-  window.scrollTo({top:0,behavior:'auto'});
+  var panel=document.getElementById('desktop-side-panel');
+  panel.scrollTop=0;
+  if(isMobile){
+    panel.classList.add('sheet-open');
+    document.getElementById('sheet-bd').classList.add('show');
+  }
 }
 
-function closeDetails(){
+function closeDay(){
   selIdx=null;
-  showPage('att');
+  var ph=document.getElementById('sp-ph'), dy=document.getElementById('sp-day');
+  if(ph) ph.style.display='block';
+  if(dy) dy.style.display='none';
+  var panel=document.getElementById('desktop-side-panel');
+  if(panel) panel.classList.remove('sheet-open');
+  var bd=document.getElementById('sheet-bd');
+  if(bd) bd.classList.remove('show');
 }
 
 // ==================== ATTENDANCE ====================
@@ -1198,6 +1275,7 @@ function quickClear(i){
         attData[i]=Object.assign({}, d, dayData);
         toast('🗑️ اتمسحت بيانات اليوم');
         renderAtt();
+        if(selIdx===i) renderDetails();
         if(d.status==='Annual') loadAnnualLeavePanel();
       } else toast('❌ خطأ: '+res);
     })
@@ -1227,7 +1305,7 @@ function statusLabel(s){
   return m[s]||s;
 }
 
-// ==================== DAY DETAILS ====================
+// ==================== الكارت الصغير: تعبئة البيانات ====================
 function renderDetails(){
   var d=attData[selIdx];
   if(!d) return;
@@ -1254,39 +1332,131 @@ function renderDetails(){
   document.getElementById('det-ded-day1').value = d.dedDay1 || '';
   document.getElementById('det-ded-half').value = d.dedHalfInd || '';
   calcIndDed();
-
-  updatePhotoCard();
-  renderPhotos();
 }
 
-function photoCardVisible(d){
-  return d.status==='Present' || d.otHours>0 || (d.photoCount||0)>0;
+// ==================== صفحة تفاصيل اليوم (تاريخ + أوقات + صور) ====================
+function pad2(n){ return String(n).padStart(2,'0'); }
+function isoOf(dt){ return dt.getFullYear()+'-'+pad2(dt.getMonth()+1)+'-'+pad2(dt.getDate()); }
+
+function dvInit(){
+  if(!dvUser) dvUser=S.username;
+  var inp=document.getElementById('dv-date');
+  if(!inp.value) inp.value=isoOf(new Date());
 }
 
-function updatePhotoCard(){
-  var d=attData[selIdx];
+function dvGoToday(){
+  document.getElementById('dv-date').value=isoOf(new Date());
+  dvLoad();
+}
+
+function dvShiftDay(n){
+  var inp=document.getElementById('dv-date');
+  if(!inp.value) inp.value=isoOf(new Date());
+  var dt=new Date(inp.value+'T12:00:00');
+  dt.setDate(dt.getDate()+n);
+  inp.value=isoOf(dt);
+  dvLoad();
+}
+
+function dvLoad(){
+  var v=document.getElementById('dv-date').value;
+  if(!v) return;
+  var p=v.split('-');
+  var y=parseInt(p[0],10), m=parseInt(p[1],10), d=parseInt(p[2],10);
+  // الفترة: من ٢٦ للشهر اللي قبله لـ ٢٥
+  var py=y, pm=m;
+  if(d>=26){ pm++; if(pm>12){ pm=1; py++; } }
+  var key=y+'_'+m+'_'+d;
+  var reqId=++dvReq;
+  dvRec=null; dvPhotos=[];
+  document.getElementById('dv-loading').style.display='block';
+  document.getElementById('dv-result').innerHTML='';
+  document.getElementById('dv-photo-card').style.display='none';
+  google.script.run
+    .withSuccessHandler(function(data){
+      if(reqId!==dvReq) return;
+      document.getElementById('dv-loading').style.display='none';
+      var rec=null;
+      (data||[]).forEach(function(r){ if(r.key===key) rec=r; });
+      dvRec=rec;
+      renderDv();
+      if(rec) dvPhotosLoad(reqId);
+    })
+    .getAttendance(dvUser, py, pm);
+}
+
+function dvRow(label, valHtml){
+  return '<div class="sal-row"><span class="sal-label">'+label+'</span><span class="sal-val">'+valHtml+'</span></div>';
+}
+
+function renderDv(){
+  var box=document.getElementById('dv-result');
+  var d=dvRec;
+  if(!d){
+    box.innerHTML='<div class="card"><div class="empty"><div class="empty-icon">📅</div><p>مفيش بيانات لليوم ده</p></div></div>';
+    document.getElementById('dv-photo-card').style.display='none';
+    return;
+  }
+  var title=d.dayName+' '+toAR(d.day)+' '+monthName(d.month)+' '+toAR(d.year);
+  var stTxt=d.status?statusLabel(d.status):'لم يتم التسجيل بعد';
+
+  var chips=[];
+  if(d.status==='Present' && d.checkTime) chips.push('⏰ وقت الحضور: '+fmtTime(d.checkTime));
+  if(d.otHours>0 && d.otTime) chips.push('⏱ وقت تسجيل الأوفر: '+fmtTime(d.otTime));
+  var chipsHtml=chips.length
+    ? chips.map(function(t){ return '<span class="time-chip">'+t+'</span>'; }).join('')
+    : '<span class="muted">مفيش أوقات مسجلة</span>';
+
+  var hero='<div class="card dv-hero">'
+    +'<div class="det-title">'+title+'</div>'
+    +'<div class="det-sub">الحالة: '+stTxt+'</div>'
+    +'<div class="det-times">'+chipsHtml+'</div>'
+    +'</div>';
+
+  var rows='';
+  rows+=dvRow('الحالة', d.status ? '<span class="pill '+getPillClass(d.status)+'">'+statusLabel(d.status)+'</span>' : '<span class="muted">—</span>');
+  rows+=dvRow('وقت الحضور', (d.status==='Present' && d.checkTime) ? fmtTime(d.checkTime) : '<span class="muted">—</span>');
+
+  if(d.otHours>0){
+    var eff=parseFloat((d.otHours*(d.otRate||1.5)).toFixed(2));
+    var otTxt = d.otType==='comp'
+      ? '<span class="pill p-comp">🔄 '+toAR(d.otHours)+' ساعة تعويض</span>'
+      : '<span class="pill p-ot">⏱ '+toAR(d.otHours)+' ساعة × '+toAR(d.otRate||1.5)+' = '+toAR(eff)+' ساعة</span>';
+    rows+=dvRow(d.otType==='comp'?'ساعات التعويض':'الأوفر تايم', otTxt);
+    rows+=dvRow('وقت تسجيل الأوفر', d.otTime ? fmtTime(d.otTime) : '<span class="muted">—</span>');
+  } else {
+    rows+=dvRow('الأوفر تايم', '<span class="muted">مفيش</span>');
+  }
+
+  var dp=[];
+  if(d.dedDay3>0) dp.push(toAR(d.dedDay3)+' × ٣ أيام');
+  if(d.dedDay2>0) dp.push(toAR(d.dedDay2)+' × يومين');
+  if(d.dedDay1>0) dp.push(toAR(d.dedDay1)+' × يوم');
+  if(d.dedHalfInd>0) dp.push(toAR(d.dedHalfInd)+' × نص يوم');
+  if(dp.length) rows+=dvRow('الخصومات', '<span class="pill p-ded">📉 '+dp.join(' + ')+'</span>');
+
+  box.innerHTML=hero+'<div class="card"><div class="sp-section">تفاصيل التسجيل</div>'+rows+'</div>';
+  document.getElementById('dv-photo-card').style.display='block';
+  renderDvPhotos();
+}
+
+// ---------- صور اليوم (في صفحة التفاصيل) ----------
+function dvPhotosLoad(reqId){
+  var d=dvRec;
   if(!d) return;
-  document.getElementById('det-photo-card').style.display = photoCardVisible(d) ? 'block' : 'none';
-}
-
-function loadDayPhotos(){
-  var d=attData[selIdx];
-  if(!d) return;
-  var idx=selIdx, key=d.key;
-  rpcOnce('getDayPhotos', [curAttUser, key], function(list){
-    if(selIdx!==idx) return;
-    photoList=list;
-    attData[idx].photoCount=list.length;
-    updatePhotoCard();
-    renderPhotos();
+  rpcOnce('getDayPhotos', [dvUser, d.key], function(list){
+    if(reqId!==dvReq) return;
+    dvPhotos=list;
+    renderDvPhotos();
   }, function(){ });
 }
 
-function renderPhotos(){
-  var box=document.getElementById('det-photos');
-  if(!box) return;
-  var key=attData[selIdx] ? attData[selIdx].key : '';
-  var html = photoList.map(function(p,idx){
+function renderDvPhotos(){
+  var box=document.getElementById('dv-photos');
+  if(!box || !dvRec) return;
+  var key=dvRec.key;
+  document.getElementById('dv-photo-title').textContent='📷 صور اليوم'+(dvPhotos.length?' ('+toAR(dvPhotos.length)+')':'');
+  var html = dvPhotos.map(function(p,idx){
     return `<div class="photo-row">
       <div class="photo-thumb" id="pt-${p.id}">📷</div>
       <div class="photo-act">
@@ -1298,7 +1468,7 @@ function renderPhotos(){
   }).join('');
   html += `<div class="photo-row"><div class="photo-add" onclick="openPhotoChoice()">+</div><div class="photo-name">إضافة صورة</div></div>`;
   box.innerHTML=html;
-  photoList.forEach(function(p){
+  dvPhotos.forEach(function(p){
     ensurePhotoData(p.id, key, function(src){
       var el=document.getElementById('pt-'+p.id);
       if(el && src) el.innerHTML='<img src="'+src+'" alt="">';
@@ -1308,7 +1478,7 @@ function renderPhotos(){
 
 function ensurePhotoData(id, key, cb){
   if(photoCache[id]){ cb('data:image/jpeg;base64,'+photoCache[id]); return; }
-  rpcOnce('getPhotoData', [curAttUser, key, id], function(b64){
+  rpcOnce('getPhotoData', [dvUser, key, id], function(b64){
     photoCache[id]=b64;
     cb('data:image/jpeg;base64,'+b64);
   }, function(){ cb(null); });
@@ -1328,21 +1498,21 @@ function closeViewer(){
 }
 
 function deletePhoto(id){
+  if(!dvRec) return;
   if(!confirm('تمسح الصورة دي؟')) return;
-  var idx=selIdx, key=attData[idx].key;
-  rpcOnce('deletePhoto', [curAttUser, key, id], function(list){
+  var key=dvRec.key, rid=dvReq;
+  rpcOnce('deletePhoto', [dvUser, key, id], function(list){
     delete photoCache[id];
-    photoList=list;
-    attData[idx].photoCount=list.length;
-    renderPhotos();
-    updatePhotoCard();
+    if(rid!==dvReq) return;
+    dvPhotos=list;
+    renderDvPhotos();
     toast('🗑️ اتمسحت الصورة');
   }, function(e){ toast('❌ '+e); });
 }
 
 // ==================== PHOTO UPLOAD ====================
 function openPhotoChoice(){
-  if(selIdx===null) return;
+  if(!dvRec) return;
   document.getElementById('choice-overlay').classList.add('show');
 }
 function closePhotoChoice(){
@@ -1379,9 +1549,9 @@ function compressImage(file, cb){
 }
 
 function uploadPhoto(file){
-  if(selIdx===null) return;
-  var idx=selIdx, key=attData[idx].key;
-  var msg=document.getElementById('det-photo-msg');
+  if(!dvRec) return;
+  var key=dvRec.key, user=dvUser, rid=dvReq;
+  var msg=document.getElementById('dv-photo-msg');
   msg.textContent='⏳ جاري تجهيز الصورة...';
   compressImage(file, function(b64){
     var uid=Date.now().toString(36)+Math.random().toString(36).slice(2,7);
@@ -1394,7 +1564,7 @@ function uploadPhoto(file){
     }
     function sendChunk(i, tries){
       inFlight++;
-      rpcOnce('uploadPhotoChunk', [curAttUser, key, uid, i, b64.substr(i*CH, CH)],
+      rpcOnce('uploadPhotoChunk', [user, key, uid, i, b64.substr(i*CH, CH)],
         function(){
           inFlight--; done++;
           msg.textContent='⏳ جاري الرفع... '+toAR(Math.round(done/total*100))+'%';
@@ -1411,13 +1581,10 @@ function uploadPhoto(file){
         if(!finishing){
           finishing=true;
           msg.textContent='⏳ جاري حفظ الصورة...';
-          rpcOnce('finishPhotoUpload', [curAttUser, key, uid, total], function(list){
-            if(selIdx===idx){ photoList=list; }
-            attData[idx].photoCount=list.length;
+          rpcOnce('finishPhotoUpload', [user, key, uid, total], function(list){
+            if(rid===dvReq){ dvPhotos=list; renderDvPhotos(); }
             msg.textContent='✅ اتحفظت الصورة';
             setTimeout(function(){ msg.textContent=''; }, 2500);
-            updatePhotoCard();
-            renderPhotos();
             toast('✅ اتحفظت الصورة');
           }, fail);
         }
@@ -1817,7 +1984,7 @@ function toast(msg){
   }
 
   document.addEventListener('pointerdown', function(e){
-    var b=e.target.closest && e.target.closest('.login-btn,.sp-save-btn,.emp-btn,.s-opt,.ot-type-btn,.btn-outline,.month-nav button,.nav-item,.bn-item,.logout-btn,.pb,.choice-btn,.det-back');
+    var b=e.target.closest && e.target.closest('.login-btn,.sp-save-btn,.emp-btn,.s-opt,.ot-type-btn,.btn-outline,.month-nav button,.nav-item,.bn-item,.logout-btn,.pb,.choice-btn');
     if(!b || b.disabled || reduce) return;
     var rect=b.getBoundingClientRect(), size=Math.max(rect.width, rect.height);
     var s=document.createElement('span');
