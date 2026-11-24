@@ -2250,7 +2250,11 @@ function setUsersBadge(n){
 function refreshUsersBadge(){
   if(!S.isAdmin) return;
   rpcOnce('getUsers',[S.username,S.pass],function(l){
-    setUsersBadge(l.filter(function(u){return u.status==='pending';}).length);
+    var r=l.filter(function(u){return u.status==='pending';}).length;
+    var s=l.filter(function(u){return u.suspended==='pending';}).length;
+    setUsersBadge(r+s);
+    if(s>0 && !window._susAlerted){ window._susAlerted=true; toast('🚫 فيه يوزر حسابه اتعلق — راجع صفحة اليوزرات'); }
+    if(s===0) window._susAlerted=false;
   },function(){});
 }
 function startBadgeTimer(){
@@ -2261,31 +2265,48 @@ function startBadgeTimer(){
 
 function renderUsers(list){
   usersCache=list;
-  var order={pending:0,approved:1};
-  list.sort(function(a,b){ return (order[a.status]-order[b.status])||(b.createdAt-a.createdAt); });
-  var pc=list.filter(function(u){return u.status==='pending';}).length;
-  setUsersBadge(pc);
+  function rank(u){ if(u.status==='pending'||u.suspended==='pending') return 0; if(u.suspended==='blocked') return 1; return 2; }
+  list.sort(function(a,b){ return (rank(a)-rank(b))||(b.createdAt-a.createdAt); });
+  var regC=list.filter(function(u){return u.status==='pending';}).length;
+  var susC=list.filter(function(u){return u.suspended==='pending';}).length;
+  setUsersBadge(regC+susC);
   var html='';
-  if(pc) html+='<div class="card pending-banner" style="border-color:var(--orange);text-align:center;font-weight:800;color:var(--orange)">⏳ فيه '+toAR(pc)+(pc===1?' طلب':' طلبات')+' مستني موافقتك</div>';
+  if(susC) html+='<div class="card pending-banner" style="border-color:var(--red);text-align:center;font-weight:800;color:var(--red)">🚫 فيه '+toAR(susC)+(susC===1?' يوزر اتعلق حسابه':' يوزرات اتعلقت حساباتهم')+' لعدم التسجيل — مستني قرارك</div>';
+  if(regC) html+='<div class="card pending-banner" style="border-color:var(--orange);text-align:center;font-weight:800;color:var(--orange)">⏳ فيه '+toAR(regC)+(regC===1?' طلب':' طلبات')+' مستني موافقتك</div>';
   html+=list.map(function(u,i){
-    var pend=u.status==='pending';
-    var top, actions='';
+    var pend=u.status==='pending', susP=u.suspended==='pending', susB=u.suspended==='blocked';
+    var roleTag='<span class="pill p-annual" style="margin-inline-start:6px;vertical-align:middle">'+(u.role||'Labeler')+'</span>';
+    var top, actions='', note='';
     if(pend){
-      top='<div class="uc-top"><div class="det-title" style="font-size:16px">'+u.displayName+' <span class="pill p-annual" style="margin-inline-start:6px;vertical-align:middle">'+(u.role||'Labeler')+'</span></div><span class="pill p-friday">⏳ مستني موافقة</span></div>';
+      top='<div class="uc-top"><div class="det-title" style="font-size:16px">'+u.displayName+' '+roleTag+'</div><span class="pill p-friday">⏳ مستني موافقة</span></div>';
       actions='<div class="user-actions"><button class="u-btn u-ok" onclick="userAction(\''+u.username+'\',\'approve\',this)">✅ موافقة</button><button class="u-btn u-no" onclick="userAction(\''+u.username+'\',\'reject\',this)">❌ رفض</button></div>';
+    } else if(susP){
+      top='<div class="uc-top"><div class="det-title" style="font-size:16px">'+u.displayName+' '+roleTag+'</div><span class="pill p-absent">🚫 معلّق — مستني قرارك</span></div>';
+      note='<div class="muted" style="margin:6px 0">اتعلق لأنه ما سجلش ٤ أيام ورا بعض</div>';
+      actions='<div class="user-actions"><button class="u-btn u-ok" onclick="suspAction(\''+u.username+'\',\'approve\',this)">✅ قبول (يكمل)</button><button class="u-btn u-no" onclick="suspAction(\''+u.username+'\',\'reject\',this)">❌ رفض (يفضل مقفول)</button></div>';
     } else {
-      top='<div class="uc-top"><div class="det-title" style="font-size:16px">'+u.displayName+' <span class="pill p-annual" style="margin-inline-start:6px;vertical-align:middle">'+(u.role||'Labeler')+'</span></div><div class="uc-icons">'
-        +'<button class="ic-btn" title="تعديل" onclick="openEdit(\''+u.username+'\')">✏️</button>'
+      top='<div class="uc-top"><div class="det-title" style="font-size:16px">'+u.displayName+' '+roleTag+(susB?' <span class="pill p-absent" style="margin-inline-start:6px;vertical-align:middle">🔒 مقفول</span>':'')+'</div><div class="uc-icons">'
+        +'<button class="ic-btn" title="'+(susB?'تعديل (هيتفعل تاني)':'تعديل')+'" onclick="openEdit(\''+u.username+'\')">✏️</button>'
         +(u.isAdmin?'':'<button class="ic-btn del" title="حذف" onclick="delUser(\''+u.username+'\',this)">🗑️</button>')
         +'</div></div>';
+      if(susB) note='<div class="muted" style="margin:6px 0">الحساب مقفول — دوس ✏️ واحفظ التعديل عشان يتفعل تاني</div>';
     }
-    return '<div class="user-card a-in '+(pend?'pending':'')+'" style="animation-delay:'+Math.min(i*70,600)+'ms">'
-      +top
+    return '<div class="user-card a-in '+((pend||susP)?'pending':'')+'" style="animation-delay:'+Math.min(i*70,600)+'ms">'
+      +top+note
       +dvRow('الباسورد','<span dir="ltr">'+u.password+'</span>')
       +dvRow('المرتب','<span>'+fNum(u.salary)+' جنيه</span>')
       +actions+'</div>';
   }).join('');
   document.getElementById('users-list').innerHTML=html;
+}
+
+function suspAction(target,action,btn){
+  var msg=action==='approve'?'تسيبه يكمل؟ العدّ هيبدأ من النهارده':'ترفض؟ الحساب هيفضل مقفول لحد ما تعدّل اليوزر';
+  if(!confirm(msg)) return;
+  rpcOnce('setSuspension',[S.username,S.pass,target,action],function(){
+    toast(action==='approve'?'✅ اليوزر هيكمل':'🔒 الحساب فضل مقفول');
+    loadUsers();
+  },function(e){ toast('❌ '+e); });
 }
 
 function userAction(target,action,btn){
