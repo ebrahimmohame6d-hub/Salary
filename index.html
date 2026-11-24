@@ -538,7 +538,7 @@ button:active{transform:scale(.95)}
 <!-- APP -->
 <div id="app">
 
-  <div class="avatar-btn" id="avatar-btn" title="تغيير الصورة" onclick="document.getElementById('avatar-file').click()">
+  <div class="avatar-btn" id="avatar-btn" title="الصورة" onclick="onAvatarClick()">
     <img id="avatar-img" alt="">
     <span class="avatar-ph" id="avatar-ph">📷</span>
     <span class="avatar-lbl" id="avatar-lbl">اضف صورة</span>
@@ -655,9 +655,8 @@ button:active{transform:scale(.95)}
                   <button class="s-opt" data-s="Present" onclick="pickStatus('Present')"><span class="s-dot d-green"></span>حضور</button>
                   <button class="s-opt" data-s="Absence" onclick="pickStatus('Absence')"><span class="s-dot d-red"></span>غياب</button>
                   <button class="s-opt" data-s="Annual" onclick="pickStatus('Annual')"><span class="s-dot d-blue"></span>إجازة سنوية</button>
-                  <button class="s-opt" data-s="Day Off" onclick="pickStatus('Day Off')"><span class="s-dot d-gray"></span>يوم راحة</button>
                   <button class="s-opt" data-s="Compensation" onclick="pickStatus('Compensation')"><span class="s-dot d-purple"></span>تعويض</button>
-                  <button class="s-opt" data-s="Friday + Double Paid" onclick="pickStatus('Friday + Double Paid')"><span class="s-dot d-orange"></span>دابل</button>
+                  <button class="s-opt" data-s="Friday + Double Paid" onclick="pickStatus('Friday + Double Paid')"><span class="s-dot d-orange"></span>جمعة/دابل</button>
                 </div>
 
                 <div class="sp-section">الساعات الإضافية</div>
@@ -803,6 +802,16 @@ button:active{transform:scale(.95)}
 </div>
 <input type="file" id="photo-file" accept="image/*" style="display:none" onchange="onPhotoPicked(this)">
 <input type="file" id="photo-cam" accept="image/*" capture="environment" style="display:none" onchange="onPhotoPicked(this)">
+
+<!-- AVATAR CHOICE -->
+<div class="choice-overlay" id="avatar-choice-overlay" onclick="if(event.target===this)closeAvatarChoice()">
+  <div class="choice-box">
+    <div class="choice-title">الصورة</div>
+    <button class="choice-btn" id="av-view-btn" onclick="viewAvatar()">👁 عرض</button>
+    <button class="choice-btn" onclick="changeAvatar()">📁 تغيير</button>
+    <button class="choice-btn ghost" onclick="closeAvatarChoice()">إلغاء</button>
+  </div>
+</div>
 
 <!-- PHOTO VIEWER -->
 <div class="viewer" id="viewer" onclick="closeViewer()">
@@ -1536,7 +1545,7 @@ function getPillClass(s){
 
 function statusLabel(s){
   const m={'Present':'✓ حضور','Absence':'✗ غياب','Annual':'🌴 إجازة Annual','Day Off':'😴 راحة',
-    'Compensation':'🔄 تعويض','Friday + Double Paid':'⭐ دابل',
+    'Compensation':'🔄 تعويض','Friday + Double Paid':'⭐ جمعة/دابل',
     'Deduction 3 day':'📉 خصم ٣','Deduction 2 day':'📉 خصم ٢','Deduction 1 day':'📉 خصم ١','Deduction half day':'📉 خصم نص'};
   return m[s]||s;
 }
@@ -1915,6 +1924,27 @@ function onAvatarFile(input){
   reader.readAsDataURL(file);
 }
 
+// ==================== AVATAR CHOICE (عرض / تغيير) ====================
+function onAvatarClick(){
+  var has = document.getElementById('avatar-img').style.display === 'block';
+  document.getElementById('av-view-btn').style.display = has ? 'block' : 'none';
+  document.getElementById('avatar-choice-overlay').classList.add('show');
+}
+function closeAvatarChoice(){
+  document.getElementById('avatar-choice-overlay').classList.remove('show');
+}
+function changeAvatar(){
+  closeAvatarChoice();
+  document.getElementById('avatar-file').click();
+}
+function viewAvatar(){
+  closeAvatarChoice();
+  var src = document.getElementById('avatar-img').getAttribute('src');
+  if(!src) return;
+  document.getElementById('viewer-img').src = src;
+  document.getElementById('viewer').classList.add('show');
+}
+
 // ==================== SALARY ====================
 function loadSalary(){
   document.getElementById('sal-loading').style.display='block';
@@ -1937,7 +1967,7 @@ function loadSalary(){
 
 function renderSalaryContent(d){
   const otSummaryHTML=buildOTSummary(d);
-  const attendRows=[['غياب',d.absence,'p-absent'],['إجازة سنوية — Annual',d.annual,'p-annual'],['يوم راحة',d.dayOff,'p-dayoff'],['تعويض',d.compensation,'p-comp'],['دابل',d.fridayDouble,'p-friday']]
+  const attendRows=[['غياب',d.absence,'p-absent'],['إجازة سنوية — Annual',d.annual,'p-annual'],['يوم راحة',d.dayOff,'p-dayoff'],['تعويض',d.compensation,'p-comp'],['جمعة/دابل',d.fridayDouble,'p-friday']]
     .filter(([l,v])=>v>0).map(([l,v,c])=>`<div class="sal-row"><span class="sal-label">${l}</span><span class="pill ${c}">${toAR(v)} يوم</span></div>`).join('');
   const otRow=d.otEffHoursWithFriday>0?`<div class="sal-row"><span class="sal-label">أوفر تايم (${toAR(d.otEffHoursWithFriday)} ساعة)</span><span class="pill p-ot">${toAR(d.otEffHoursWithFriday)} ساعة</span></div>`:'';
   const compHoursRow=d.compHoursTotal>0?`<div class="sal-row"><span class="sal-label">ساعات تعويض (${toAR(d.compHoursTotal)} ساعة)</span><span class="pill p-comp">${toAR(d.compHoursTotal)} ساعة</span></div>`:'';
@@ -2038,7 +2068,7 @@ function buildOTSummary(d){
   if(hasFri){
     var friAmt=d.fridayAmount||0;
     var friRawHours=d.fridayEffHours?parseFloat((d.fridayEffHours/2).toFixed(2)):0;
-    html+='<div class="ot-sum-row"><span class="ot-sum-lbl">'+toAR(d.fridayDouble)+' دابل ('+toAR(friRawHours)+'×٢)</span><span class="ot-sum-val">'+toAR(friRawHours)+' ساعة × ٢ = '+fNum(friAmt.toFixed(2))+' جنيه</span></div>';
+    html+='<div class="ot-sum-row"><span class="ot-sum-lbl">'+toAR(d.fridayDouble)+' جمعة/دابل ('+toAR(friRawHours)+'×٢)</span><span class="ot-sum-val">'+toAR(friRawHours)+' ساعة × ٢ = '+fNum(friAmt.toFixed(2))+' جنيه</span></div>';
   }
 
   var totalEffHoursWithFri=d.otEffHoursWithFriday||0;
