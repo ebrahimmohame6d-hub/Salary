@@ -275,9 +275,9 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .choice-btn{width:100%;padding:12px;border-radius:var(--radius-sm);border:1.5px solid var(--border2);background:var(--bg3);color:var(--accent-lt);font-size:14px;font-weight:700;font-family:'Cairo',sans-serif;cursor:pointer;margin-bottom:8px;transition:all .15s}
 .choice-btn:hover{background:#fff;transform:translateY(-1px)}
 .choice-btn.ghost{background:none;border-color:var(--border);color:var(--text2);margin-bottom:0}
-.viewer{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:600;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
+.viewer{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:600;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
 .viewer.show{display:flex;animation:fadeIn .25s ease}
-.viewer img{max-width:100%;max-height:100%;border-radius:10px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.viewer img{width:min(92vw,92vh);height:auto;max-width:none;max-height:none;object-fit:contain;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
 .viewer.show img{animation:popK .4s cubic-bezier(.34,1.56,.64,1)}
 .viewer-close{position:absolute;top:16px;left:16px;width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,0.15);color:#fff;font-size:18px;cursor:pointer}
 
@@ -1881,18 +1881,22 @@ function onAvatarFile(input){
   reader.onload=function(ev){
     var im=new Image();
     im.onload=function(){
-      var size=128;
-      var canvas=document.createElement('canvas');
-      canvas.width=size; canvas.height=size;
-      var ctx=canvas.getContext('2d');
+      // قص مربع من النص، وحجم الإخراج حتى 2048×2048 (من غير تكبير لو الأصل أصغر)
       var s=Math.min(im.width, im.height);
       var sx=(im.width-s)/2, sy=(im.height-s)/2;
-      ctx.drawImage(im, sx, sy, s, s, 0, 0, size, size);
-      var b64=canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
+      var out=Math.min(2048, s);
+      var canvas=document.createElement('canvas');
+      canvas.width=out; canvas.height=out;
+      var ctx=canvas.getContext('2d');
+      ctx.imageSmoothingEnabled=true;
+      ctx.imageSmoothingQuality='high';
+      ctx.drawImage(im, sx, sy, s, s, 0, 0, out, out);
+      var dataUrl=canvas.toDataURL('image/jpeg', 0.92);
+      var b64=dataUrl.split(',')[1];
 
       var uid='av'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
       var CH=3500, total=Math.ceil(b64.length/CH);
-      var done=0, failed=false;
+      var done=0, inFlight=0, nextI=0, failed=false;
       toast('⏳ جاري رفع الصورة...');
 
       function fail(){
@@ -1901,23 +1905,35 @@ function onAvatarFile(input){
         toast('❌ الصورة متترفعتش، حاول تاني');
       }
       function sendChunk(i, tries){
+        inFlight++;
         rpcOnce('uploadPhotoChunk', [user, 'avatar', uid, i, b64.substr(i*CH, CH)],
           function(){
-            done++;
-            if(done===total){
-              rpcOnce('setAvatar', [user, pass, uid, total], function(){
-                var src='data:image/jpeg;base64,'+b64;
-                try{ localStorage.setItem('hr_avatar_'+user, src); }catch(e){}
-                applyAvatar();
-                toast('✅ اتغيرت الصورة');
-              }, fail);
-            }
+            inFlight--; done++;
+            pump();
           },
           function(){
+            inFlight--;
             if(tries<2) sendChunk(i, tries+1); else fail();
           });
       }
-      for(var i=0;i<total;i++) sendChunk(i, 0);
+      function pump(){
+        if(failed) return;
+        if(done===total){
+          rpcOnce('setAvatar', [user, pass, uid, total], function(){
+            // الكاش المحلي بيتخزن بس لو الحجم مقبول عشان ما يملاش التخزين
+            if(dataUrl.length < 1500000){
+              try{ localStorage.setItem('hr_avatar_'+user, dataUrl); }catch(e){}
+            } else {
+              try{ localStorage.removeItem('hr_avatar_'+user); }catch(e){}
+            }
+            applyAvatar();
+            toast('✅ اتغيرت الصورة');
+          }, fail);
+          return;
+        }
+        while(inFlight<6 && nextI<total){ sendChunk(nextI++, 0); }
+      }
+      pump();
     };
     im.src=ev.target.result;
   };
