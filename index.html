@@ -882,6 +882,7 @@ button:active{transform:scale(.95)}
     <div class="choice-title" id="eu-title">تعديل</div>
     <div style="text-align:right;margin-bottom:10px"><label style="display:block;font-size:10px;color:var(--text2);margin-bottom:4px;font-weight:700">الباسورد</label><input class="ot-input" id="eu-pass" style="width:100%"></div>
     <div style="text-align:right;margin-bottom:14px"><label style="display:block;font-size:10px;color:var(--text2);margin-bottom:4px;font-weight:700">المرتب الأساسي (جنيه)</label><input class="ot-input" type="number" id="eu-salary" min="0" style="width:100%"></div>
+    <button class="sp-save-btn" id="eu-activate" onclick="activateEdit()" style="display:none;background:linear-gradient(90deg,#1a8a55,#2cb87a)">🔓 تفعيل الحساب</button>
     <button class="sp-save-btn" onclick="saveEdit()">💾 حفظ</button>
     <button class="choice-btn ghost" onclick="closeEdit()">إلغاء</button>
   </div>
@@ -2286,10 +2287,10 @@ function renderUsers(list){
       actions='<div class="user-actions"><button class="u-btn u-ok" onclick="suspAction(\''+u.username+'\',\'approve\',this)">✅ قبول (يكمل)</button><button class="u-btn u-no" onclick="suspAction(\''+u.username+'\',\'reject\',this)">❌ رفض (يفضل مقفول)</button></div>';
     } else {
       top='<div class="uc-top"><div class="det-title" style="font-size:16px">'+u.displayName+' '+roleTag+(susB?' <span class="pill p-absent" style="margin-inline-start:6px;vertical-align:middle">🔒 مقفول</span>':'')+'</div><div class="uc-icons">'
-        +'<button class="ic-btn" title="'+(susB?'تعديل (هيتفعل تاني)':'تعديل')+'" onclick="openEdit(\''+u.username+'\')">✏️</button>'
+        +'<button class="ic-btn" title="'+(susB?'تعديل / تفعيل':'تعديل')+'" onclick="openEdit(\''+u.username+'\')">✏️</button>'
         +(u.isAdmin?'':'<button class="ic-btn del" title="حذف" onclick="delUser(\''+u.username+'\',this)">🗑️</button>')
         +'</div></div>';
-      if(susB) note='<div class="muted" style="margin:6px 0">الحساب مقفول — دوس ✏️ واحفظ التعديل عشان يتفعل تاني</div>';
+      if(susB) note='<div class="muted" style="margin:6px 0">الحساب مقفول — دوس ✏️ وبعدين "تفعيل الحساب"</div>';
     }
     return '<div class="user-card a-in '+((pend||susP)?'pending':'')+'" style="animation-delay:'+Math.min(i*70,600)+'ms">'
       +top+note
@@ -2301,7 +2302,7 @@ function renderUsers(list){
 }
 
 function suspAction(target,action,btn){
-  var msg=action==='approve'?'تسيبه يكمل؟ العدّ هيبدأ من النهارده':'ترفض؟ الحساب هيفضل مقفول لحد ما تعدّل اليوزر';
+  var msg=action==='approve'?'تسيبه يكمل؟ العدّ هيبدأ من النهارده':'ترفض؟ الحساب هيفضل مقفول لحد ما تفعّله';
   if(!confirm(msg)) return;
   rpcOnce('setSuspension',[S.username,S.pass,target,action],function(){
     toast(action==='approve'?'✅ اليوزر هيكمل':'🔒 الحساب فضل مقفول');
@@ -2339,6 +2340,8 @@ function openEdit(target){
   document.getElementById('eu-title').textContent='تعديل '+u.displayName;
   document.getElementById('eu-pass').value=u.password;
   document.getElementById('eu-salary').value=u.salary;
+  var locked = (u.suspended==='blocked' || u.suspended==='pending');
+  document.getElementById('eu-activate').style.display = locked ? 'block' : 'none';
   document.getElementById('edit-overlay').classList.add('show');
 }
 function closeEdit(){ document.getElementById('edit-overlay').classList.remove('show'); }
@@ -2356,6 +2359,14 @@ function saveEdit(){
     toast('✅ اتعدل');
     loadUsers();
     loadEmpSelectors();
+  },function(e){ toast('❌ '+e); });
+}
+function activateEdit(){
+  if(!confirm('تفعّل الحساب ده؟ العدّ هيبدأ من النهارده')) return;
+  rpcOnce('activateUser',[S.username,S.pass,editTarget],function(){
+    closeEdit();
+    toast('🔓 اتفعل الحساب');
+    loadUsers();
   },function(e){ toast('❌ '+e); });
 }
 
