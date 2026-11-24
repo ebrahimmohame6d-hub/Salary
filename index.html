@@ -2505,6 +2505,42 @@ function toast(msg){
     }
   });
 })();
+
+// ==================== BONUS FOR ALL USERS ====================
+(function(){
+  var prev = window.renderSalaryContent;
+  window.renderSalaryContent = function(d){
+    var r = prev.apply(this, arguments);
+    if(!S.isAdmin){
+      var box = document.getElementById('sal-content');
+      var target = null;
+      box.querySelectorAll('.sal-row').forEach(function(x){
+        var l = x.querySelector('.sal-label');
+        if(l && l.textContent.trim()==='Bonus / KPI') target = x;
+      });
+      var html = '<div class="sal-row"><span class="sal-label">Bonus / KPI</span><span class="bonus-edit"><input class="ot-input bonus-input" type="number" id="bonus-input" min="0" step="1" placeholder="0" value="'+((d && d.bonus)||'')+'" onkeydown="if(event.keyCode===13)saveBonus()"><button class="bonus-save" onclick="saveBonus()" title="حفظ">✓</button></span></div>';
+      if(target){
+        target.outerHTML = html;
+      } else {
+        var head = box.querySelector('.sal-2col .card:nth-child(2) .card-head');
+        if(head) head.insertAdjacentHTML('afterend', html);
+      }
+    }
+    return r;
+  };
+
+  window.saveBonus = function(){
+    var el = document.getElementById('bonus-input');
+    if(!el) return;
+    var v = parseFloat(el.value)||0;
+    if(v<0){ toast('❌ الرقم لازم يكون صفر أو أكتر'); return; }
+    var target = S.isAdmin ? curSalUser : S.username;
+    rpcOnce('setBonus', [S.username, S.pass, target, salYear, salMonth, v], function(){
+      toast(v>0 ? '✅ اتضاف البونص على المرتب' : '🗑️ اتمسح البونص');
+      loadSalary();
+    }, function(e){ toast('❌ '+e); });
+  };
+})();
 </script>
 </body>
 </html>
