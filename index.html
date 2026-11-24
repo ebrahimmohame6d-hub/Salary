@@ -275,6 +275,8 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .choice-btn{width:100%;padding:12px;border-radius:var(--radius-sm);border:1.5px solid var(--border2);background:var(--bg3);color:var(--accent-lt);font-size:14px;font-weight:700;font-family:'Cairo',sans-serif;cursor:pointer;margin-bottom:8px;transition:all .15s}
 .choice-btn:hover{background:#fff;transform:translateY(-1px)}
 .choice-btn.ghost{background:none;border-color:var(--border);color:var(--text2);margin-bottom:0}
+.choice-btn.del{border-color:rgba(224,52,72,0.4);color:var(--red);background:#fff5f6}
+.choice-btn.del:hover{background:rgba(224,52,72,0.12)}
 .viewer{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:600;align-items:center;justify-content:center;padding:20px;cursor:zoom-out}
 .viewer.show{display:flex;animation:fadeIn .25s ease}
 .viewer img{width:min(92vw,92vh);height:auto;max-width:none;max-height:none;object-fit:contain;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.5)}
@@ -487,6 +489,59 @@ button:active{transform:scale(.95)}
 
 /* HIDE EMP CARDS */
 #att-emp-card,#sal-emp-card,#dv-emp-card{display:none !important}
+
+/* ===== MOBILE ATTENDANCE FIX ===== */
+@media (max-width:768px){
+  html,body{max-width:100%;overflow-x:hidden}
+  .main{max-width:100%;overflow-x:hidden}
+  .card{min-width:0;max-width:100%}
+
+  .att-layout{display:block}
+  .att-layout>*{min-width:0}
+  .att-table-wrap{width:100%;overflow-x:hidden}
+
+  /* الجدول يتحول لكروت */
+  .att-table,.att-table tbody{display:block;width:100%}
+  .att-table thead{display:none}
+
+  .att-table tr{
+    display:grid;
+    grid-template-columns:1fr auto;
+    grid-template-areas:"day day" "st hrs";
+    align-items:center;
+    gap:2px 8px;
+    background:#fff;
+    border:1.5px solid var(--border2);
+    border-radius:12px;
+    margin:8px 0;
+    padding:4px 8px 10px;
+    box-shadow:0 1px 4px rgba(13,27,75,0.06);
+  }
+  .att-table td{display:block;min-width:0;padding:0 !important;background:transparent}
+  .att-table td:nth-child(1){grid-area:day}
+  .att-table td:nth-child(2){grid-area:st;padding:0 4px !important}
+  .att-table td:nth-child(3){grid-area:hrs;text-align:left;padding:0 4px !important}
+
+  /* اليوم جوه الكارت من غير بوردر مزدوج */
+  .att-table tr .day-row{margin:0;border:none;box-shadow:none;background:transparent;padding:8px 4px}
+  .att-table tr .day-row:hover{transform:none;box-shadow:none}
+
+  /* الجمعة */
+  .att-table tr:has(.friday-row){background:#fff8f0;border-color:rgba(224,104,32,0.4)}
+  .att-table tr .friday-row{background:transparent !important;border:none !important;box-shadow:none !important}
+
+  /* النهارده (طبقة الموية اللي ورا) */
+  .att-table tr.today-tr{background:transparent;border-color:transparent;box-shadow:none}
+
+  /* فاصل الشهر */
+  .att-table tr.month-sep{display:block;background:none;border:none;box-shadow:none;padding:0;margin:14px 0 4px}
+  .att-table tr.month-sep td{display:block;border-radius:8px;text-align:right;padding:6px 12px !important;background:var(--bg3)}
+
+  /* البوتوم ناف: الكلام ما يتقطعش تحت شريط المتصفح */
+  .bottom-nav{height:auto;min-height:var(--bottom-nav-h);padding-bottom:max(env(safe-area-inset-bottom),14px)}
+  .main{padding-bottom:calc(var(--bottom-nav-h) + 30px + env(safe-area-inset-bottom))}
+  .toast{bottom:calc(var(--bottom-nav-h) + 30px + env(safe-area-inset-bottom))}
+}
 </style>
 <base target="_blank">
 </head>
@@ -809,6 +864,7 @@ button:active{transform:scale(.95)}
     <div class="choice-title">الصورة</div>
     <button class="choice-btn" id="av-view-btn" onclick="viewAvatar()">👁 عرض</button>
     <button class="choice-btn" onclick="changeAvatar()">📁 تغيير</button>
+    <button class="choice-btn del" id="av-del-btn" onclick="deleteAvatarPhoto()">🗑 مسح</button>
     <button class="choice-btn ghost" onclick="closeAvatarChoice()">إلغاء</button>
   </div>
 </div>
@@ -1944,7 +2000,19 @@ function onAvatarFile(input){
 function onAvatarClick(){
   var has = document.getElementById('avatar-img').style.display === 'block';
   document.getElementById('av-view-btn').style.display = has ? 'block' : 'none';
+  document.getElementById('av-del-btn').style.display = has ? 'block' : 'none';
   document.getElementById('avatar-choice-overlay').classList.add('show');
+}
+function deleteAvatarPhoto(){
+  closeAvatarChoice();
+  if(!confirm('تمسح الصورة دي؟')) return;
+  var user=S.username, pass=S.pass;
+  toast('⏳ جاري مسح الصورة...');
+  rpcOnce('deleteAvatar', [user, pass], function(){
+    try{ localStorage.removeItem('hr_avatar_'+user); }catch(e){}
+    applyAvatar();
+    toast('🗑️ اتمسحت الصورة');
+  }, function(e){ toast('❌ '+e); });
 }
 function closeAvatarChoice(){
   document.getElementById('avatar-choice-overlay').classList.remove('show');
