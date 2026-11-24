@@ -483,6 +483,7 @@ button:active{transform:scale(.95)}
 }
 @media (max-width:768px){
   .card{transform:none !important}
+  .liquid-layer{display:none !important}
 }
 
 /* HIDE EMP CARDS */
@@ -809,6 +810,7 @@ button:active{transform:scale(.95)}
     <div class="choice-title">الصورة</div>
     <button class="choice-btn" id="av-view-btn" onclick="viewAvatar()">👁 عرض</button>
     <button class="choice-btn" onclick="changeAvatar()">📁 تغيير</button>
+    <button class="choice-btn" id="av-del-btn" onclick="deleteAvatarPhoto()" style="color:var(--red);border-color:rgba(224,52,72,.4)">🗑 مسح</button>
     <button class="choice-btn ghost" onclick="closeAvatarChoice()">إلغاء</button>
   </div>
 </div>
@@ -887,6 +889,18 @@ function rpcOnce(fnName, args, onOk, onErr){
   xhr.onerror = function(){ onErr('network'); };
   xhr.ontimeout = function(){ onErr('timeout'); };
   xhr.send();
+}
+
+// طلب POST (بيستخدم في رفع الصورة والمسح)
+function sendRpcPost(fn, args){
+  return fetch(APPS_SCRIPT_URL, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({fn:fn, args:args})
+  }).then(function(r){ return r.json(); }).then(function(res){
+    if(res && res.success) return res.result;
+    throw new Error((res && res.error) || 'error');
+  });
 }
 
 function createGsRunner(successCb, failureCb){
@@ -1839,35 +1853,36 @@ function uploadPhoto(file){
 }
 
 // ==================== AVATAR (على السيرفر) ====================
-function applyAvatar(){
+function setAvatarView(src){
   var img=document.getElementById('avatar-img');
   var ph=document.getElementById('avatar-ph');
   var b=document.getElementById('avatar-btn');
   var l=document.getElementById('avatar-lbl');
+  if(src){
+    img.src=src; img.style.display='block'; ph.style.display='none';
+    if(l) l.style.display='none'; if(b) b.classList.add('has-img');
+  } else {
+    img.removeAttribute('src'); img.style.display='none'; ph.style.display='block';
+    if(l) l.style.display='block'; if(b) b.classList.remove('has-img');
+  }
+}
+
+function applyAvatar(){
   if(!S || !S.username) return;
   var user=S.username;
-
-  function show(src){
-    if(src){ img.src=src; img.style.display='block'; ph.style.display='none'; }
-    else { img.removeAttribute('src'); img.style.display='none'; ph.style.display='block'; }
-    if(b) b.classList.toggle('has-img', !!src);
-    if(l) l.style.display = src ? 'none' : 'block';
-  }
-
-  // عرض سريع من الكاش، وبعدين تحديث من السيرفر
   var cached=null;
   try { cached=localStorage.getItem('hr_avatar_'+user); } catch(e){}
-  if(cached) show(cached);
+  if(cached) setAvatarView(cached);
 
   rpcOnce('getAvatar',[user],function(b64){
     if(S.username!==user) return;
     if(b64){
       var src='data:image/jpeg;base64,'+b64;
+      setAvatarView(src);
       try{ localStorage.setItem('hr_avatar_'+user, src); }catch(e){}
-      show(src);
     } else {
+      setAvatarView(null);
       try{ localStorage.removeItem('hr_avatar_'+user); }catch(e){}
-      show(null);
     }
   }, function(){});
 }
@@ -1881,69 +1896,59 @@ function onAvatarFile(input){
   reader.onload=function(ev){
     var im=new Image();
     im.onload=function(){
-      // قص مربع من النص، وحجم الإخراج حتى 2048×2048 (من غير تكبير لو الأصل أصغر)
       var s=Math.min(im.width, im.height);
       var sx=(im.width-s)/2, sy=(im.height-s)/2;
       var out=Math.min(2048, s);
-      var canvas=document.createElement('canvas');
-      canvas.width=out; canvas.height=out;
-      var ctx=canvas.getContext('2d');
+      var c=document.createElement('canvas');
+      c.width=out; c.height=out;
+      var ctx=c.getContext('2d');
       ctx.imageSmoothingEnabled=true;
       ctx.imageSmoothingQuality='high';
       ctx.drawImage(im, sx, sy, s, s, 0, 0, out, out);
-      var dataUrl=canvas.toDataURL('image/jpeg', 0.92);
+      var dataUrl=c.toDataURL('image/jpeg', 0.92);
       var b64=dataUrl.split(',')[1];
 
-      var uid='av'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
-      var CH=3500, total=Math.ceil(b64.length/CH);
-      var done=0, inFlight=0, nextI=0, failed=false;
-      toast('⏳ جاري رفع الصورة...');
+      // عرض فوري
+      setAvatarView(dataUrl);
+      toast('⏳ جاري حفظ الصورة...');
 
-      function fail(){
-        if(failed) return;
-        failed=true;
-        toast('❌ الصورة متترفعتش، حاول تاني');
-      }
-      function sendChunk(i, tries){
-        inFlight++;
-        rpcOnce('uploadPhotoChunk', [user, 'avatar', uid, i, b64.substr(i*CH, CH)],
-          function(){
-            inFlight--; done++;
-            pump();
-          },
-          function(){
-            inFlight--;
-            if(tries<2) sendChunk(i, tries+1); else fail();
-          });
-      }
-      function pump(){
-        if(failed) return;
-        if(done===total){
-          rpcOnce('setAvatar', [user, pass, uid, total], function(){
-            // الكاش المحلي بيتخزن بس لو الحجم مقبول عشان ما يملاش التخزين
-            if(dataUrl.length < 1500000){
-              try{ localStorage.setItem('hr_avatar_'+user, dataUrl); }catch(e){}
-            } else {
-              try{ localStorage.removeItem('hr_avatar_'+user); }catch(e){}
-            }
-            applyAvatar();
-            toast('✅ اتغيرت الصورة');
-          }, fail);
-          return;
-        }
-        while(inFlight<6 && nextI<total){ sendChunk(nextI++, 0); }
-      }
-      pump();
+      sendRpcPost('setAvatarDirect', [user, pass, b64])
+        .then(function(){
+          try{ localStorage.setItem('hr_avatar_'+user, dataUrl); }catch(e){
+            try{ localStorage.removeItem('hr_avatar_'+user); }catch(_){}
+          }
+          toast('✅ اتغيرت الصورة');
+        })
+        .catch(function(e){
+          toast('❌ الصورة متحفظتش: '+e.message);
+          applyAvatar();
+        });
     };
     im.src=ev.target.result;
   };
   reader.readAsDataURL(file);
 }
 
-// ==================== AVATAR CHOICE (عرض / تغيير) ====================
+function deleteAvatarPhoto(){
+  closeAvatarChoice();
+  if(!confirm('تمسح الصورة؟')) return;
+  var user=S.username, pass=S.pass;
+  var prev=document.getElementById('avatar-img').getAttribute('src');
+  setAvatarView(null);
+  try{ localStorage.removeItem('hr_avatar_'+user); }catch(e){}
+  sendRpcPost('deleteAvatar', [user, pass])
+    .then(function(){ toast('🗑️ اتمسحت الصورة'); })
+    .catch(function(e){
+      toast('❌ متمسحتش: '+e.message);
+      if(prev) setAvatarView(prev);
+    });
+}
+
+// ==================== AVATAR CHOICE (عرض / تغيير / مسح) ====================
 function onAvatarClick(){
   var has = document.getElementById('avatar-img').style.display === 'block';
   document.getElementById('av-view-btn').style.display = has ? 'block' : 'none';
+  document.getElementById('av-del-btn').style.display = has ? 'block' : 'none';
   document.getElementById('avatar-choice-overlay').classList.add('show');
 }
 function closeAvatarChoice(){
@@ -2463,8 +2468,9 @@ function toast(msg){
   });
 })();
 
-// ==================== WATER EFFECT ====================
+// ==================== WATER EFFECT (ديسكتوب بس) ====================
 (function(){
+  if(window.innerWidth<=768) return;
   var wrap=document.querySelector('.att-table-wrap');
   var tbody=document.getElementById('att-tbody');
 
@@ -2518,35 +2524,10 @@ function toast(msg){
     mouseActive=true;
   });
   tbody.addEventListener('mouseleave', function(){ mouseActive=false; });
-
-  function onTilt(e){
-    if(e.gamma==null) return;
-    tiltX=clamp(e.gamma/30, -1, 1);
-  }
-  if(typeof DeviceOrientationEvent!=='undefined' && typeof DeviceOrientationEvent.requestPermission==='function'){
-    document.addEventListener('click', function(){
-      DeviceOrientationEvent.requestPermission()
-        .then(function(state){ if(state==='granted') window.addEventListener('deviceorientation', onTilt); })
-        .catch(function(){});
-    }, {once:true});
-  } else {
-    window.addEventListener('deviceorientation', onTilt);
-  }
 })();
 
-// ==================== AVATAR LABEL + SCROLL TO TODAY ====================
+// ==================== SCROLL TO TODAY ====================
 (function(){
-  var oldApply = window.applyAvatar;
-  window.applyAvatar = function(){
-    if(oldApply) oldApply.apply(this, arguments);
-    var img=document.getElementById('avatar-img');
-    var b=document.getElementById('avatar-btn');
-    var l=document.getElementById('avatar-lbl');
-    var has = img && img.style.display==='block';
-    if(b) b.classList.toggle('has-img', !!has);
-    if(l) l.style.display = has ? 'none' : 'block';
-  };
-
   window.scrollToToday = function(){
     [100, 400, 800, 1400, 2200].forEach(function(delay){
       setTimeout(function(){
