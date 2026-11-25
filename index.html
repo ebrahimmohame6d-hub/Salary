@@ -5,12 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="HR System">
-<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-title" content="Attend & Salary">
 <meta name="theme-color" content="#0d1b4b">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.jpg?v=3">
-<link rel="icon" type="image/jpeg" sizes="192x192" href="/apple-touch-icon.jpg?v=3">
-<title>HR System</title>
+<link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/WpxRj6z9/Screenshot-2026-03-31-220317.png">
+<link rel="icon" type="image/png" sizes="512x512" href="https://i.ibb.co/WpxRj6z9/Screenshot-2026-03-31-220317.png">
+<title>Attend & Salary</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -516,7 +515,7 @@ button:active{transform:scale(.95)}
     </div>
 
     <div id="reg-box" style="display:none">
-      <div class="fg"><label>اسم المستخدم</label><input id="r-user" placeholder="username" dir="ltr" autocomplete="off"></div>
+      <div class="fg"><label>اسم المستخدم (إنجليزي، أرقام، _ — من ٣ لـ ٢٠ حرف)</label><input id="r-user" placeholder="username" dir="ltr" autocomplete="off"></div>
       <div class="fg"><label>كلمة المرور</label><input id="r-pass" type="password" placeholder="••••" dir="ltr" autocomplete="new-password"></div>
       <div class="fg"><label>المرتب الأساسي (جنيه)</label><input id="r-salary" type="number" min="0" placeholder="5500" dir="ltr"></div>
       <div class="fg">
@@ -842,6 +841,31 @@ button:active{transform:scale(.95)}
 <div class="toast" id="toast"></div>
 
 <script>
+// ==================== ICON & MANIFEST ====================
+// لو عايز لوجو جديد: ارفعه على ibb.co (PNG مربع) وحط الرابط المباشر هنا
+var ICON_URL = 'https://i.ibb.co/WpxRj6z9/Screenshot-2026-03-31-220317.png';
+(function(){
+  try {
+    var manifest = {
+      name: 'Attend & Salary',
+      short_name: 'Attend & Salary',
+      start_url: window.location.href.split('#')[0],
+      display: 'standalone',
+      background_color: '#0a1230',
+      theme_color: '#0d1b4b',
+      icons: [
+        { src: ICON_URL, sizes: '192x192', type: 'image/png' },
+        { src: ICON_URL, sizes: '512x512', type: 'image/png' }
+      ]
+    };
+    var blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+    var link = document.createElement('link');
+    link.rel = 'manifest';
+    link.href = URL.createObjectURL(blob);
+    document.head.appendChild(link);
+  } catch(e){}
+})();
+
 // ==================== APPS SCRIPT BRIDGE ====================
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbye7KFKphubufC72h2FmsErDHC6pwWy6-1dZ2rpO5fRiSehTZb4y-acjTDilUhZf7FG/exec';
 
@@ -1233,6 +1257,9 @@ function showRegister(){
 }
 function showLogin(){ swapBox('reg-box','login-box'); }
 
+// نفس شرط السيرفر: إنجليزي صغير / أرقام / _ ، من ٣ لـ ٢٠ حرف
+var USERNAME_RE = /^[a-z0-9_]{3,20}$/;
+
 function doRegister(){
   var u=document.getElementById('r-user').value.trim().toLowerCase();
   var p=document.getElementById('r-pass').value.trim();
@@ -1242,6 +1269,12 @@ function doRegister(){
   var btn=document.getElementById('r-btn');
   err.style.display='none'; ok.style.display='none';
   if(!u||!p||!s||!role){ err.textContent='املا كل الخانات واختار الوظيفة'; err.style.display='block'; return; }
+  if(!USERNAME_RE.test(u)){
+    err.textContent='اسم المستخدم لازم يكون من ٣ لـ ٢٠ حرف إنجليزي أو أرقام أو _ (من غير مسافات أو عربي)';
+    err.style.display='block';
+    return;
+  }
+  if(p.length<4){ err.textContent='كلمة المرور لازم تكون ٤ حروف على الأقل'; err.style.display='block'; return; }
   btn.disabled=true;
   rpcOnce('registerUser',[u,p,parseFloat(s),role],function(res){
     btn.disabled=false;
