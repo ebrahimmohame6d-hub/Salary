@@ -515,7 +515,7 @@ button:active{transform:scale(.95)}
     </div>
 
     <div id="reg-box" style="display:none">
-      <div class="fg"><label>اسم المستخدم (إنجليزي، أرقام، _ — من ٣ لـ ٢٠ حرف)</label><input id="r-user" placeholder="username" dir="ltr" autocomplete="off"></div>
+      <div class="fg"><label>اسم المستخدم (إنجليزي، ومسافات بين الكلمات مسموحة)</label><input id="r-user" placeholder="Ahmed Ali" dir="ltr" autocomplete="off"></div>
       <div class="fg"><label>كلمة المرور</label><input id="r-pass" type="password" placeholder="••••" dir="ltr" autocomplete="new-password"></div>
       <div class="fg"><label>المرتب الأساسي (جنيه)</label><input id="r-salary" type="number" min="0" placeholder="5500" dir="ltr"></div>
       <div class="fg">
@@ -842,7 +842,6 @@ button:active{transform:scale(.95)}
 
 <script>
 // ==================== ICON & MANIFEST ====================
-// لو عايز لوجو جديد: ارفعه على ibb.co (PNG مربع) وحط الرابط المباشر هنا
 var ICON_URL = 'https://i.ibb.co/WpxRj6z9/Screenshot-2026-03-31-220317.png';
 (function(){
   try {
@@ -865,6 +864,14 @@ var ICON_URL = 'https://i.ibb.co/WpxRj6z9/Screenshot-2026-03-31-220317.png';
     document.head.appendChild(link);
   } catch(e){}
 })();
+
+// ==================== USERNAME HELPERS ====================
+// نفس تنظيف السيرفر: حروف صغيرة + مسافة واحدة بين الكلمات
+function normUser(s){
+  return String(s || '').toLowerCase().trim().replace(/\s+/g, ' ');
+}
+// إنجليزي وأرقام و_ ومسافات بين الكلمات
+var USERNAME_RE = /^[a-z0-9_]+( [a-z0-9_]+)*$/;
 
 // ==================== APPS SCRIPT BRIDGE ====================
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbye7KFKphubufC72h2FmsErDHC6pwWy6-1dZ2rpO5fRiSehTZb4y-acjTDilUhZf7FG/exec';
@@ -1204,7 +1211,7 @@ function buildAnnualLeaveCard(al, year){
 
 // ==================== LOGIN / REGISTER ====================
 function onUserInput(){
-  var u=document.getElementById('l-user').value.trim().toLowerCase();
+  var u=normUser(document.getElementById('l-user').value);
   if(!u) return;
   try {
     var savedPass=localStorage.getItem('hr_cred_'+u);
@@ -1213,7 +1220,7 @@ function onUserInput(){
 }
 
 function doLogin(){
-  const u=document.getElementById('l-user').value.trim().toLowerCase();
+  const u=normUser(document.getElementById('l-user').value);
   const p=document.getElementById('l-pass').value.trim();
   const err=document.getElementById('l-err');
   err.style.display='none';
@@ -1257,11 +1264,8 @@ function showRegister(){
 }
 function showLogin(){ swapBox('reg-box','login-box'); }
 
-// نفس شرط السيرفر: إنجليزي صغير / أرقام / _ ، من ٣ لـ ٢٠ حرف
-var USERNAME_RE = /^[a-z0-9_]{3,20}$/;
-
 function doRegister(){
-  var u=document.getElementById('r-user').value.trim().toLowerCase();
+  var u=normUser(document.getElementById('r-user').value);
   var p=document.getElementById('r-pass').value.trim();
   var s=document.getElementById('r-salary').value;
   var role=document.getElementById('r-role').value;
@@ -1269,8 +1273,8 @@ function doRegister(){
   var btn=document.getElementById('r-btn');
   err.style.display='none'; ok.style.display='none';
   if(!u||!p||!s||!role){ err.textContent='املا كل الخانات واختار الوظيفة'; err.style.display='block'; return; }
-  if(!USERNAME_RE.test(u)){
-    err.textContent='اسم المستخدم لازم يكون من ٣ لـ ٢٠ حرف إنجليزي أو أرقام أو _ (من غير مسافات أو عربي)';
+  if(u.length<3 || u.length>20 || !USERNAME_RE.test(u)){
+    err.textContent='اسم المستخدم لازم يكون من ٣ لـ ٢٠ حرف إنجليزي، ومسموح فيه مسافات بين الكلمات';
     err.style.display='block';
     return;
   }
@@ -2373,19 +2377,6 @@ function toast(msg){
     enter(document.querySelectorAll('.sidebar .nav-item, .bn-item'), 100, 60);
     return r;
   });
-
-  var al=$('sp-annual-leave');
-  if(al){
-    new MutationObserver(function(){
-      var bar=al.querySelector('.al-bar');
-      if(bar){
-        var w=bar.style.width;
-        bar.style.width='0%'; void bar.offsetWidth;
-        requestAnimationFrame(function(){ bar.style.width=w; });
-      }
-      animateNumbers(al, 1000);
-    }).observe(al, {childList:true});
-  }
 
   var err=$('l-err');
   if(err){
