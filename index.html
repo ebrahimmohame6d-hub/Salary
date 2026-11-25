@@ -497,6 +497,48 @@ button:active{transform:scale(.95)}
 
 /* HIDE EMP CARDS */
 #att-emp-card,#sal-emp-card,#dv-emp-card{display:none !important}
+
+/* ===== MOBILE FIX ===== */
+html,body{max-width:100%;overflow-x:hidden}
+
+@media (max-width:768px){
+  #app,.main,.page,.page.active{max-width:100vw;min-width:0;overflow-x:hidden}
+  .main{padding-left:10px;padding-right:10px}
+
+  .card{width:100%;min-width:0;box-sizing:border-box;overflow:hidden}
+  .att-layout,.att-layout>*{min-width:0;width:100%}
+
+  .att-table-wrap{width:100%;overflow-x:hidden;overflow-y:visible}
+  .att-table{table-layout:fixed;width:100%;border-collapse:separate;border-spacing:0}
+  .att-table th:nth-child(1),.att-table td:nth-child(1){width:50%}
+  .att-table th:nth-child(2),.att-table td:nth-child(2){width:20%}
+  .att-table th:nth-child(3),.att-table td:nth-child(3){width:30%}
+  .att-table th{padding:6px 4px;font-size:9px;text-align:center}
+  .att-table th:nth-child(1){text-align:right}
+  .att-table td:nth-child(2),.att-table td:nth-child(3){padding:8px 3px;text-align:center}
+  .att-table td:nth-child(1){padding:0 2px}
+
+  .day-row{width:100%;min-width:0;box-sizing:border-box;margin:5px 0;padding:9px 8px;gap:6px}
+  .day-num-box{width:28px;height:28px;font-size:12px;border-radius:6px}
+  .day-name-txt{min-width:0;flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .friday-badge{font-size:8px;padding:1px 5px}
+  .day-del{width:22px;height:22px;font-size:10px}
+
+  .pill{font-size:9px;padding:3px 6px;gap:2px}
+  .day-ot-badge,.day-comp-badge,.day-ded-badge{font-size:9px;padding:2px 5px;white-space:normal}
+  .today-tr td{padding:2px 2px}
+
+  .card-head{min-width:0}
+  .period-badge{max-width:100%;white-space:normal;font-size:10px}
+  .month-nav{width:100%;justify-content:space-between}
+  .month-nav span{min-width:0;font-size:11px;flex:1}
+
+  .stats-grid{width:100%;min-width:0}
+  .sal-2col{width:100%;min-width:0}
+  .emp-sel{max-width:100%}
+  .sal-row{gap:6px;flex-wrap:wrap}
+  .sal-label{min-width:0}
+}
 </style>
 <base target="_blank">
 </head>
