@@ -842,30 +842,6 @@ button:active{transform:scale(.95)}
 <div class="toast" id="toast"></div>
 
 <script>
-// ==================== ICON & MANIFEST ====================
-var ICON_URL = 'https://i.ibb.co/WpxRj6z9/Screenshot-2026-03-31-220317.png';
-(function(){
-  try {
-    var manifest = {
-      name: 'Attend & Salary',
-      short_name: 'Attend & Salary',
-      start_url: window.location.href.split('#')[0],
-      display: 'standalone',
-      background_color: '#0a1230',
-      theme_color: '#0d1b4b',
-      icons: [
-        { src: ICON_URL, sizes: '192x192', type: 'image/png' },
-        { src: ICON_URL, sizes: '512x512', type: 'image/png' }
-      ]
-    };
-    var blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-    var link = document.createElement('link');
-    link.rel = 'manifest';
-    link.href = URL.createObjectURL(blob);
-    document.head.appendChild(link);
-  } catch(e){}
-})();
-
 // ==================== USERNAME HELPERS ====================
 // نفس تنظيف السيرفر: حروف صغيرة + مسافة واحدة بين الكلمات
 function normUser(s){
