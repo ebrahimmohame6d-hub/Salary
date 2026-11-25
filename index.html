@@ -341,12 +341,15 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .user-card{background:#fff;border:1.5px solid var(--border2);border-radius:var(--radius);padding:14px;margin-bottom:10px;transition:transform .25s ease,box-shadow .25s ease,border-color .25s}
 .user-card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(42,77,184,.18);border-color:var(--accent-lt)}
 .user-card.pending{border-color:rgba(224,144,32,.7);background:#fffaf0;animation:pendingGlow 2s ease-in-out infinite}
+.user-card.suspended{border-color:rgba(224,52,72,.85);background:#fff5f6;animation:suspendGlow 2s ease-in-out infinite}
+.user-card.closed{border-color:#cbd5e1;background:#f8fafc;opacity:0.88}
 @keyframes pendingGlow{0%,100%{box-shadow:0 0 0 0 rgba(224,144,32,.35)}50%{box-shadow:0 0 0 7px rgba(224,144,32,0)}}
+@keyframes suspendGlow{0%,100%{box-shadow:0 0 0 0 rgba(224,52,72,.35)}50%{box-shadow:0 0 0 7px rgba(224,52,72,0)}}
 .user-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;flex-wrap:wrap}
 .user-actions{display:flex;gap:8px;margin-top:10px}
 .u-btn{flex:1;padding:10px;border-radius:var(--radius-sm);border:none;font-family:'Cairo',sans-serif;font-size:13px;font-weight:800;cursor:pointer;color:#fff;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s}
 .u-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.2)}.u-btn:active{transform:scale(.95)}
-.u-ok{background:linear-gradient(90deg,#1a8a55,#2cb87a)}.u-no{background:linear-gradient(90deg,#c01c2e,#e03448)}
+.u-ok{background:linear-gradient(90deg,#1a8a55,#2cb87a)}.u-no{background:linear-gradient(90deg,#c01c2e,#e03448)}.u-close{background:linear-gradient(90deg,#334155,#0f172a)}
 .pending-banner{animation:bannerBounce 1.6s ease-in-out infinite}
 @keyframes bannerBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 .user-removed{animation:userOut .45s ease forwards}
@@ -357,8 +360,8 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 @keyframes badgePulse{0%,100%{box-shadow:0 0 0 0 rgba(224,52,72,.55);transform:scale(1)}50%{box-shadow:0 0 0 7px rgba(224,52,72,0);transform:scale(1.12)}}
 .bn-item .bn-icon{position:relative}
 .bn-item .nav-badge{position:absolute;top:-4px;left:-2px;margin:0;min-width:17px;height:17px;font-size:10px;padding:0 4px}
-.uc-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
-.uc-icons{display:flex;gap:6px}
+.uc-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.uc-icons{display:flex;align-items:center;gap:6px}
 .ic-btn{width:34px;height:34px;border-radius:9px;border:1.5px solid var(--border2);background:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s cubic-bezier(.34,1.56,.64,1),background .2s}
 .ic-btn:hover{transform:scale(1.18) rotate(-6deg);background:var(--bg3)}
 .ic-btn.del{border-color:rgba(224,52,72,.4)}.ic-btn.del:hover{background:rgba(224,52,72,.12)}
@@ -791,7 +794,7 @@ button:active{transform:scale(.95)}
 
     <!-- USERS PAGE -->
     <div id="page-users" class="page">
-      <div class="page-header"><h2>👥 اليوزرات</h2><p>كل الحسابات وطلبات الإنشاء الجديدة</p></div>
+      <div class="page-header"><h2>👥 اليوزرات</h2><p>كل الحسابات وطلبات الإنشاء والحسابات المعلّقة</p></div>
       <div id="users-list"></div>
     </div>
 
@@ -843,11 +846,9 @@ button:active{transform:scale(.95)}
 
 <script>
 // ==================== USERNAME HELPERS ====================
-// نفس تنظيف السيرفر: حروف صغيرة + مسافة واحدة بين الكلمات
 function normUser(s){
   return String(s || '').toLowerCase().trim().replace(/\s+/g, ' ');
 }
-// إنجليزي وأرقام و_ ومسافات بين الكلمات
 var USERNAME_RE = /^[a-z0-9_]+( [a-z0-9_]+)*$/;
 
 // ==================== APPS SCRIPT BRIDGE ====================
@@ -867,6 +868,7 @@ function callAppsScript(fnName, args, onSuccess, onFailure, attempt){
       try {
         var res = JSON.parse(xhr.responseText);
         if(res && res.success){ if(onSuccess) onSuccess(res.result); }
+        else if(res && res.error && onFailure){ onFailure(new Error(res.error)); }
         else retry();
       } catch(e){ retry(); }
     } else retry();
@@ -876,7 +878,6 @@ function callAppsScript(fnName, args, onSuccess, onFailure, attempt){
   xhr.send();
 }
 
-// طلب واحد من غير إعادة محاولة تلقائية
 function rpcOnce(fnName, args, onOk, onErr){
   var payload = btoa(unescape(encodeURIComponent(JSON.stringify({ fn: fnName, args: args }))));
   var xhr = new XMLHttpRequest();
@@ -1081,7 +1082,18 @@ function patchDay(patch){
         if(old.status==='Annual' || nd.status==='Annual') loadAnnualLeavePanel();
       } else toast('❌ خطأ: '+res);
     })
-    .withFailureHandler(function(e){ isSaving=false; toast('❌ '+e.message); })
+    .withFailureHandler(function(e){
+      isSaving=false;
+      var msg = (e && e.message) ? e.message : String(e);
+      if(msg.indexOf('تعليق') !== -1 || msg.indexOf('إغلاق') !== -1){
+        logout();
+        var errEl=document.getElementById('l-err');
+        errEl.textContent=msg;
+        errEl.style.display='block';
+      } else {
+        toast('❌ '+msg);
+      }
+    })
     .saveAttendanceDay(curAttUser, attYear, attMonth, cleanRec(nd));
 }
 
@@ -1417,7 +1429,7 @@ function showPage(name){
   if(name==='users' && S.isAdmin) loadUsers();
 }
 
-// ==================== الكارت الصغير ====================
+// ==================== DAY DETAILS PANEL ====================
 function openDay(i){
   selIdx=i;
   document.getElementById('sp-ph').style.display='none';
@@ -1455,7 +1467,6 @@ function loadAttendance(){
       scrollToToday();
     })
     .withFailureHandler(e=>{
-      console.warn('Attendance load failed, will retry automatically...');
       setTimeout(loadAttendance, 3000);
     })
     .getAttendance(curAttUser, attYear, attMonth);
@@ -1557,7 +1568,7 @@ function getPillClass(s){
 function statusLabel(s){
   const m={'Present':'✓ حضور','Absence':'✗ غياب','Annual':'🌴 إجازة Annual','Day Off':'😴 راحة',
     'Compensation':'🔄 تعويض','Friday + Double Paid':'⭐ جمعة/دابل',
-    'Deduction 3 day':'📉 خصم ٣','Deduction 2 day':'📉 خصم ٢','Deduction 1 day':'📉 خصم ١','Deduction half day':'📉 خصم نص'};
+    'Deduction 3 day':'📉 خصم ٣','Deduction half day':'📉 خصم نص','Deduction 1 day':'📉 خصم ١','Deduction 2 day':'📉 خصم ٢'};
   return m[s]||s;
 }
 
@@ -1589,7 +1600,7 @@ function renderDetails(){
   calcIndDed();
 }
 
-// ==================== صفحة تفاصيل اليوم ====================
+// ==================== DAY VIEW ====================
 function pad2(n){ return String(n).padStart(2,'0'); }
 function isoOf(dt){ return dt.getFullYear()+'-'+pad2(dt.getMonth()+1)+'-'+pad2(dt.getDate()); }
 
@@ -1694,7 +1705,7 @@ function renderDv(){
   renderDvPhotos();
 }
 
-// ---------- صور اليوم ----------
+// ---------- DAY PHOTOS ----------
 function dvPhotosLoad(reqId){
   var d=dvRec;
   if(!d) return;
@@ -1903,7 +1914,6 @@ function loadSalary(){
       renderSalaryContent(res.salary);
     })
     .withFailureHandler(e=>{
-      console.warn('Salary load failed, will retry automatically...');
       setTimeout(loadSalary, 3000);
     })
     .calcSalaryWithLeave(curSalUser, salYear, salMonth);
@@ -2121,7 +2131,8 @@ function setUsersBadge(n){
 function refreshUsersBadge(){
   if(!S.isAdmin) return;
   rpcOnce('getUsers',[S.username,S.pass],function(l){
-    setUsersBadge(l.filter(function(u){return u.status==='pending';}).length);
+    var alertCount = l.filter(function(u){ return u.status==='pending' || u.status==='suspended'; }).length;
+    setUsersBadge(alertCount);
   },function(){});
 }
 function startBadgeTimer(){
@@ -2132,26 +2143,52 @@ function startBadgeTimer(){
 
 function renderUsers(list){
   usersCache=list;
-  var order={pending:0,approved:1};
-  list.sort(function(a,b){ return (order[a.status]-order[b.status])||(b.createdAt-a.createdAt); });
+  var order={suspended:0, pending:1, approved:2, closed:3};
+  list.sort(function(a,b){ return ((order[a.status]||2)-(order[b.status]||2))||(b.createdAt-a.createdAt); });
+
+  var sc=list.filter(function(u){return u.status==='suspended';}).length;
   var pc=list.filter(function(u){return u.status==='pending';}).length;
-  setUsersBadge(pc);
+  setUsersBadge(sc + pc);
+
   var html='';
-  if(pc) html+='<div class="card pending-banner" style="border-color:var(--orange);text-align:center;font-weight:800;color:var(--orange)">⏳ فيه '+toAR(pc)+(pc===1?' طلب':' طلبات')+' مستني موافقتك</div>';
+  if(sc){
+    html+='<div class="card pending-banner" style="border-color:var(--red);background:#fff5f6;text-align:center;font-weight:800;color:var(--red)">⛔ فيه '+toAR(sc)+(sc===1?' يوزر معلّق':' يوزرات معلّقة')+' بسبب إنه مسجلش في ٤ أيام ورا بعض</div>';
+  }
+  if(pc){
+    html+='<div class="card pending-banner" style="border-color:var(--orange);text-align:center;font-weight:800;color:var(--orange)">⏳ فيه '+toAR(pc)+(pc===1?' طلب':' طلبات')+' مستني موافقتك</div>';
+  }
+
   html+=list.map(function(u,i){
-    var pend=u.status==='pending';
-    var top, actions='';
-    if(pend){
-      top='<div class="uc-top"><div class="det-title" style="font-size:16px">'+u.displayName+' <span class="pill p-annual" style="margin-inline-start:6px;vertical-align:middle">'+(u.role||'Labeler')+'</span></div><span class="pill p-friday">⏳ مستني موافقة</span></div>';
+    var susp = u.status==='suspended';
+    var pend = u.status==='pending';
+    var closed = u.status==='closed';
+    var top, actions='', reasonRow='', cardCls='';
+
+    if(susp){
+      cardCls='suspended';
+      top='<div class="uc-top"><div><span class="det-title" style="font-size:16px">'+u.displayName+'</span> <span class="pill p-annual" style="margin-inline-start:6px;vertical-align:middle">'+(u.role||'Labeler')+'</span></div><span class="pill p-absent">⛔ معلّق</span></div>';
+      reasonRow=dvRow('سبب التعليق','<span style="color:var(--red)">'+(u.suspendReason||'مسجلش في ٤ أيام ورا بعض')+'</span>');
+      actions='<div class="user-actions"><button class="u-btn u-ok" onclick="userAction(\''+u.username+'\',\'reactivate\',this)">🔓 فتح وتفعيل</button><button class="u-btn u-close" onclick="userAction(\''+u.username+'\',\'close\',this)">🔒 إغلاق الحساب</button></div>';
+    } else if(pend){
+      cardCls='pending';
+      top='<div class="uc-top"><div><span class="det-title" style="font-size:16px">'+u.displayName+'</span> <span class="pill p-annual" style="margin-inline-start:6px;vertical-align:middle">'+(u.role||'Labeler')+'</span></div><span class="pill p-friday">⏳ مستني موافقة</span></div>';
       actions='<div class="user-actions"><button class="u-btn u-ok" onclick="userAction(\''+u.username+'\',\'approve\',this)">✅ موافقة</button><button class="u-btn u-no" onclick="userAction(\''+u.username+'\',\'reject\',this)">❌ رفض</button></div>';
+    } else if(closed){
+      cardCls='closed';
+      top='<div class="uc-top"><div><span class="det-title" style="font-size:16px">'+u.displayName+'</span> <span class="pill p-annual" style="margin-inline-start:6px;vertical-align:middle">'+(u.role||'Labeler')+'</span></div><div class="uc-icons"><span class="pill p-absent">🔒 مغلق</span>'
+        +'<button class="ic-btn del" title="حذف" onclick="delUser(\''+u.username+'\',this)">🗑️</button></div></div>';
+      actions='<div class="user-actions"><button class="u-btn u-ok" onclick="userAction(\''+u.username+'\',\'reactivate\',this)">🔓 إعادة فتح وتفعيل</button></div>';
     } else {
-      top='<div class="uc-top"><div class="det-title" style="font-size:16px">'+u.displayName+' <span class="pill p-annual" style="margin-inline-start:6px;vertical-align:middle">'+(u.role||'Labeler')+'</span></div><div class="uc-icons">'
+      top='<div class="uc-top"><div><span class="det-title" style="font-size:16px">'+u.displayName+'</span> <span class="pill p-annual" style="margin-inline-start:6px;vertical-align:middle">'+(u.role||'Labeler')+'</span></div><div class="uc-icons">'
+        +'<span class="pill p-present">✅ فعال</span>'
         +'<button class="ic-btn" title="تعديل" onclick="openEdit(\''+u.username+'\')">✏️</button>'
         +(u.isAdmin?'':'<button class="ic-btn del" title="حذف" onclick="delUser(\''+u.username+'\',this)">🗑️</button>')
         +'</div></div>';
     }
-    return '<div class="user-card a-in '+(pend?'pending':'')+'" style="animation-delay:'+Math.min(i*70,600)+'ms">'
+
+    return '<div class="user-card a-in '+cardCls+'" style="animation-delay:'+Math.min(i*70,600)+'ms">'
       +top
+      +reasonRow
       +dvRow('الباسورد','<span dir="ltr">'+u.password+'</span>')
       +dvRow('المرتب','<span>'+fNum(u.salary)+' جنيه</span>')
       +actions+'</div>';
@@ -2160,11 +2197,22 @@ function renderUsers(list){
 }
 
 function userAction(target,action,btn){
-  var msg=action==='approve'?'توافق على الحساب ده؟':'متأكد؟ الحساب هيتمسح ومش هيتفعل';
-  if(!confirm(msg)) return;
+  var msgs={
+    approve:'توافق على الحساب ده؟',
+    reactivate:'تفتح الحساب وترجعه فعال تاني؟',
+    close:'تقفل الحساب ده نهائياً وميقدرش يدخل تاني؟',
+    reject:'متأكد؟ الحساب هيتمسح ومش هيتفعل'
+  };
+  var toasts={
+    approve:'✅ اتفعل الحساب',
+    reactivate:'🔓 اتفتح الحساب وبقى فعال',
+    close:'🔒 اتقفل الحساب',
+    reject:'🗑️ اتلغى الحساب'
+  };
+  if(!confirm(msgs[action]||'متأكد؟')) return;
   var cardEl=btn&&btn.closest('.user-card');
   rpcOnce('setUserStatus',[S.username,S.pass,target,action],function(){
-    toast(action==='approve'?'✅ اتفعل الحساب':'🗑️ اتلغى الحساب');
+    toast(toasts[action]||'✅ تم');
     if(cardEl && action==='reject'){ cardEl.classList.add('user-removed'); setTimeout(loadUsers,450); }
     else loadUsers();
     loadEmpSelectors();
